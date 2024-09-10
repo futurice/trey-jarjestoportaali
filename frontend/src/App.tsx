@@ -1,20 +1,35 @@
-import { useState } from "react"
+import { RouterProvider, createBrowserRouter } from "react-router-dom"
 import { Container } from "@radix-ui/themes"
 import "./App.css"
+import { ProtectedRoute, GuestRoute } from "./api/router"
+import Dashboard from "./components/Dashboard"
+import Login from "./components/Login"
+
+const router = createBrowserRouter([
+  {
+    id: "App",
+    path: "/",
+    children: [
+      {
+        index: true,
+        Component: () => <ProtectedRoute component={Dashboard} />,
+      },
+      {
+        path: "/login",
+        element: <GuestRoute component={Login} />,
+      },
+      {
+        path: "/dashboard",
+        element: <ProtectedRoute component={Dashboard} />,
+      },
+    ],
+  },
+])
 
 function App() {
-  const [count, setCount] = useState(0)
-
   return (
     <Container align="center">
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>count is {count}</button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">Click on the Vite and React logos to learn more</p>
+      <RouterProvider router={router} />
     </Container>
   )
 }
