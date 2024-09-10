@@ -1,5 +1,6 @@
 import { ReactNode } from "react"
 import { Navigate } from "react-router-dom"
+import { useStytchUser } from "@stytch/react"
 
 interface IRouteProps {
   component: any
@@ -11,12 +12,12 @@ interface IRouteProps {
  * @returns The component passed as parameter if the user is logged in, otherwise the login page.
  */
 export const ProtectedRoute = ({ component: Component, ...rest }: IRouteProps): ReactNode => {
-  // const { user } = useStytchUser()
-  const user = true
+  const { user } = useStytchUser()
+
   if (user) {
     return <Component {...rest} />
   } else {
-    return <Navigate to="/" />
+    return <Navigate to="/login" />
   }
 }
 
@@ -26,8 +27,8 @@ export const ProtectedRoute = ({ component: Component, ...rest }: IRouteProps): 
  * @returns The component passed as parameter if the user is not logged in, otherwise the front page.
  */
 export const GuestRoute = ({ component: Component, ...rest }: IRouteProps): ReactNode => {
-  // const { user } = useStytchUser()
-  const user = false
+  const { user } = useStytchUser()
+
   if (!user) {
     return <Component {...rest} />
   } else {
