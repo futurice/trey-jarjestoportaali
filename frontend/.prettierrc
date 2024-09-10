@@ -4,5 +4,22 @@
   "semi": false,
   "printWidth": 100,
   "bracketSameLine": false,
-  "bracketSpacing": true
+  "bracketSpacing": true,
+  "importOrder": [
+    "^react(.*)",
+    "<THIRD_PARTY_MODULES>",
+    "@/(.*)",
+    "theme",
+    "primitives",
+    "^[pages/]",
+    "^[components/]",
+    "^[api/]",
+    "^[services/]",
+    "^[utils/]",
+    "^[assets/]",
+    "^[models/]",
+    "^[./]",
+    "^[../]"
+  ],
+  "plugins": ["@trivago/prettier-plugin-sort-imports"]
 }
