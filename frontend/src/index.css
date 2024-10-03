@@ -1,0 +1,12 @@
+.radix-themes {
+  --trey-blue: #006069;
+  --blue-9: var(--trey-blue);
+  --blue-a9: var(--trey-blue);
+}
+
+body {
+  background-image: url("https://trey.fi/content/themes/trey/svg/tausta_aalto.svg");
+  background-color: #006069;
+  background-size: cover;
+  background-repeat: repeat;
+}
