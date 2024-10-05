@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - main
+      - feat/github-actions-frontend
     paths:
       - 'frontend/**'
       - '.github/workflows/deploy-frontend-to-dev.yml'
@@ -38,5 +39,5 @@ jobs:
           repo_token: ${{ secrets.GITHUB_TOKEN }} # Used for Github integrations (i.e. PR comments)
           action: "upload"
           app_location: "./frontend"
-          output_location: "frontend/dist"
+          output_location: "dist"
           app_build_command: "npm run build"
