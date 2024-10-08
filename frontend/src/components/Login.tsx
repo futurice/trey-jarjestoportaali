@@ -1,6 +1,6 @@
 import { StytchLogin } from "@stytch/react"
 import { Callbacks, Products } from "@stytch/vanilla-js"
-import { Container } from "@radix-ui/themes"
+import { LoginContainer } from "../components/LoginContainer/LoginContainer"
 
 const Login = () => {
   const REDIRECT_URL = "http://localhost:5173/dashboard"
@@ -28,7 +28,7 @@ const Login = () => {
   }
 
   return (
-    <Container align="center" width={"auto"}>
+    <LoginContainer>
       <StytchLogin
         config={config}
         callbacks={callbacks}
@@ -38,7 +38,7 @@ const Login = () => {
           },
         }}
       />
-    </Container>
+    </LoginContainer>
   )
 }
 
