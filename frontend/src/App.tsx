@@ -1,9 +1,21 @@
 import { RouterProvider, createBrowserRouter } from "react-router-dom"
-import { Container } from "@radix-ui/themes"
 import "./App.css"
 import { ProtectedRoute, GuestRoute } from "./api/router"
 import Dashboard from "./components/Dashboard"
+import { Layout } from "./components/Layout/Layout"
 import Login from "./components/Login"
+
+interface IProtectedRoutePage {
+  component: () => JSX.Element
+}
+
+const ProtectedRoutePage: React.FC<IProtectedRoutePage> = ({ component }) => {
+  return (
+    <Layout>
+      <ProtectedRoute component={component} />
+    </Layout>
+  )
+}
 
 const router = createBrowserRouter([
   {
@@ -12,7 +24,7 @@ const router = createBrowserRouter([
     children: [
       {
         index: true,
-        Component: () => <ProtectedRoute component={Dashboard} />,
+        Component: () => <ProtectedRoutePage component={Dashboard} />,
       },
       {
         path: "/login",
@@ -20,18 +32,14 @@ const router = createBrowserRouter([
       },
       {
         path: "/dashboard",
-        element: <ProtectedRoute component={Dashboard} />,
+        element: <ProtectedRoutePage component={Dashboard} />,
       },
     ],
   },
 ])
 
 function App() {
-  return (
-    <Container align="center">
-      <RouterProvider router={router} />
-    </Container>
-  )
+  return <RouterProvider router={router} />
 }
 
 export default App

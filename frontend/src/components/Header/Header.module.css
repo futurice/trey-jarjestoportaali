@@ -1,0 +1,14 @@
+.header {
+  display: flex;
+  background-color: var(--blue-9);
+  padding: 10px;
+}
+
+.image-container {
+  display: flex;
+  align-items: center;
+}
+
+.image-container img {
+  max-height: 30px;
+}
