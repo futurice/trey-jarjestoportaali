@@ -3,7 +3,7 @@ import { Callbacks, Products } from "@stytch/vanilla-js"
 import { Container } from "@radix-ui/themes"
 
 const Login = () => {
-  const REDIRECT_URL = "http://localhost:5173/dashboard"
+  const REDIRECT_URL = "/dashboard"
   const config = {
     products: [Products.passwords],
     passwordOptions: {
