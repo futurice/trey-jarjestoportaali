@@ -4,44 +4,7 @@
 
 Monorepo for the new Järjestöportaali for TREY, a successor of Tahlo.
 
----
-page_type: sample
-languages:
-- azdeveloper
-- aspx-csharp
-- csharp
-- bicep
-- typescript
-- html
-  products:
-- azure
-- azure-cosmos-db
-- azure-app-service
-- azure-monitor
-- azure-pipelines
-- aspnet-core
-  urlFragment: todo-csharp-cosmos-sql
-  name: React Web App with C# API and Cosmos DB for NoSQL on Azure
-  description: A complete ToDo app with C# API and Azure Cosmos DB (NoSQL) for storage. Uses Azure Developer CLI (azd) to build, deploy, and monitor
----
-<!-- YAML front-matter schema: https://review.learn.microsoft.com/en-us/help/contribute/samples/process/onboarding?branch=main#supported-metadata-fields-for-readmemd -->
-
-# React Web App with C# API and Cosmos DB for NoSQL on Azure
-
-[![Open in GitHub Codespaces](https://img.shields.io/static/v1?style=for-the-badge&label=GitHub+Codespaces&message=Open&color=brightgreen&logo=github)](https://codespaces.new/azure-samples/todo-csharp-cosmos-sql)
-[![Open in Dev Container](https://img.shields.io/static/v1?style=for-the-badge&label=Dev+Containers&message=Open&color=blue&logo=visualstudiocode)](https://vscode.dev/redirect?url=vscode://ms-vscode-remote.remote-containers/cloneInVolume?url=https://github.com/azure-samples/todo-csharp-cosmos-sql)
-
-A blueprint for getting a React web app with a C# API and a MongoDB database running on Azure. The blueprint includes sample application code (a ToDo web app) which can be removed and replaced with your own application code. Add your own source code and leverage the Infrastructure as Code assets (written in Bicep) to get up and running quickly.
-
-Let's jump in and get this up and running in Azure. When you are finished, you will have a fully functional web app deployed to the cloud. In later steps, you'll see how to setup a pipeline and monitor the application.
-
-!["Screenshot of deployed ToDo app"](assets/web.png)
-
-<sup>Screenshot of the deployed ToDo app</sup>
-
 ### Prerequisites
-> This template will create infrastructure and deploy code to Azure. If you don't have an Azure Subscription, you can sign up for a [free account here](https://azure.microsoft.com/free/). Make sure you have contributor role to the Azure subscription.
-
 
 The following prerequisites are required to use this application. Please ensure that you have them all installed locally.
 
@@ -50,16 +13,12 @@ The following prerequisites are required to use this application. Please ensure 
 - [Node.js with npm (18.17.1+)](https://nodejs.org/) - for the Web frontend
 
 ### Quickstart
-To learn how to get started with any template, follow the steps in [this quickstart](https://learn.microsoft.com/azure/developer/azure-developer-cli/get-started?tabs=localinstall&pivots=programming-language-csharp) with this template (`Azure-Samples/todo-csharp-cosmos-sql`).
 
-This quickstart will show you how to authenticate on Azure, initialize using a template, provision infrastructure and deploy code on Azure via the following commands:
+This quickstart will show you how to authenticate on Azure, provision infrastructure and deploy code on Azure via the following commands:
 
 ```bash
 # Log in to azd. Only required once per-install.
 azd auth login
-
-# First-time project setup. Initialize a project in the current directory, using this template.
-azd init --template Azure-Samples/todo-csharp-cosmos-sql
 
 # Provision and deploy to Azure
 azd up
@@ -99,8 +58,6 @@ At this point, you have a complete application deployed on Azure. But there is m
 
 - [`azd down`](https://learn.microsoft.com/azure/developer/azure-developer-cli/reference#azd-down) - to delete all the Azure resources created with this template
 
-- [Enable optional features, like APIM](./OPTIONAL_FEATURES.md) - for enhanced backend API protection and observability
-
 ### Additional `azd` commands
 
 The Azure Developer CLI includes many other commands to help with your Azure development experience. You can view these commands at the terminal by running `azd help`. You can also view the full list of commands on our [Azure Developer CLI command](https://aka.ms/azure-dev/ref) page.
@@ -115,7 +72,3 @@ This template creates a [managed identity](https://docs.microsoft.com/azure/acti
 ### Key Vault
 
 This template uses [Azure Key Vault](https://docs.microsoft.com/azure/key-vault/general/overview) to securely store your Cosmos DB connection string for the provisioned Cosmos DB account. Key Vault is a cloud service for securely storing and accessing secrets (API keys, passwords, certificates, cryptographic keys) and makes it simple to give other Azure services access to them. As you continue developing your solution, you may add as many secrets to your Key Vault as you require.
-
-## Reporting Issues and Feedback
-
-If you have any feature requests, issues, or areas for improvement, please [file an issue](https://aka.ms/azure-dev/issues). To keep up-to-date, ask questions, or share suggestions, join our [GitHub Discussions](https://aka.ms/azure-dev/discussions). You may also contact us via AzDevTeam@microsoft.com.
