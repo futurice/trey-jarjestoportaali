@@ -3,7 +3,7 @@ import { Callbacks, Products } from "@stytch/vanilla-js"
 import { Container } from "@radix-ui/themes"
 
 const Login = () => {
-  const REDIRECT_URL = "http://localhost:5173/dashboard"
+  const REDIRECT_URL = "/dashboard"
   const config = {
     products: [Products.passwords],
     passwordOptions: {
@@ -19,8 +19,8 @@ const Login = () => {
       // TODO: add more event types as needed
       console.log(event)
       if (
-        (event.type === "AUTHENTICATE_FLOW_COMPLETE" || event.type === "PASSWORD_AUTHENTICATE") &&
-        event.data?.user
+          (event.type === "AUTHENTICATE_FLOW_COMPLETE" || event.type === "PASSWORD_AUTHENTICATE") &&
+          event.data?.user
       ) {
         window.location.href = REDIRECT_URL
       }
@@ -28,17 +28,17 @@ const Login = () => {
   }
 
   return (
-    <Container align="center" width={"auto"}>
-      <StytchLogin
-        config={config}
-        callbacks={callbacks}
-        styles={{
-          logo: {
-            logoImageUrl: "https://trey.fi/media/trey_tunnus_musta-1.png",
-          },
-        }}
-      />
-    </Container>
+      <Container align="center" width={"auto"}>
+        <StytchLogin
+            config={config}
+            callbacks={callbacks}
+            styles={{
+              logo: {
+                logoImageUrl: "https://trey.fi/media/trey_tunnus_musta-1.png",
+              },
+            }}
+        />
+      </Container>
   )
 }
 
