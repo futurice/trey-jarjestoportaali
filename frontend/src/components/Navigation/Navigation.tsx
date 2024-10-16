@@ -10,11 +10,11 @@ const Navigation = () => {
   return (
     <NavigationMenu.Root className={styles["navigation"]}>
       <NavigationMenu.List className={styles["navigation-menu-list"]}>
-        {navigationRoutes.map((navigationRoute, i) => {
+        {navigationRoutes.map((navigationRoute) => {
           return (
-            <NavigationMenu.Item key={i}>
+            <NavigationMenu.Item key={navigationRoute.name}>
               <NavigationMenu.Link
-                data-active={location.pathname === navigationRoute.href ? true : false}
+                data-active={location.pathname === navigationRoute.href}
                 className={styles["navigation-menu-link"]}
                 href={navigationRoute.href}
               >
