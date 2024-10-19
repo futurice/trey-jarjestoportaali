@@ -1,0 +1,56 @@
+/* reset */
+button,
+p {
+  all: unset;
+}
+
+.navigation {
+  position: relative;
+  display: flex;
+  width: 100%;
+  z-index: 1;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.navigation-menu-list {
+  display: flex;
+  list-style: none;
+  margin: 0;
+}
+
+.navigation-menu-link {
+  display: block;
+  text-decoration: none;
+  font-size: 16px;
+}
+.navigation-menu-link[data-active="true"] {
+  text-decoration: underline;
+  color: var(--trey-yellow);
+}
+
+.navigation-menu-trigger,
+.navigation-menu-link {
+  padding: 8px 12px;
+  outline: none;
+  font-weight: 500;
+  border-radius: 4px;
+  color: var(--white);
+}
+.navigation-menu-trigger:hover,
+.navigation-menu-link:hover {
+  text-decoration: underline;
+}
+.navigation-menu-trigger:focus,
+.navigation-menu-link:focus {
+  outline: 2px solid var(--blue-focus);
+  color: var(--trey-yellow);
+}
+
+.navigation-menu-trigger {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 2px;
+  cursor: pointer;
+}

@@ -2,11 +2,20 @@
   --trey-blue: #006069;
   --blue-9: var(--trey-blue);
   --blue-a9: var(--trey-blue);
+  --trey-yellow: #ffcc00;
+  --white: #ffffff;
+  --blue-focus: #4d4aff;
 }
 
 body {
   background-image: url("https://trey.fi/content/themes/trey/svg/tausta_aalto.svg");
-  background-color: #006069;
+  background-color: var(--trey-blue);
   background-size: cover;
   background-repeat: repeat;
+  margin: 0;
+  padding: 0;
+}
+
+.rt-ContainerInner {
+  background-color: var(--white);
 }
