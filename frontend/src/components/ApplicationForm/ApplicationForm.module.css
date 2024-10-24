@@ -1,0 +1,26 @@
+.form {
+  max-width: 500px;
+  margin: 0 auto;
+}
+
+.form label {
+  text-align: left;
+  display: block;
+  margin-bottom: 13px;
+  margin-top: 20px;
+}
+
+.form input,
+.form textarea {
+  display: block;
+  box-sizing: border-box;
+  width: 100%;
+  padding: 5px 8px 2px;
+  border: 1px solid #d6d4cb;
+  font-size: 16px;
+  height: 34px;
+}
+
+.question-area {
+  display: flex;
+}
