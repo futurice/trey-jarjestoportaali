@@ -1,11 +1,12 @@
+import { Container } from "@radix-ui/themes"
 import { ApplicationForm } from "./ApplicationForm/ApplicationForm"
 
 const Dashboard = () => {
   return (
-    <>
-      <h1>Dashboard</h1>
+    <Container align="center">
+      <h1>Luo hakemus</h1>
       <ApplicationForm />
-    </>
+    </Container>
   )
 }
 

@@ -1,26 +1,76 @@
-.form {
-  max-width: 500px;
+.application-form {
+  max-width: 80%;
   margin: 0 auto;
 }
 
-.form label {
-  text-align: left;
-  display: block;
-  margin-bottom: 13px;
-  margin-top: 20px;
+.application-form button {
+  cursor: pointer;
 }
 
-.form input,
-.form textarea {
+.application-form label {
+  text-align: left;
+  display: block;
+  margin: 20px 0 10px 0;
+}
+
+.application-form input,
+.application-form textarea {
   display: block;
   box-sizing: border-box;
   width: 100%;
-  padding: 5px 8px 2px;
-  border: 1px solid #d6d4cb;
+  padding: 5px 8px 5px;
+  border: 1px solid var(--trey-greige);
   font-size: 16px;
   height: 34px;
 }
 
+.error-message {
+  margin: 8px 0 0 0;
+  text-align: start;
+  font-size: 12px;
+  color: red;
+}
+
 .question-area {
+  margin-top: 20px;
+  margin-bottom: 20px;
+  position: relative;
+}
+
+.question-input-area {
   display: flex;
+}
+
+.question-input-area :first-child {
+  flex: 1;
+}
+
+.question-area select {
+  border-color: var(--trey-greige);
+  margin: 0 10px 0 10px;
+  height: 34px;
+  cursor: pointer;
+}
+
+.button-container {
+  display: flex;
+  justify-content: space-between;
+  margin: 20px 0 20px 0;
+}
+
+.form-table {
+  border-collapse: collapse;
+  width: 100%;
+  margin-bottom: 30px;
+}
+
+.form-table td,
+th {
+  border: 1px solid var(--trey-greige);
+  text-align: left;
+  padding: 8px;
+}
+
+.form-table tr:nth-child(even) {
+  background-color: rgba(214, 212, 203, 0.2);
 }
