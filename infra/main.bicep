@@ -230,6 +230,9 @@ module apimApi './app/apim-api.bicep' = if (useAPIM) {
   }
 }
 
+// Storage outputs
+output AZURE_STORAGE_BLOB_ENDPOINT string = storage.outputs.primaryEndpoints.blob
+
 // Data outputs
 output AZURE_COSMOS_ENDPOINT string = cosmos.outputs.endpoint
 output AZURE_COSMOS_CONNECTION_STRING_KEY string = cosmos.outputs.connectionStringKey
