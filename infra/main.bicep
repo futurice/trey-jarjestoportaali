@@ -24,6 +24,9 @@ param logAnalyticsName string = ''
 param resourceGroupName string = ''
 param webServiceName string = ''
 param apimServiceName string = ''
+param storageAccountName string = ''
+param storageContainerName string = 'trey'
+param storageSKU string = 'Standard_LRS'
 
 @description('Flag to use Azure API Management to mediate the calls between the Web frontend and the backend API')
 param useAPIM bool = false
@@ -74,6 +77,7 @@ module api './app/api.bicep' = {
       AZURE_COSMOS_CONNECTION_STRING_KEY: cosmos.outputs.connectionStringKey
       AZURE_COSMOS_DATABASE_NAME: cosmos.outputs.databaseName
       AZURE_COSMOS_ENDPOINT: cosmos.outputs.endpoint
+      AZURE_STORAGE_BLOB_ENDPOINT: storage.outputs.primaryEndpoints.blob
       API_ALLOW_ORIGINS: web.outputs.SERVICE_WEB_URI
     }
   }
@@ -111,6 +115,17 @@ module userComsosSqlRoleAssign './core/database/cosmos/sql/cosmos-sql-role-assig
   }
 }
 
+// Give the API contributer role to the storage account
+module storageContribRoleFunction 'core/security/role.bicep' = {
+  scope: rg
+  name: 'storage-contribrole-api'
+  params: {
+    principalId: api.outputs.SERVICE_API_IDENTITY_PRINCIPAL_ID
+    roleDefinitionId: 'ba92f5b4-2d11-453d-a403-e96b0029c9fe'
+    principalType: 'ServicePrincipal'
+  }
+}
+
 // The application database
 module cosmos './app/db.bicep' = {
   name: 'cosmos'
@@ -135,6 +150,29 @@ module appServicePlan './core/host/appserviceplan.bicep' = {
     sku: {
       name: 'B3'
     }
+  }
+}
+
+module storage 'core/storage/storage-account.bicep' = {
+  name: 'storage'
+  scope: rg
+  params: {
+    name: !empty(storageAccountName) ? storageAccountName : '${abbrs.storageStorageAccounts}${resourceToken}'
+    location: location
+    publicNetworkAccess: 'Enabled'
+    sku: {
+      name: storageSKU
+    }
+    deleteRetentionPolicy: {
+      enabled: true
+      days: 2
+    }
+    containers: [
+      {
+        name: storageContainerName
+        publicAccess: 'Blob'
+      }
+    ]
   }
 }
 
