@@ -9,7 +9,7 @@ internal sealed class FileService(BlobContainerClient container, ILogger<FileSer
 {
     internal static DefaultAzureCredential DefaultCredential { get; } = new();
 
-    public async Task<FilesResponse> UploadFilesAsync(IFormFileCollection files,
+    public async Task<FileResponse> UploadFilesAsync(IFormFileCollection files,
         CancellationToken cancellationToken)
     {
         try
@@ -35,16 +35,16 @@ internal sealed class FileService(BlobContainerClient container, ILogger<FileSer
             }
 
             return uploadedFiles.Count is 0
-                ? FilesResponse.FromError("No files uploaded.")
-                : new FilesResponse([.. uploadedFiles]);
+                ? FileResponse.FromError("No files uploaded.")
+                : new FileResponse([.. uploadedFiles]);
         }
         catch (Exception ex)
         {
-            return FilesResponse.FromError(ex.ToString());
+            return FileResponse.FromError(ex.ToString());
         }
     }
 
-    public Task<FilesResponse> FindFilesAsync(CancellationToken cancellationToken)
+    public Task<BlobFile[]> FindFilesAsync(CancellationToken cancellationToken)
     {
         try
         {
@@ -52,14 +52,12 @@ internal sealed class FileService(BlobContainerClient container, ILogger<FileSer
             // TODO: change to async
             var blobs = container.GetBlobsAsync(cancellationToken: cancellationToken)
                 .ToBlockingEnumerable();
-            var blobItems = blobs.ToList();
-            return Task.FromResult(blobItems.Count != 0
-                ? new FilesResponse([.. blobItems.Select(blob => blob.Name)])
-                : FilesResponse.FromError("No files found."));
+            var blobItems = blobs.Select(blob => BlobFile.FromBlobItem(blob)).ToArray();
+            return Task.FromResult(blobItems.ToArray());
         }
         catch (Exception ex)
         {
-            return Task.FromResult(FilesResponse.FromError(ex.ToString()));
+            return Task.FromException<BlobFile[]>(ex);
         }
     }
 }

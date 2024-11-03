@@ -11,6 +11,15 @@ export interface Entity {
     updated?: Date
 }
 
+export interface Result<T extends Entity> {
+    result?: T | T[];
+    error?: string;
+    id: number;
+    isCanceled: boolean;
+    isCompleted: boolean;
+    isCompletedSuccessfully: boolean
+}
+
 export abstract class RestService<T extends Entity> {
     protected client: AxiosInstance;
 
@@ -21,12 +30,12 @@ export abstract class RestService<T extends Entity> {
     }
 
     public async getList(queryOptions?: QueryOptions): Promise<T[]> {
-        const response = await this.client.request<T[]>({
+        const response = await this.client.request<Result<T>>({
             method: 'GET',
             data: queryOptions
         });
 
-        return response.data;
+        return response.data.result as T[];
     }
 
     public async get(id: string): Promise<T> {

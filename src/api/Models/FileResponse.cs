@@ -1,11 +1,23 @@
+using Azure.Storage.Blobs.Models;
+
 namespace Trey.Api.Models;
 
-public record FilesResponse(
-    string[] Files,
+public record FileResponse(
+    string[] File,
     string? Error = null)
 {
-    public static FilesResponse FromError(string error)
+    public static FileResponse FromError(string error)
     {
-        return new FilesResponse([], error);
+        return new FileResponse([], error);
+    }
+}
+
+public record BlobFile(
+    string? Id,
+    string Name)
+{
+    public static BlobFile FromBlobItem(BlobItem blob)
+    {
+        return new BlobFile(null, blob.Name);
     }
 }

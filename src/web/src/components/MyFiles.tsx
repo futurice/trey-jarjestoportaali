@@ -7,9 +7,8 @@ const MyFiles = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [files, setFiles] = useState<BlobFile[]>([]);
 
-  const fileService = new FileService(config.api.baseUrl, '/lists');
-
   useEffect(() => {
+    const fileService = new FileService(config.api.baseUrl, '/files');
     setIsLoading(true);
     fileService.getList() // Todo: add user id
         .then(files => setFiles(files))
