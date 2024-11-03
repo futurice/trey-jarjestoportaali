@@ -43,7 +43,8 @@ var app = builder.Build();
 
 app.UseCors(policy =>
 {
-    policy.AllowAnyOrigin();
+    var origins = builder.Configuration["API_ALLOW_ORIGINS"];
+    policy.WithOrigins(origins ?? "*");
     policy.AllowAnyHeader();
     policy.AllowAnyMethod();
 });
