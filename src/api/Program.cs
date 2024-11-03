@@ -1,17 +1,16 @@
 using Azure.Identity;
 using Azure.Storage.Blobs;
 using Microsoft.Azure.Cosmos;
-using SimpleTodo.Api;
-using Todo.Api;
-using Todo.Api.Extensions;
-using Todo.Api.Services;
+using Trey.Api;
+using Trey.Api.Extensions;
+using Trey.Api.Services;
 
 var credential = new DefaultAzureCredential();
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddSingleton<ListsRepository>();
 builder.Services.AddSingleton(_ => new CosmosClient(builder.Configuration["AZURE_COSMOS_ENDPOINT"], credential,
-    new CosmosClientOptions()
+    new CosmosClientOptions
     {
         SerializerOptions = new CosmosSerializationOptions
         {

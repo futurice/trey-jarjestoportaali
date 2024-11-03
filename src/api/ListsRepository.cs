@@ -1,12 +1,12 @@
 using Microsoft.Azure.Cosmos;
 using Microsoft.Azure.Cosmos.Linq;
 
-namespace SimpleTodo.Api;
+namespace Trey.Api;
 
 public class ListsRepository
 {
-    private readonly Container _listsCollection;
     private readonly Container _itemsCollection;
+    private readonly Container _listsCollection;
 
     public ListsRepository(CosmosClient client, IConfiguration configuration)
     {
@@ -53,7 +53,8 @@ public class ListsRepository
             batchSize);
     }
 
-    public async Task<IEnumerable<TodoItem>> GetListItemsByStateAsync(string listId, string state, int? skip, int? batchSize)
+    public async Task<IEnumerable<TodoItem>> GetListItemsByStateAsync(string listId, string state, int? skip,
+        int? batchSize)
     {
         return await ToListAsync(
             _itemsCollection.GetItemLinqQueryable<TodoItem>().Where(i => i.ListId == listId && i.State == state),
@@ -70,10 +71,7 @@ public class ListsRepository
     public async Task<TodoItem?> GetListItemAsync(string listId, string itemId)
     {
         var response = await _itemsCollection.ReadItemAsync<TodoItem>(itemId, new PartitionKey(itemId));
-        if (response?.Resource.ListId != listId)
-        {
-            return null;
-        }
+        if (response?.Resource.ListId != listId) return null;
         return response.Resource;
     }
 
@@ -89,26 +87,16 @@ public class ListsRepository
 
     private async Task<List<T>> ToListAsync<T>(IQueryable<T> queryable, int? skip, int? batchSize)
     {
-        if (skip != null)
-        {
-            queryable = queryable.Skip(skip.Value);
-        }
+        if (skip != null) queryable = queryable.Skip(skip.Value);
 
-        if (batchSize != null)
-        {
-            queryable = queryable.Take(batchSize.Value);
-        }
+        if (batchSize != null) queryable = queryable.Take(batchSize.Value);
 
-        using FeedIterator<T> iterator = queryable.ToFeedIterator();
+        using var iterator = queryable.ToFeedIterator();
         var items = new List<T>();
 
         while (iterator.HasMoreResults)
-        {
             foreach (var item in await iterator.ReadNextAsync())
-            {
                 items.Add(item);
-            }
-        }
 
         return items;
     }

@@ -1,9 +1,9 @@
 using Azure.Identity;
 using Azure.Storage.Blobs;
 using Azure.Storage.Blobs.Models;
-using Todo.Api.Models;
+using Trey.Api.Models;
 
-namespace Todo.Api.Services;
+namespace Trey.Api.Services;
 
 internal sealed class FileService(BlobContainerClient container, ILogger<FileService> logger)
 {
@@ -12,21 +12,19 @@ internal sealed class FileService(BlobContainerClient container, ILogger<FileSer
     public async Task<FilesResponse> UploadFilesAsync(IFormFileCollection files,
         CancellationToken cancellationToken)
     {
-        try {
+        try
+        {
             logger.LogDebug("Uploading files to {container}.", container.Uri);
-            
+
             List<string> uploadedFiles = [];
             foreach (var file in files)
             {
                 var fileName = file.FileName;
 
                 await using var stream = file.OpenReadStream();
-                
+
                 var blobClient = container.GetBlobClient(fileName);
-                if (await blobClient.ExistsAsync(cancellationToken))
-                {
-                    continue;
-                }
+                if (await blobClient.ExistsAsync(cancellationToken)) continue;
 
                 await using var fileStream = file.OpenReadStream();
                 await blobClient.UploadAsync(fileStream, new BlobHttpHeaders
@@ -45,7 +43,7 @@ internal sealed class FileService(BlobContainerClient container, ILogger<FileSer
             return FilesResponse.FromError(ex.ToString());
         }
     }
-    
+
     public Task<FilesResponse> FindFilesAsync(CancellationToken cancellationToken)
     {
         try

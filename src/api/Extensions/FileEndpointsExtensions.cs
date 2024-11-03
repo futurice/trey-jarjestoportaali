@@ -1,7 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
-using Todo.Api.Services;
+using Trey.Api.Services;
 
-namespace Todo.Api.Extensions;
+namespace Trey.Api.Extensions;
 
 public static class FileEndpointsExtensions
 {
