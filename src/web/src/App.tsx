@@ -4,6 +4,7 @@ import { ProtectedRoute, GuestRoute } from "./api/router"
 import Dashboard from "./components/Dashboard"
 import { Layout } from "./components/Layout/Layout"
 import Login from "./components/Login"
+import MyFiles from "./components/MyFiles.tsx";
 
 interface IProtectedRoutePage {
   component: () => JSX.Element
@@ -33,6 +34,10 @@ const router = createBrowserRouter([
       {
         path: "/dashboard",
         element: <ProtectedRoutePage component={Dashboard} />,
+      },
+      {
+        path: "/my-files",
+        element: <ProtectedRoutePage component={MyFiles} />,
       },
     ],
   },
