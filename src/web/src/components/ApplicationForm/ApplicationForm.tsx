@@ -1,4 +1,4 @@
-import React, { useState } from "react"
+import React, { BaseSyntheticEvent, useState } from "react"
 import { useFieldArray, useForm } from "react-hook-form"
 import { ApplicationState, IApplicationForm, ResponseType } from "../../applicationForm/types"
 import { Button } from "../Button/Button"
@@ -29,8 +29,13 @@ export const ApplicationForm: React.FC = () => {
     control,
   })
 
-  const onSubmit = (data: IApplicationForm) => {
-    setFormData(data)
+  const onSubmit = (
+    data: IApplicationForm,
+    e: BaseSyntheticEvent<object, any, any> | undefined,
+  ) => {
+    if (e) {
+      setFormData(data)
+    }
   }
 
   const preventEnterKeySubmit = (
@@ -68,8 +73,8 @@ export const ApplicationForm: React.FC = () => {
         </section>
         <section>
           <h2>Hakemuksen kysymykset</h2>
-          {fields.map((_question, i) => (
-            <div key={`question_${i}`} className={styles["question-area"]}>
+          {fields.map((question, i) => (
+            <div key={question.id} className={styles["question-area"]}>
               <div className={styles["question-input-area"]}>
                 <input
                   onKeyDown={preventEnterKeySubmit}
@@ -83,7 +88,7 @@ export const ApplicationForm: React.FC = () => {
                 >
                   <option value={ResponseType.TextField}>Tekstikenttä</option>
                 </select>
-                <Button variant="secondary" onClick={() => remove(i)}>
+                <Button disabled={i === 0} variant="secondary" onClick={() => remove(i)}>
                   Poista
                 </Button>
               </div>
