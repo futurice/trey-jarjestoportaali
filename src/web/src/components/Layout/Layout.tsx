@@ -1,6 +1,6 @@
 import React from "react"
-import { Container } from "@radix-ui/themes"
 import { Header } from "../Header/Header"
+import styles from "./Layout.module.css"
 
 interface ILayout {
   children: React.ReactNode
@@ -10,7 +10,7 @@ export const Layout: React.FC<ILayout> = ({ children }) => {
   return (
     <>
       <Header />
-      <Container align="center">{children}</Container>
+      <div className={styles["page-container"]}>{children}</div>
     </>
   )
 }

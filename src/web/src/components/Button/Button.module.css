@@ -1,0 +1,13 @@
+.primary {
+  background-color: rgba(214, 212, 203, 0.2);
+  border: 1px solid var(--trey-greige);
+  border-radius: 3px;
+  padding: 6px 18px;
+}
+
+.secondary {
+  composes: primary;
+  background-color: transparent;
+  border: 1px solid red;
+  color: red;
+}
