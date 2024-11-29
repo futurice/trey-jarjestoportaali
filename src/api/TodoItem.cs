@@ -1,4 +1,4 @@
-namespace SimpleTodo.Api;
+namespace Trey.Api;
 
 public class TodoItem
 {
