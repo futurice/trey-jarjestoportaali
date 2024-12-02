@@ -4,13 +4,8 @@ param tags object = {}
 
 param containers array = [
   {
-    name: 'TodoList'
-    id: 'TodoList'
-    partitionKey: '/id'
-  }
-  {
-    name: 'TodoItem'
-    id: 'TodoItem'
+    name: 'Forms'
+    id: 'Forms'
     partitionKey: '/id'
   }
 ]

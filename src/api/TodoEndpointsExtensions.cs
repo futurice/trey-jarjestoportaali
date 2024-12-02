@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Http.HttpResults;
 
-namespace SimpleTodo.Api
+namespace Trey.Api
 {
     public static class TodoEndpointsExtensions
     {

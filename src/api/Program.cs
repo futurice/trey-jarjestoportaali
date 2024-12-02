@@ -1,11 +1,16 @@
 using Azure.Identity;
 using Microsoft.Azure.Cosmos;
-using SimpleTodo.Api;
+using Trey.Api;
+using Trey.Api.Extensions;
+using Trey.Api.Repositories;
+using System.Text.Json;
+using System.Text.Json.Serialization;
 
 var credential = new DefaultAzureCredential();
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddSingleton<ListsRepository>();
+builder.Services.AddSingleton<FormsRepository>();
 builder.Services.AddSingleton(_ => new CosmosClient(builder.Configuration["AZURE_COSMOS_ENDPOINT"], credential, new CosmosClientOptions()
 {
     SerializerOptions = new CosmosSerializationOptions
@@ -17,6 +22,17 @@ builder.Services.AddCors();
 builder.Services.AddApplicationInsightsTelemetry(builder.Configuration);
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+
+builder.Services.ConfigureHttpJsonOptions(options =>
+{
+    options.SerializerOptions.PropertyNameCaseInsensitive = true;
+    options.SerializerOptions.WriteIndented = true;
+    options.SerializerOptions.AllowTrailingCommas = true;
+    options.SerializerOptions.PropertyNamingPolicy = JsonNamingPolicy.CamelCase;
+    options.SerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles;
+    options.SerializerOptions.Converters.Add(new JsonStringEnumConverter());
+});
+
 var app = builder.Build();
 
 app.UseCors(policy =>
@@ -27,12 +43,14 @@ app.UseCors(policy =>
 });
 
 // Swagger UI
-app.UseSwaggerUI(options => {
+app.UseSwaggerUI(options =>
+{
     options.SwaggerEndpoint("./openapi.yaml", "v1");
     options.RoutePrefix = "";
 });
 
-app.UseStaticFiles(new StaticFileOptions{
+app.UseStaticFiles(new StaticFileOptions
+{
     // Serve openapi.yaml file
     ServeUnknownFileTypes = true,
 });
@@ -40,4 +58,9 @@ app.UseStaticFiles(new StaticFileOptions{
 app.MapGroup("/lists")
     .MapTodoApi()
     .WithOpenApi();
+
+app.MapGroup("/forms")
+    .MapFormsApi()
+    .WithOpenApi();
+
 app.Run();

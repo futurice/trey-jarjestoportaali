@@ -1,7 +1,7 @@
 using Microsoft.Azure.Cosmos;
 using Microsoft.Azure.Cosmos.Linq;
 
-namespace SimpleTodo.Api;
+namespace Trey.Api;
 
 public class ListsRepository
 {
