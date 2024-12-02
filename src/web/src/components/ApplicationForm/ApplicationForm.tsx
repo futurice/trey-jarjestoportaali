@@ -4,6 +4,7 @@ import { ApplicationState, IApplicationForm, ResponseType } from "../../applicat
 import { Button } from "../Button/Button"
 import styles from "./ApplicationForm.module.css"
 import { ApplicationFormTable } from "./ApplicationFormTable"
+import { saveForm } from "../../api/Forms"
 
 export const ApplicationForm: React.FC = () => {
   const {
@@ -35,6 +36,7 @@ export const ApplicationForm: React.FC = () => {
   ) => {
     if (e) {
       setFormData(data)
+      saveForm(data)
     }
   }
 
