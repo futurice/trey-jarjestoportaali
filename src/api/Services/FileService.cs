@@ -1,11 +1,13 @@
 using Azure.Identity;
 using Azure.Storage.Blobs;
 using Azure.Storage.Blobs.Models;
+using Azure.Storage.Blobs.Specialized;
+using Azure.Storage.Sas;
 using Trey.Api.Models;
 
 namespace Trey.Api.Services;
 
-internal sealed class FileService(BlobContainerClient container, ILogger<FileService> logger)
+internal sealed class FileService(BlobContainerClient containerClient, BlobServiceClient serviceClient, ILogger<FileService> logger)
 {
     internal static DefaultAzureCredential DefaultCredential { get; } = new();
 
@@ -14,7 +16,7 @@ internal sealed class FileService(BlobContainerClient container, ILogger<FileSer
     {
         try
         {
-            logger.LogDebug("Uploading files to {container}.", container.Uri);
+            logger.LogDebug("Uploading files to {container}.", containerClient.Uri);
 
             List<string> uploadedFiles = [];
             foreach (var file in files)
@@ -23,7 +25,7 @@ internal sealed class FileService(BlobContainerClient container, ILogger<FileSer
 
                 await using var stream = file.OpenReadStream();
 
-                var blobClient = container.GetBlobClient(fileName);
+                var blobClient = containerClient.GetBlobClient(fileName);
                 if (await blobClient.ExistsAsync(cancellationToken)) continue;
 
                 await using var fileStream = file.OpenReadStream();
@@ -48,9 +50,9 @@ internal sealed class FileService(BlobContainerClient container, ILogger<FileSer
     {
         try
         {
-            logger.LogDebug("Listing files from {container}.", container.Uri);
+            logger.LogDebug("Listing files from {container}.", containerClient.Uri);
             // TODO: change to async
-            var blobs = container.GetBlobsAsync(cancellationToken: cancellationToken)
+            var blobs = containerClient.GetBlobsAsync(cancellationToken: cancellationToken)
                 .ToBlockingEnumerable();
             var blobItems = blobs.Select(blob => BlobFile.FromBlobItem(blob)).ToArray();
             return Task.FromResult(blobItems.ToArray());
@@ -59,5 +61,38 @@ internal sealed class FileService(BlobContainerClient container, ILogger<FileSer
         {
             return Task.FromException<BlobFile[]>(ex);
         }
+    }
+    public async Task<Uri> CreateSasUri(string filename)
+    {
+        var userDelegationKey =
+            await serviceClient.GetUserDelegationKeyAsync(
+                DateTimeOffset.UtcNow,
+                DateTimeOffset.UtcNow.AddDays(1));
+        
+        var blobClient = serviceClient
+            .GetBlobContainerClient(containerClient.Name)
+            .GetBlobClient(filename);
+
+        var sasBuilder = new BlobSasBuilder()
+        {
+            BlobContainerName = blobClient.BlobContainerName,
+            BlobName = blobClient.Name,
+            Resource = "b", // "blob"
+            StartsOn = DateTimeOffset.UtcNow,
+            ExpiresOn = DateTimeOffset.UtcNow.AddDays(1)
+        };
+
+        sasBuilder.SetPermissions(BlobSasPermissions.Read);
+        
+        var uriBuilder = new BlobUriBuilder(blobClient.Uri)
+        {
+            Sas = sasBuilder.ToSasQueryParameters(
+                userDelegationKey,
+                blobClient
+                    .GetParentBlobContainerClient()
+                    .GetParentBlobServiceClient().AccountName)
+        };
+
+        return uriBuilder.ToUri();
     }
 }

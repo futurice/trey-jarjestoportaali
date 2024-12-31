@@ -27,9 +27,14 @@ public static class FileEndpointsExtensions
         return TypedResults.Ok(response);
     }
 
-    private static Task<IResult> GetFile(string fileId)
+    private static async Task<IResult> GetFile(string fileId,
+        [FromServices] FileService service,
+        [FromServices] ILogger<FileService> logger)
     {
-        return Task.FromResult<IResult>(TypedResults.StatusCode(501));
+        logger.LogDebug("Finding file {fileId} from {container}", fileId, service);
+        var response = await service.CreateSasUri(fileId);
+        logger.LogDebug("Found file: {fileId}", fileId);
+        return TypedResults.Ok(response);
     }
 
     private static Task<IResult> GetFiles([FromServices] FileService service,
