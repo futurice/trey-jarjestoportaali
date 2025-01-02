@@ -17,13 +17,20 @@ builder.Services.AddSingleton(_ => new CosmosClient(builder.Configuration["AZURE
             PropertyNamingPolicy = CosmosPropertyNamingPolicy.CamelCase
         }
     }));
-builder.Services.AddSingleton<BlobContainerClient>(_ =>
+
+builder.Services.AddSingleton<BlobServiceClient>(_ =>
 {
     var blobServiceClient = new BlobServiceClient(
         Uri.TryCreate(builder.Configuration["AZURE_STORAGE_BLOB_ENDPOINT"], UriKind.Absolute, out var uri)
             ? uri
             : throw new ArgumentException("Invalid URI for Azure Storage Blob endpoint"),
         credential);
+    return blobServiceClient;
+});
+
+builder.Services.AddSingleton<BlobContainerClient>(serviceProvider =>
+{
+    var blobServiceClient = serviceProvider.GetRequiredService<BlobServiceClient>();
 
     // TODO: Get container name from environment variable
     var containerClient = blobServiceClient.GetBlobContainerClient("trey");
