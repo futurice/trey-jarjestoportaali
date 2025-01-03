@@ -2,6 +2,7 @@ import {useEffect, useState} from "react";
 import {FileService} from "../services/fileService.ts";
 import config from "../config";
 import {BlobFile} from "../models/file.ts";
+import UploadFile from "./UploadFile/UploadFile.tsx";
 
 const MyFiles = () => {
   const [isLoading, setIsLoading] = useState(false);
@@ -24,6 +25,7 @@ const MyFiles = () => {
               <div key={file.id}><a href={file.uri}>{file.id}</a></div>
       ))}
     </div>
+    <UploadFile />
   </>;
 }
 
