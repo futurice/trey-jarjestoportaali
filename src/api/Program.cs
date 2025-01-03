@@ -8,7 +8,6 @@ using Trey.Api.Services;
 var credential = new DefaultAzureCredential();
 var builder = WebApplication.CreateBuilder(args);
 
-builder.Services.AddSingleton<ListsRepository>();
 builder.Services.AddSingleton(_ => new CosmosClient(builder.Configuration["AZURE_COSMOS_ENDPOINT"], credential,
     new CosmosClientOptions
     {
@@ -68,10 +67,6 @@ app.UseStaticFiles(new StaticFileOptions
     // Serve openapi.yaml file
     ServeUnknownFileTypes = true
 });
-
-app.MapGroup("/lists")
-    .MapTodoApi()
-    .WithOpenApi();
 
 app.MapGroup("/files")
     .MapBlobFileApi()
