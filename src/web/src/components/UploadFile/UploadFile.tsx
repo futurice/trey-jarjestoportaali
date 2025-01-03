@@ -3,6 +3,15 @@ import config from "../../config";
 import { FileService } from "../../services/fileService.ts";
 import styles from './UploadFile.module.css';
 
+/**
+ * Custom hook to handle file upload logic.
+ *
+ * @param {string} baseUrl - The base URL for the API.
+ * @param {string} baseRoute - The base route for the file upload endpoint.
+ * @returns {Object} The upload state and the upload function.
+ * @returns {boolean} isUploading - Indicates if a file is currently being uploaded.
+ * @returns {string|null} uploadError - Error message if the upload fails.
+ */
 const useFileUpload = (baseUrl: string, baseRoute: string) => {
   const [isUploading, setIsUploading] = useState(false);
   const [uploadError, setUploadError] = useState<string | null>(null);
