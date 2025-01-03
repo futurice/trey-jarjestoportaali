@@ -13,12 +13,11 @@ public record FileResponse(
 }
 
 public record BlobFile(
-    string? Id,
-    string Name,
+    string Id,
     string? Uri = null)
 {
     public static BlobFile FromBlobItem(BlobItem blob)
     {
-        return new BlobFile(null, blob.Name);
+        return new BlobFile(blob.Name);
     }
 }

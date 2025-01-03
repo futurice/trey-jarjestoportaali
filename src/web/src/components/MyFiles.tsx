@@ -21,7 +21,7 @@ const MyFiles = () => {
       {isLoading
           ? <p>Loading...</p>
           : files.map(file => (
-              <div key={file.name}><a href={file.uri}>{file.name}</a></div>
+              <div key={file.id}><a href={file.uri}>{file.id}</a></div>
       ))}
     </div>
   </>;
