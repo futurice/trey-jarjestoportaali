@@ -54,7 +54,10 @@ internal sealed class FileService(BlobContainerClient containerClient, BlobServi
             // TODO: change to async
             var blobs = containerClient.GetBlobsAsync(cancellationToken: cancellationToken)
                 .ToBlockingEnumerable();
-            var blobItems = blobs.Select(blob => BlobFile.FromBlobItem(blob)).ToArray();
+            var blobItems = blobs.Select(blob => BlobFile.FromBlobItem(blob) with
+            {
+                Uri = CreateSasUri(blob.Name).Result.ToString()
+            }).ToArray();
             return Task.FromResult(blobItems.ToArray());
         }
         catch (Exception ex)
@@ -62,7 +65,7 @@ internal sealed class FileService(BlobContainerClient containerClient, BlobServi
             return Task.FromException<BlobFile[]>(ex);
         }
     }
-    public async Task<Uri> CreateSasUri(string filename)
+    private async Task<Uri> CreateSasUri(string filename)
     {
         var userDelegationKey =
             await serviceClient.GetUserDelegationKeyAsync(

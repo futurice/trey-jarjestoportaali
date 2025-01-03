@@ -14,7 +14,8 @@ public record FileResponse(
 
 public record BlobFile(
     string? Id,
-    string Name)
+    string Name,
+    string? Uri = null)
 {
     public static BlobFile FromBlobItem(BlobItem blob)
     {

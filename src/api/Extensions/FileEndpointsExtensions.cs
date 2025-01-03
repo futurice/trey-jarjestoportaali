@@ -9,7 +9,6 @@ public static class FileEndpointsExtensions
     {
         group.MapPost("/", CreateFile);
         group.MapGet("/", GetFiles);
-        group.MapGet("/{fileId}", GetFile);
         return group;
     }
 
@@ -24,16 +23,6 @@ public static class FileEndpointsExtensions
 
         logger.LogInformation("Uploaded files: {x}", response);
 
-        return TypedResults.Ok(response);
-    }
-
-    private static async Task<IResult> GetFile(string fileId,
-        [FromServices] FileService service,
-        [FromServices] ILogger<FileService> logger)
-    {
-        logger.LogDebug("Finding file {fileId} from {container}", fileId, service);
-        var response = await service.CreateSasUri(fileId);
-        logger.LogDebug("Found file: {fileId}", fileId);
         return TypedResults.Ok(response);
     }
 
