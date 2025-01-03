@@ -3,6 +3,7 @@ import {FileService} from "../services/fileService.ts";
 import config from "../config";
 import {BlobFile} from "../models/file.ts";
 import UploadFile from "./UploadFile/UploadFile.tsx";
+import ListFiles from "./ListFiles/ListFiles.tsx";
 
 const MyFiles = () => {
   const [isLoading, setIsLoading] = useState(false);
@@ -18,13 +19,8 @@ const MyFiles = () => {
 
   return <>
     <h1>MyFiles</h1>
-    <div>
-      {isLoading
-          ? <p>Loading...</p>
-          : files.map(file => (
-              <div key={file.id}><a href={file.uri}>{file.id}</a></div>
-      ))}
-    </div>
+    <ListFiles files={files} isLoading={isLoading} />
+
     <UploadFile />
   </>;
 }

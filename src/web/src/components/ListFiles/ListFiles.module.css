@@ -1,0 +1,32 @@
+.listFilesContainer {
+  padding: 20px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  background-color: #f9f9f9;
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+.listFilesContainer ul {
+  list-style-type: none;
+  padding: 0;
+}
+
+.listFilesContainer li {
+  margin-bottom: 10px;
+}
+
+.listFilesContainer a {
+  text-decoration: none;
+  color: #007bff;
+}
+
+.listFilesContainer a:hover {
+  text-decoration: underline;
+}
+
+.loadingMessage {
+  text-align: center;
+  font-size: 1.2em;
+  color: #666;
+}
