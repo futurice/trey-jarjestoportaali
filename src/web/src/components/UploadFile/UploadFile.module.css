@@ -1,0 +1,42 @@
+.uploadFileContainer {
+  padding: 20px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  background-color: #f9f9f9;
+  max-width: 400px;
+  margin: 0 auto;
+}
+
+.uploadFileContainer h2 {
+  font-size: 1.5em;
+  margin-bottom: 10px;
+}
+
+.fileUploadLabel {
+  display: block;
+  margin-bottom: 10px;
+  font-weight: bold;
+}
+
+.fileUploadInput {
+  display: block;
+  margin-bottom: 10px;
+}
+
+.uploadButton {
+  padding: 10px 20px;
+  background-color: #007bff;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.uploadButton:disabled {
+  background-color: #ccc;
+}
+
+.uploadError {
+  color: red;
+  margin-top: 10px;
+}
