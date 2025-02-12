@@ -29,6 +29,8 @@ function ListFiles(props: { files: BlobFile[], isLoading: boolean }) {
               <a href={file.uri} aria-label={`Download file ${file.id}`}>
                 {file.id}
               </a>
+              <p>Created On: {file.createdOn?.toLocaleDateString()}</p>
+              <p>Last Modified: {file.lastModified?.toLocaleDateString()}</p>
             </li>
           ))}
         </ul>

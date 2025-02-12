@@ -51,11 +51,12 @@ internal sealed class FileService(BlobContainerClient containerClient, BlobServi
         try
         {
             logger.LogDebug("Listing files from {container}.", containerClient.Uri);
-            // TODO: change to async
             var blobs = containerClient.GetBlobsAsync(cancellationToken: cancellationToken)
                 .ToBlockingEnumerable();
             var blobItems = blobs.Select(blob => BlobFile.FromBlobItem(blob) with
             {
+                CreatedOn = blob.Properties.CreatedOn,
+                LastModified = blob.Properties.LastModified,
                 Uri = CreateSasUri(blob.Name).Result.ToString()
             }).ToArray();
             return Task.FromResult(blobItems.ToArray());
