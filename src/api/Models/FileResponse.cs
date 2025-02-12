@@ -20,7 +20,6 @@ public record BlobFile(
     {
         return new BlobFile(blob.Name);
     }
-
     public DateTimeOffset? CreatedOn { get; set; }
     public DateTimeOffset? LastModified { get; set; }
 }

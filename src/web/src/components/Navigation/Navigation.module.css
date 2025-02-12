@@ -1,9 +1,3 @@
-/* reset */
-button,
-p {
-  all: unset;
-}
-
 .navigation {
   position: relative;
   display: flex;
@@ -53,4 +47,7 @@ p {
   justify-content: space-between;
   gap: 2px;
   cursor: pointer;
+  border: none;
+  background-color: transparent;
+  font-size: 16px;
 }
