@@ -3,6 +3,7 @@ using Azure.Storage.Blobs;
 using Microsoft.Azure.Cosmos;
 using Trey.Api;
 using Trey.Api.Extensions;
+using Trey.Api.Repositories;
 using Trey.Api.Services;
 
 var credential = new DefaultAzureCredential();
@@ -40,6 +41,7 @@ builder.Services.AddSingleton<BlobContainerClient>(serviceProvider =>
 });
 
 builder.Services.AddSingleton<FileService>();
+builder.Services.AddSingleton<OrganizationsRepository>();
 
 builder.Services.AddCors();
 builder.Services.AddApplicationInsightsTelemetry(builder.Configuration);
@@ -70,6 +72,11 @@ app.UseStaticFiles(new StaticFileOptions
 
 app.MapGroup("/files")
     .MapBlobFileApi()
+    .WithOpenApi()
+    .DisableAntiforgery(); // FIXME - remove this line when antiforgery is implemented
+
+app.MapGroup("/organizations")
+    .MapOrganizationApi()
     .WithOpenApi()
     .DisableAntiforgery(); // FIXME - remove this line when antiforgery is implemented
 
