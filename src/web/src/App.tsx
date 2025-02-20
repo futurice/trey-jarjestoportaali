@@ -1,4 +1,6 @@
+import { useEffect } from "react"
 import { RouterProvider, createBrowserRouter } from "react-router-dom"
+import { useStytch } from "@stytch/react"
 import "./App.css"
 import { ProtectedRoute, GuestRoute } from "./api/router"
 import Dashboard from "./components/Dashboard"
@@ -44,6 +46,23 @@ const router = createBrowserRouter([
 ])
 
 function App() {
+  const stytch = useStytch()
+  useEffect(() => {
+    const authenticate = () => {
+      const tokens = stytch.session.getTokens()
+      if (stytch.session.getSync() && tokens?.session_jwt && tokens?.session_token) {
+        stytch.session.updateSession({
+          session_jwt: tokens.session_jwt,
+          session_token: tokens.session_token,
+        })
+        stytch.session.authenticate({ session_duration_minutes: 30 })
+      }
+    }
+    // Refresh session every 25 minutes
+    const interval = setInterval(authenticate, 25 * 60000)
+    return () => clearInterval(interval)
+  }, [stytch])
+
   return <RouterProvider router={router} />
 }
 
