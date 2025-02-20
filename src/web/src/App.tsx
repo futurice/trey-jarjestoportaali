@@ -49,10 +49,13 @@ function App() {
   const stytch = useStytch()
   useEffect(() => {
     const authenticate = () => {
-      if (stytch.session.getSync()) {
-        stytch.session.authenticate({
-          session_duration_minutes: 30,
+      const tokens = stytch.session.getTokens()
+      if (stytch.session.getSync() && tokens?.session_jwt && tokens?.session_token) {
+        stytch.session.updateSession({
+          session_jwt: tokens.session_jwt,
+          session_token: tokens.session_token,
         })
+        stytch.session.authenticate({ session_duration_minutes: 30 })
       }
     }
     // Refresh session every 25 minutes
