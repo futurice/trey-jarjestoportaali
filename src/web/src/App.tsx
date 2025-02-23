@@ -5,6 +5,7 @@ import { Layout } from "./components/Layout/Layout";
 import Login from "./components/Login";
 import MyFiles from "./components/MyFiles";
 import { Authenticated, Roles } from "./authentication";
+import {Registration} from "./components/Registration/Registration.tsx";
 
 const approvedRoles = [Roles.ORGANISATION, Roles.TREY_BOARD, Roles.ADMIN];
 
@@ -24,6 +25,14 @@ const App = ()=> {
                     </Authenticated>}/>
 
                 <Route path="/login" element={<Login/>}/>
+
+                <Route path="registration" element={
+                    <Authenticated requiredRoles={[Roles.NONE]} redirectUrl={"/registration"} >
+                        <Layout>
+                            <Registration />
+                        </Layout>
+                    </Authenticated>}>
+                </Route>
             </Routes>
     </BrowserRouter>
 }
