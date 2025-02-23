@@ -1,6 +1,8 @@
 using Azure.Identity;
 using Azure.Storage.Blobs;
 using Microsoft.Azure.Cosmos;
+using Newtonsoft.Json;
+using Stytch.net.Clients;
 using Trey.Api;
 using Trey.Api.Extensions;
 using Trey.Api.Repositories;
@@ -40,8 +42,20 @@ builder.Services.AddSingleton<BlobContainerClient>(serviceProvider =>
     return containerClient;
 });
 
+builder.Services.AddSingleton<ConsumerClient>(client =>
+{
+    var projectId = builder.Configuration["STYTCH_PROJECT_ID"];
+    var projectSecret = builder.Configuration["STYTCH_PROJECT_SECRET"];
+    return new ConsumerClient(new ClientConfig
+    {
+        ProjectId = projectId,
+        ProjectSecret = projectSecret
+    });
+});
+
 builder.Services.AddSingleton<FileService>();
 builder.Services.AddSingleton<OrganizationsRepository>();
+builder.Services.AddSingleton<UserService>();
 
 builder.Services.AddCors();
 builder.Services.AddApplicationInsightsTelemetry(builder.Configuration);
@@ -77,6 +91,11 @@ app.MapGroup("/files")
 
 app.MapGroup("/organizations")
     .MapOrganizationApi()
+    .WithOpenApi()
+    .DisableAntiforgery(); // FIXME - remove this line when antiforgery is implemented
+
+app.MapGroup("/users")
+    .MapUserApi()
     .WithOpenApi()
     .DisableAntiforgery(); // FIXME - remove this line when antiforgery is implemented
 
