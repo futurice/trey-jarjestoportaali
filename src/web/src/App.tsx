@@ -12,6 +12,7 @@ const approvedRoles = [Roles.ORGANISATION, Roles.TREY_BOARD, Roles.ADMIN];
 const App = ()=> {
     return <BrowserRouter>
             <Routes>
+
                 <Route path="/dashboard" element={<Authenticated requiredRoles={approvedRoles} redirectUrl={"/registration"}>
                         <Layout>
                             <Dashboard/>
@@ -25,6 +26,7 @@ const App = ()=> {
                     </Authenticated>}/>
 
                 <Route path="/login" element={<Login/>}/>
+                <Route path="/" element={<Login/>}/>
 
                 <Route path="registration" element={
                     <Authenticated requiredRoles={[Roles.NONE]} redirectUrl={"/registration"} >
