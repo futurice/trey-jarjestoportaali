@@ -38,7 +38,7 @@ param ftpsState string = 'FtpsOnly'
 param healthCheckPath string = ''
 param virtualNetworkSubnetId string = ''
 
-resource appService 'Microsoft.Web/sites@2022-03-01' = {
+resource appService 'Microsoft.Web/sites@2024-04-01' = {
   name: name
   location: location
   tags: tags
@@ -100,7 +100,7 @@ module configAppSettings 'appservice-appsettings.bicep' = {
 }
 
 // sites/web/config 'logs'
-resource configLogs 'Microsoft.Web/sites/config@2022-03-01' = {
+resource configLogs 'Microsoft.Web/sites/config@2024-04-01' = {
   name: 'logs'
   parent: appService
   properties: {
