@@ -3,8 +3,10 @@ import * as NavigationMenu from "@radix-ui/react-navigation-menu"
 import styles from "./Navigation.module.css"
 
 const navigationRoutes = [
-    { name: "Dashboard", href: "/dashboard" },
-    { name: "My Files", href: "/my-files" }]
+  { name: "Dashboard", href: "/dashboard" },
+  { name: "My Files", href: "/my-files" },
+  { name: "Users", href: "/users" },
+]
 
 const Navigation = () => {
   const location = useLocation()
