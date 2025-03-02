@@ -1,6 +1,7 @@
-import { Model } from "survey-core";
-import { Survey } from "survey-react-ui";
+import {Model} from "survey-core";
+import {Survey} from "survey-react-ui";
 import "survey-core/defaultV2.min.css";
+import "./survey.css";
 
 const json = {
     "logoPosition": "right",
@@ -22,14 +23,21 @@ const json = {
                 },
                 {
                     "type": "text",
-                    "name": "question2",
+                    "name": "name",
                     "title": "Järjestön nimi",
                     "isRequired": true,
                 },
                 {
                     "type": "text",
-                    "name": "question1",
-                    "title": "Järjsetön toimintakausi",
+                    "name": "operationPeriodStart",
+                    "title": "Järjsetön toimintakauden alkupvm",
+                    "isRequired": true,
+                    "inputType": "number"
+                },
+                {
+                    "type": "text",
+                    "name": "operationPeriodEnd",
+                    "title": "Järjsetön toimintakauden loppumispvm",
                     "isRequired": true,
                     "inputType": "number"
                 },
@@ -556,6 +564,10 @@ const json = {
 
 export const Registration = () => {
     const survey = new Model(json);
+    survey.css = {
+        body: "survey-body",
+    };
+
     return <div>
         <h1>Registration</h1>
         <Survey model={survey} />
