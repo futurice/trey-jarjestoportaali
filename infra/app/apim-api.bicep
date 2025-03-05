@@ -102,7 +102,7 @@ resource apimService 'Microsoft.ApiManagement/service@2021-08-01' existing = {
 // placeholderName is never deployed, it is merely used to make the child name validation pass
 var appNameForBicep = !empty(apiAppName) ? apiAppName : 'placeholderName'
 
-resource apiAppProperties 'Microsoft.Web/sites/config@2022-03-01' = if (!empty(apiAppName)) {
+resource apiAppProperties 'Microsoft.Web/sites/config@2024-04-01' = if (!empty(apiAppName)) {
   name: '${appNameForBicep}/web'
   kind: 'string'
   properties: {
