@@ -31,7 +31,9 @@ jobs:
 
       - name: Install azd
         uses: Azure/setup-azd@v2
-      
+        with:
+          version: latest
+
       - name: Install NodeJS
         uses: actions/setup-node@v4
         with:
@@ -69,7 +71,7 @@ jobs:
           AZD_INITIAL_ENVIRONMENT_CONFIG: ${{ secrets.AZD_INITIAL_ENVIRONMENT_CONFIG }}
 
       - name: Deploy Application
-        run: azd deploy --no-prompt
+        run: azd deploy --no-prompt --debug
         env:
           AZURE_ENV_NAME: ${{ vars.AZURE_ENV_NAME }}
           AZURE_LOCATION: ${{ vars.AZURE_LOCATION }}
