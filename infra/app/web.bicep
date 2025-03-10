@@ -17,6 +17,7 @@ module web '../core/host/appservice.bicep' = {
     runtimeName: 'node'
     runtimeVersion: '20-lts'
     tags: union(tags, { 'azd-service-name': serviceName })
+    scmDoBuildDuringDeployment: true
   }
 }
 
