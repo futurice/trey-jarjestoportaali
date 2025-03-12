@@ -4,6 +4,7 @@ import { Authenticated, Roles, useRefreshSession } from "./authentication"
 import Dashboard from "./components/Dashboard"
 import { Layout } from "./components/Layout/Layout"
 import Login from "./components/Login"
+import { Logout } from "./components/Logout.tsx"
 import MyFiles from "./components/MyFiles"
 import { Registration } from "./components/Registration/Registration.tsx"
 
@@ -50,6 +51,7 @@ const App = () => {
             </Authenticated>
           }
         ></Route>
+        <Route path="/logout" element={<Logout />} />
       </Routes>
     </BrowserRouter>
   )

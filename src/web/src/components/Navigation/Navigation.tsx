@@ -1,5 +1,5 @@
 import { useState } from "react"
-import { Link as RouterLink, useLocation } from "react-router-dom"
+import { Link as RouterLink, useLocation, useNavigate } from "react-router-dom"
 import Logout from "@mui/icons-material/Logout"
 import {
   Avatar,
@@ -52,6 +52,7 @@ const NavigationItem = ({ item, isOpen }: { item: NavigationRoute; isOpen: boole
 const Navigation = () => {
   const location = useLocation()
   const { user } = useStytchUser()
+  const navigate = useNavigate()
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null)
 
   const open = Boolean(anchorEl)
@@ -101,7 +102,7 @@ const Navigation = () => {
         transformOrigin={{ horizontal: "right", vertical: "top" }}
         anchorOrigin={{ horizontal: "right", vertical: "bottom" }}
       >
-        <MenuItem onClick={handleClose}>
+        <MenuItem onClick={() => navigate("/logout")}>
           <ListItemIcon>
             <Logout fontSize="small" />
           </ListItemIcon>
