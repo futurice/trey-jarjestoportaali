@@ -6,6 +6,11 @@ export const useRefreshSession = () => {
   useEffect(() => {
     const authenticate = () => {
       if (stytch.session.getSync()) {
+        const tokens = stytch.session.getTokens()
+        stytch.session.updateSession({
+          session_token: tokens?.session_token ?? "",
+          session_jwt: tokens?.session_jwt ?? "",
+        })
         stytch.session.authenticate({
           session_duration_minutes: 30,
         })
