@@ -30,7 +30,7 @@ const json = {
                 {
                     "type": "text",
                     "name": "operationPeriodStart",
-                    "title": "Järjsetön toimintakauden alkupvm",
+                    "title": "Järjestön toimintakauden alkupvm",
                     "isRequired": true,
                     "inputType": "number"
                 },
