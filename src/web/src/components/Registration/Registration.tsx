@@ -37,7 +37,7 @@ const json = {
                 {
                     "type": "text",
                     "name": "operationPeriodEnd",
-                    "title": "Järjsetön toimintakauden loppumispvm",
+                    "title": "Järjestön toimintakauden loppumispvm",
                     "isRequired": true,
                     "inputType": "number"
                 },
@@ -566,6 +566,13 @@ export const Registration = () => {
     const survey = new Model(json);
     survey.css = {
         body: "survey-body",
+        question: {
+            title: "survey-question-title",
+            titleTopRoot: "question-frame",
+        },
+        panel: {
+            withFrame: "survey-question-frame"
+        }
     };
 
     return <div>

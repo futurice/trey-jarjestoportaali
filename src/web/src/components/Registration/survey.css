@@ -1,4 +1,17 @@
 .survey-body {
     margin: auto;
     width: 50%;
+    padding: 20px;
+}
+
+.survey-question-title {
+    text-align: left;
+    font-size: 0.9em;
+    font-weight: normal;
+}
+
+.question-frame {
+    background-color: white;
+    padding: 1% 4% 4% 4%;
+    border-radius: 10px;
 }
