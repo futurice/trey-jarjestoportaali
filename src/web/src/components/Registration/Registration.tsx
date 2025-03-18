@@ -572,6 +572,9 @@ export const Registration = () => {
         },
         panel: {
             withFrame: "survey-question-frame"
+        },
+        actionBar: {
+            root: "survey-footer"
         }
     };
 

@@ -6,7 +6,7 @@
 
 .survey-question-title {
     text-align: left;
-    font-size: 0.9em;
+    font-size: 16px;
     font-weight: normal;
 }
 
@@ -14,4 +14,9 @@
     background-color: white;
     padding: 1% 4% 4% 4%;
     border-radius: 10px;
+}
+
+.survey-footer {
+    padding-left: 555px;
+    padding-top: 10px;
 }
