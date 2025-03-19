@@ -18,10 +18,10 @@ export interface TimeRange {
 
 export interface Organization {
   id: string; // UUID string
-  name: string;
-  shortName?: string | null;
-  foundingYear?: number | null;
-  operatingPeriod: TimeRange;
+  name: string; // Name of the organization
+  shortName?: string | null; // Lyhennetty versio tosi pitkästä nimestä
+  foundingYear?: number | null; // Perustusvuosi, ei pakollinen
+  operatingPeriod: TimeRange; // Toimintakauden aikaväli, date picker
   email: string;
   chairperson: Person;
   boardmembers?: Person[] | null;

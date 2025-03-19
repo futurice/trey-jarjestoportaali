@@ -2,6 +2,7 @@ import {Model} from "survey-core";
 import {Survey} from "survey-react-ui";
 import "survey-core/defaultV2.min.css";
 import "./survey.css";
+import {useCallback} from "react";
 
 const json = {
     "logoPosition": "right",
@@ -29,21 +30,21 @@ const json = {
                 },
                 {
                     "type": "text",
-                    "name": "operationPeriodStart",
+                    "name": "operatingPeriod.start",
                     "title": "Järjestön toimintakauden alkupvm",
                     "isRequired": true,
-                    "inputType": "number"
+                    "inputType": "string"
                 },
                 {
                     "type": "text",
-                    "name": "operationPeriodEnd",
+                    "name": "operatingPeriod.end",
                     "title": "Järjestön toimintakauden loppumispvm",
                     "isRequired": true,
-                    "inputType": "number"
+                    "inputType": "string"
                 },
                 {
                     "type": "text",
-                    "name": "question4",
+                    "name": "email",
                     "title": "Järjestön hallituksen (tms.) sähköpostiosoite",
                     "isRequired": true,
                     "inputType": "email"
@@ -55,18 +56,18 @@ const json = {
             "elements": [
                 {
                     "type": "text",
-                    "name": "question5",
+                    "name": "chairperson.name",
                     "title": "Järjestön puheenjohtajan nimi",
                     "isRequired": true
                 },
                 {
                     "type": "matrixdynamic",
-                    "name": "question6",
+                    "name": "boardmembers",
                     "title": "Hallistuksen varsinaisten jäsenien nimet",
                     "isRequired": true,
                     "columns": [
                         {
-                            "name": "Column 1",
+                            "name": "name",
                             "title": "Ethän listaa tähän hallituksen varajäseniä, toimihenkilöitä ym",
                             "cellType": "text"
                         }
@@ -84,14 +85,14 @@ const json = {
                 },
                 {
                     "type": "text",
-                    "name": "question7",
+                    "name": "memberCount",
                     "title": "Järjestön jäsenmäärä",
                     "isRequired": true,
                     "inputType": "number"
                 },
                 {
                     "type": "text",
-                    "name": "question8",
+                    "name": "treyMemberCount",
                     "title": "Järjestöön kuuluvien ylioppilaskunnan jäsenten lukumäärä ilmoituksen jättämishetkellä",
                     "inputType": "number"
                 }
@@ -104,7 +105,7 @@ const json = {
             "elements": [
                 {
                     "type": "matrixdynamic",
-                    "name": "question9",
+                    "name": "reservationRightsEmails",
                     "title": "Tilavarausoikeudet tarvitsevan henkilön @tuni.fi-sähköpostiosoite",
                     "isRequired": true,
                     "columns": [
@@ -129,7 +130,7 @@ const json = {
                 },
                 {
                     "type": "matrixdynamic",
-                    "name": "question10",
+                    "name": "emailLists.trey-jarjestot",
                     "title": "Listalle trey-jarjestot@lists.tuni.fi lisättävä(t) sähköposti(t)\r",
                     "isRequired": false,
                     "columns": [
@@ -154,7 +155,7 @@ const json = {
                 },
                 {
                     "type": "matrixdynamic",
-                    "name": "question11",
+                    "name": "emailLists.trey-hervanta",
                     "title": "Listalle trey-hervanta@lists.tuni.fi lisättävä(t) sähköposti(t)\r",
                     "isRequired": false,
                     "columns": [
@@ -179,7 +180,7 @@ const json = {
                 },
                 {
                     "type": "matrixdynamic",
-                    "name": "question12",
+                    "name": "emailLists.trey-keskusta",
                     "title": "Listalle trey-keskusta@lists.tuni.fi lisättävä(t) sähköposti(t)",
                     "isRequired": false,
                     "columns": [
@@ -204,7 +205,7 @@ const json = {
                 },
                 {
                     "type": "matrixdynamic",
-                    "name": "question13",
+                    "name": "emailLists.trey-kauppi",
                     "title": "Listalle trey-kauppi@lists.tuni.fi lisättävä(t) sähköposti(t)\r",
                     "isRequired": false,
                     "columns": [
@@ -229,7 +230,7 @@ const json = {
                 },
                 {
                     "type": "matrixdynamic",
-                    "name": "question14",
+                    "name": "emailLists.trey-puheenjohtaja",
                     "title": "Listalle trey-puheenjohtajat@lists.tuni.fi lisättävä(t) sähköposti(t)\r",
                     "isRequired": false,
                     "columns": [
@@ -254,7 +255,7 @@ const json = {
                 },
                 {
                     "type": "matrixdynamic",
-                    "name": "question15",
+                    "name": "emailLists.trey-tiedotuslista",
                     "title": "Listalle trey-tiedotuslista@lists.tuni.fi lisättävä(t) sähköposti(t)\r",
                     "isRequired": false,
                     "columns": [
@@ -279,7 +280,7 @@ const json = {
                 },
                 {
                     "type": "matrixdynamic",
-                    "name": "question16",
+                    "name": "emailLists.trey-tuutorivastaavat",
                     "title": "Listalle trey-tuutorivastaavat@lists.tuni.fi lisättävä(t) sähköposti(t)\r",
                     "isRequired": false,
                     "columns": [
@@ -304,7 +305,7 @@ const json = {
                 },
                 {
                     "type": "matrixdynamic",
-                    "name": "question17",
+                    "name": "emailLists.trey-tutororganisers",
                     "title": "Listalle trey-tutororganisers@lists.tuni.fi lisättävä(t) sähköposti(t)\r",
                     "isRequired": false,
                     "columns": [
@@ -329,7 +330,7 @@ const json = {
                 },
                 {
                     "type": "matrixdynamic",
-                    "name": "question18",
+                    "name": "emailLists.trey-kv",
                     "title": "Listalle trey-kv@lists.tuni.fi lisättävä(t) sähköposti(t)\r",
                     "isRequired": false,
                     "columns": [
@@ -354,7 +355,7 @@ const json = {
                 },
                 {
                     "type": "matrixdynamic",
-                    "name": "question19",
+                    "name": "emailLists.trey-kopovastaavat",
                     "title": "Listalle trey-kopovastaavat@lists.tuni.fi lisättävä(t) sähköposti(t)\r",
                     "isRequired": false,
                     "columns": [
@@ -379,7 +380,7 @@ const json = {
                 },
                 {
                     "type": "matrixdynamic",
-                    "name": "question20",
+                    "name": "emailLists.trey-sopo",
                     "title": "Listalle trey-sopo@lists.tuni.fi lisättävä(t) sähköposti(t)\r",
                     "isRequired": false,
                     "columns": [
@@ -404,7 +405,7 @@ const json = {
                 },
                 {
                     "type": "matrixdynamic",
-                    "name": "question21",
+                    "name": "emailLists.trey-tapahtuma",
                     "title": "Listalle trey-tapahtumatoimijat@lists.tuni.fi lisättävä(t) sähköposti(t)",
                     "isRequired": false,
                     "columns": [
@@ -429,7 +430,7 @@ const json = {
                 },
                 {
                     "type": "matrixdynamic",
-                    "name": "question22",
+                    "name": "emailLists.trey-alumni",
                     "title": "Listalle trey-alumnivastaavat@lists.tuni.fi lisättävä(t) sähköposti(t)\r",
                     "isRequired": false,
                     "columns": [
@@ -497,7 +498,7 @@ const json = {
             "elements": [
                 {
                     "type": "radiogroup",
-                    "name": "panel1",
+                    "name": "associationFacility",
                     "title": "Järjestöllämme on järjestötila Tampereen yliopiston kampuksella\n",
                     "isRequired": true,
                     "choices": [
@@ -512,31 +513,44 @@ const json = {
                     ]
                 },
                 {
-                    "type": "comment",
-                    "name": "question26",
-                    "title": "Järjestötilan sijainti (kampus, rakennus ja järjestötilan tarkka koodi)"
-                },
-                {
-                    "type": "comment",
-                    "name": "question27",
-                    "title": "Onko järjestöllä erillistä varastotilaa tai muuta tilaa kampuksella? Anna mahdollisimman\r\ntarkka sijainti.\r"
-                },
-                {
-                    "type": "text",
-                    "name": "question28",
-                    "title": "Järjestön vastuuhenkilö koskien järjestötilojen käyttösopimusta vuonna 2025\r"
-                },
-                {
-                    "type": "text",
-                    "name": "question29",
-                    "title": "Järjestön vastuuhenkilön @tuni.fi-sähköpostiosoite\r",
-                    "inputType": "email"
-                },
-                {
-                    "type": "text",
-                    "name": "question30",
-                    "title": ". Järjestön vastuuhenkilön puhelinnumero",
-                    "inputType": "tel"
+                    "type": "panel",
+                    "name": "associationFacility",
+                    "state": "collapsed",
+                    "elements": [
+                        {
+                            "type": "comment",
+                            "name": "roomCode",
+                            "title": "Järjestötilan sijainti (kampus, rakennus ja järjestötilan tarkka koodi)"
+                        },
+                        {
+                            "type": "comment",
+                            "name": "otherInfo",
+                            "title": "Onko järjestöllä erillistä varastotilaa tai muuta tilaa kampuksella? Anna mahdollisimman\r\ntarkka sijainti.\r"
+                        },
+                        {
+                            "type": "panel",
+                            "name": "contactPerson",
+                            "elements": [
+                                {
+                                    "type": "text",
+                                    "name": "name",
+                                    "title": "Järjestön vastuuhenkilö koskien järjestötilojen käyttösopimusta vuonna 2025\r"
+                                },
+                                {
+                                    "type": "text",
+                                    "name": "email",
+                                    "title": "Järjestön vastuuhenkilön @tuni.fi-sähköpostiosoite\r",
+                                    "inputType": "email"
+                                },
+                                {
+                                    "type": "text",
+                                    "name": "phone",
+                                    "title": ". Järjestön vastuuhenkilön puhelinnumero",
+                                    "inputType": "tel"
+                                }
+                            ]
+                        }
+                    ]
                 }
             ]
         },
@@ -564,6 +578,11 @@ const json = {
 
 export const Registration = () => {
     const survey = new Model(json);
+    const surveyComplete = useCallback((survey: Model) => {
+        console.log(survey.data);
+    }, []);
+    survey.onComplete.add(surveyComplete);
+
     survey.css = {
         body: "survey-body",
         question: {
