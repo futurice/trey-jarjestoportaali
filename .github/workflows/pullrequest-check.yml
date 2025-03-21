@@ -1,0 +1,32 @@
+name: Run linter on pull request
+
+on:
+  pull_request:
+    branches: [ main ]
+    types: [ opened, synchronize, reopened ]
+
+permissions: {}
+
+jobs:
+  build:
+    name: Lint
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: read
+      packages: read
+      statuses: write
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          sparse-checkout: 'src/web'
+
+      - name: Super-linter
+        uses: super-linter/super-linter@v7.3.0
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          VALIDATE_ALL_CODEBASE: false
+          DEFAULT_BRANCH: ${{ github.event.pull_request.base.ref }}
