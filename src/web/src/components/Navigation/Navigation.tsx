@@ -1,7 +1,7 @@
 import { useState } from "react"
 import { useTranslation } from "react-i18next"
 import { Link as RouterLink, useLocation, useNavigate } from "react-router-dom"
-import { Person } from "@mui/icons-material"
+import { Language, Person } from "@mui/icons-material"
 import Logout from "@mui/icons-material/Logout"
 import {
   Avatar,
@@ -17,6 +17,7 @@ import {
 } from "@mui/material"
 import { useStytchUser } from "@stytch/react"
 import TreyLogo from "../../assets/TreyLogo"
+import i18n from "../../i18n"
 
 interface NavigationRoute {
   name: string
@@ -58,6 +59,15 @@ const Navigation = () => {
   const navigate = useNavigate()
   const { t } = useTranslation()
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null)
+  const [lngAnchorEl, setLngAnchorEl] = useState<null | HTMLElement>(null)
+
+  const lngOpen = Boolean(lngAnchorEl)
+  const handleLngClick = (event: React.MouseEvent<HTMLElement>) => {
+    setLngAnchorEl(event.currentTarget)
+  }
+  const handleLngClose = () => {
+    setLngAnchorEl(null)
+  }
 
   const open = Boolean(anchorEl)
   const handleClick = (event: React.MouseEvent<HTMLElement>) => {
@@ -65,6 +75,57 @@ const Navigation = () => {
   }
   const handleClose = () => {
     setAnchorEl(null)
+  }
+
+  const LngMenu = () => {
+    return (
+      <Menu
+        anchorEl={lngAnchorEl}
+        id="lng-menu"
+        open={lngOpen}
+        onClose={handleLngClose}
+        onClick={handleLngClose}
+        anchorOrigin={{
+          vertical: "bottom",
+          horizontal: "left",
+        }}
+        transformOrigin={{
+          vertical: "top",
+          horizontal: "center",
+        }}
+        slotProps={{
+          paper: {
+            elevation: 0,
+            sx: {
+              overflow: "visible",
+              filter: "drop-shadow(0px 2px 8px rgba(0,0,0,0.32))",
+              mt: 1.5,
+              "&::before": {
+                content: '""',
+                display: "block",
+                position: "absolute",
+                top: 0,
+                right: 30,
+                width: 10,
+                height: 10,
+                bgcolor: "background.paper",
+                transform: "translateY(-50%) rotate(45deg)",
+                zIndex: 0,
+              },
+            },
+          },
+        }}
+      >
+        <MenuItem onClick={() => i18n.changeLanguage("fi")}>
+          <ListItemIcon>🇫🇮</ListItemIcon>
+          {t("language.fi")}
+        </MenuItem>
+        <MenuItem onClick={() => i18n.changeLanguage("en")}>
+          <ListItemIcon>🇬🇧</ListItemIcon>
+          {t("language.en")}
+        </MenuItem>
+      </Menu>
+    )
   }
 
   const ProfileMenu = () => {
@@ -132,13 +193,17 @@ const Navigation = () => {
           ))}
         </Box>
         <Box sx={{ flexGrow: 0 }}>
-          <IconButton sx={{ p: 0 }} onClick={handleClick}>
+          <IconButton className="languageMenuButton" sx={{ p: 1 }} onClick={handleLngClick}>
+            <Language sx={{ color: "white", fontSize: "2rem" }} />
+          </IconButton>
+          <IconButton sx={{ p: 1 }} onClick={handleClick}>
             <Avatar>
               <Person />
             </Avatar>
           </IconButton>
         </Box>
       </Toolbar>
+      <LngMenu />
       <ProfileMenu />
     </>
   )
