@@ -1,5 +1,6 @@
 import { useState } from "react"
 import { Link as RouterLink, useLocation, useNavigate } from "react-router-dom"
+import { Person } from "@mui/icons-material"
 import Logout from "@mui/icons-material/Logout"
 import {
   Avatar,
@@ -129,7 +130,9 @@ const Navigation = () => {
         </Box>
         <Box sx={{ flexGrow: 0 }}>
           <IconButton sx={{ p: 0 }} onClick={handleClick}>
-            <Avatar>{user?.name.first_name.charAt(0) ?? "?"}</Avatar>
+            <Avatar>
+              <Person />
+            </Avatar>
           </IconButton>
         </Box>
       </Toolbar>
