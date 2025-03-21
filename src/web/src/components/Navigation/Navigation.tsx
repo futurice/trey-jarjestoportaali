@@ -116,11 +116,17 @@ const Navigation = () => {
           },
         }}
       >
-        <MenuItem onClick={() => i18n.changeLanguage("fi")}>
+        <MenuItem
+          onClick={() => i18n.changeLanguage("fi")}
+          sx={{ fontWeight: i18n.language === "fi" ? "bold" : "regular" }}
+        >
           <ListItemIcon>🇫🇮</ListItemIcon>
           {t("language.fi")}
         </MenuItem>
-        <MenuItem onClick={() => i18n.changeLanguage("en")}>
+        <MenuItem
+          onClick={() => i18n.changeLanguage("en")}
+          sx={{ fontWeight: i18n.language === "en" ? "bold" : "regular" }}
+        >
           <ListItemIcon>🇬🇧</ListItemIcon>
           {t("language.en")}
         </MenuItem>
