@@ -1,15 +1,11 @@
 import React from "react"
-import treylogo from "../../../public/treylogo-navigation.svg"
+import { AppBar } from "@mui/material"
 import Navigation from "../Navigation/Navigation"
-import styles from "./Header.module.css"
 
 export const Header: React.FC = () => {
   return (
-    <header className={styles["header"]}>
-      <div className={styles["image-container"]}>
-        <img src={treylogo} alt="TREY-logo" />
-      </div>
+    <AppBar position="static" sx={{ padding: "2px 15px 2px 15px" }}>
       <Navigation />
-    </header>
+    </AppBar>
   )
 }
