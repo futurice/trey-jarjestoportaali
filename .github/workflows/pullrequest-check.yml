@@ -1,0 +1,32 @@
+name: Run linter on pull request
+
+on:
+  pull_request:
+    branches: [ main ]
+
+permissions: {}
+defaults:
+  run:
+    working-directory: ./src/web
+
+jobs:
+  build:
+    name: Lint
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: read
+      packages: read
+      statuses: write
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Super-linter
+        uses: super-linter/super-linter@v7.3.0
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          FILTER_REGEX_INCLUDE: ^src/web/
