@@ -1,11 +1,13 @@
 import React, { BaseSyntheticEvent, useState } from "react"
 import { useFieldArray, useForm } from "react-hook-form"
+import { useTranslation } from "react-i18next"
 import { ApplicationState, IApplicationForm, ResponseType } from "../../applicationForm/types"
 import { Button } from "../Button/Button"
 import styles from "./ApplicationForm.module.css"
 import { ApplicationFormTable } from "./ApplicationFormTable"
 
 export const ApplicationForm: React.FC = () => {
+  const { t } = useTranslation()
   const {
     register,
     control,
@@ -53,48 +55,48 @@ export const ApplicationForm: React.FC = () => {
         className={styles["application-form"]}
       >
         <section>
-          <h2>Hakemuksen perustiedot</h2>
-          <label htmlFor="name">Hakemuksen nimi</label>
+          <h2>{t("form.info")}</h2>
+          <label htmlFor="name">{t("form.name.label")}</label>
           <input
             onKeyDown={preventEnterKeySubmit}
-            aria-label="Kirjoita hakemuksen nimi"
+            aria-label={t("form.name.placeholder")}
             {...register("name", { required: true })}
-            placeholder="Kirjoita hakemuksen nimi"
+            placeholder={t("form.name.placeholder")}
           />
-          {errors.name && <p className={styles["error-message"]}>Pakollinen kenttä</p>}
-          <label htmlFor="description">Hakemuksen kuvaus</label>
+          {errors.name && <p className={styles["error-message"]}>{t("form.required")}</p>}
+          <label htmlFor="description">{t("form.description.label")}</label>
           <textarea
             onKeyDown={preventEnterKeySubmit}
-            aria-label="Kirjoita hakemuksen kuvaus"
+            aria-label={t("form.description.placeholder")}
             {...register("description", { required: true })}
-            placeholder="Kirjoita hakemuksen kuvaus"
+            placeholder={t("form.description.placeholder")}
           />
-          {errors.description && <p className={styles["error-message"]}>Pakollinen kenttä</p>}
+          {errors.description && <p className={styles["error-message"]}>{t("form.required")}</p>}
         </section>
         <section>
-          <h2>Hakemuksen kysymykset</h2>
+          <h2>{t("form.questions")}</h2>
           {fields.map((question, i) => (
             <div key={question.id} className={styles["question-area"]}>
               <div className={styles["question-input-area"]}>
                 <input
                   onKeyDown={preventEnterKeySubmit}
-                  aria-label="Kirjoita kysymys"
-                  placeholder="Kysymyksen otsikko"
+                  aria-label={t("form.question.placeholder")}
+                  placeholder={t("form.question.placeholder")}
                   {...register(`questions.${i}.title`, { required: true })}
                 />
                 <select
                   onKeyDown={preventEnterKeySubmit}
                   {...register(`questions.${i}.responseType`, { required: true })}
                 >
-                  <option value={ResponseType.TextField}>Tekstikenttä</option>
+                  <option value={ResponseType.TextField}>{t("form.question.textField")}</option>
                 </select>
                 <Button disabled={i === 0} variant="secondary" onClick={() => remove(i)}>
-                  Poista
+                  {t("delete")}
                 </Button>
               </div>
 
               {errors.questions && errors.questions[i]?.title?.type === "required" && (
-                <p className={styles["error-message"]}>Pakollinen kenttä</p>
+                <p className={styles["error-message"]}>{t("form.required")}</p>
               )}
             </div>
           ))}
@@ -105,10 +107,10 @@ export const ApplicationForm: React.FC = () => {
             type="button"
             onClick={() => append({ title: "", responseType: ResponseType.TextField })}
           >
-            + Lisää kysymyksiä
+            + {t("form.question.add")}
           </Button>
           <Button variant="primary" type="submit">
-            Tallenna hakemus
+            {t("form.submit")}
           </Button>
         </div>
       </form>

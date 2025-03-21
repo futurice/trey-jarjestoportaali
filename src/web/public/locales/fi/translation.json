@@ -1,0 +1,28 @@
+{
+	"form": {
+		"info": "Hakemuksen perustiedot",
+		"name": {
+			"label": "Hakemuksen nimi",
+			"placeholder": "Kirjoita hakemuksen nimi"
+		},
+		"required": "Pakollinen tieto",
+		"description": {
+			"label": "Hakemuksen kuvaus",
+			"placeholder": "Kirjoita hakemuksen kuvaus"
+		},
+		"questions": "Kysymykset",
+		"question": {
+			"placeholder": "Kysymyksen otsikko",
+			"textField": "Tekstikenttä",
+			"add": "Lisää uusi kysymys"
+		},
+		"submit": "Tallenna hakemus",
+		"create": ""
+	},
+	"delete": "Poista",
+	"logout": "Kirjaudu ulos",
+	"navigation": {
+		"dashboard": "Dashboard",
+		"files": "Tiedostot"
+	}
+}

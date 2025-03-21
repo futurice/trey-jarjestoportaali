@@ -1,4 +1,5 @@
 import { useState } from "react"
+import { useTranslation } from "react-i18next"
 import { Link as RouterLink, useLocation, useNavigate } from "react-router-dom"
 import { Person } from "@mui/icons-material"
 import Logout from "@mui/icons-material/Logout"
@@ -23,12 +24,13 @@ interface NavigationRoute {
 }
 
 const navigationRoutes = [
-  { name: "Dashboard", href: "/dashboard" },
-  { name: "My Files", href: "/my-files" },
+  { name: "navigation.dashboard", href: "/dashboard" },
+  { name: "navigation.files", href: "/my-files" },
 ] as NavigationRoute[]
 
 const NavigationItem = ({ item, isOpen }: { item: NavigationRoute; isOpen: boolean }) => {
   const theme = useTheme()
+  const { t } = useTranslation()
   return (
     <Button
       component={RouterLink}
@@ -45,7 +47,7 @@ const NavigationItem = ({ item, isOpen }: { item: NavigationRoute; isOpen: boole
         },
       }}
     >
-      {item.name}
+      {t(item.name)}
     </Button>
   )
 }
@@ -54,6 +56,7 @@ const Navigation = () => {
   const location = useLocation()
   const { user } = useStytchUser()
   const navigate = useNavigate()
+  const { t } = useTranslation()
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null)
 
   const open = Boolean(anchorEl)
@@ -107,7 +110,7 @@ const Navigation = () => {
           <ListItemIcon>
             <Logout fontSize="small" />
           </ListItemIcon>
-          Logout
+          {t("logout")}
         </MenuItem>
       </Menu>
     ) : null
