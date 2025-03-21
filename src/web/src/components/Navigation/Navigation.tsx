@@ -65,7 +65,7 @@ const Navigation = () => {
   }
 
   const ProfileMenu = () => {
-    return (
+    return user ? (
       <Menu
         anchorEl={anchorEl}
         id="account-menu"
@@ -110,7 +110,7 @@ const Navigation = () => {
           Logout
         </MenuItem>
       </Menu>
-    )
+    ) : null
   }
 
   return (

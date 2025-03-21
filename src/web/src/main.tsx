@@ -1,6 +1,6 @@
 import { StrictMode } from "react"
 import { createRoot } from "react-dom/client"
-import { createTheme, CssBaseline, ThemeProvider } from "@mui/material"
+import { CssBaseline, ThemeProvider, createTheme } from "@mui/material"
 import { StytchProvider } from "@stytch/react"
 import { StytchUIClient } from "@stytch/vanilla-js"
 import App from "./App.tsx"
