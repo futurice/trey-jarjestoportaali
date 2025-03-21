@@ -5,12 +5,9 @@ on:
     branches: [ main ]
     types: [ opened, synchronize, reopened ]
     paths:
-      - 'src/web/**'
+      - 'src/web/src/**'
 
 permissions: {}
-defaults:
-  run:
-    working-directory: src/web
 
 jobs:
   build:
@@ -27,12 +24,11 @@ jobs:
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
+          sparse-checkout: 'src/web'
 
       - name: Super-linter
         uses: super-linter/super-linter@v7.3.0
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          FILTER_REGEX_INCLUDE: ^src/web/src
           VALIDATE_ALL_CODEBASE: false
           DEFAULT_BRANCH: ${{ github.event.pull_request.base.ref }}
-          DEFAULT_WORKSPACE: ${{ github.workspace }}/src/web
