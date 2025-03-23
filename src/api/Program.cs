@@ -1,7 +1,6 @@
 using Azure.Identity;
 using Azure.Storage.Blobs;
 using Microsoft.Azure.Cosmos;
-using Trey.Api;
 using Trey.Api.Extensions;
 using Trey.Api.Repositories;
 using Trey.Api.Services;
@@ -42,6 +41,7 @@ builder.Services.AddSingleton<BlobContainerClient>(serviceProvider =>
 
 builder.Services.AddSingleton<FileService>();
 builder.Services.AddSingleton<OrganizationsRepository>();
+builder.Services.AddSingleton<SurveyRepository>();
 
 builder.Services.AddCors();
 builder.Services.AddApplicationInsightsTelemetry(builder.Configuration);
@@ -77,6 +77,11 @@ app.MapGroup("/files")
 
 app.MapGroup("/organizations")
     .MapOrganizationApi()
+    .WithOpenApi()
+    .DisableAntiforgery(); // FIXME - remove this line when antiforgery is implemented
+
+app.MapGroup("/surveys")
+    .MapSurveyEndpoints()
     .WithOpenApi()
     .DisableAntiforgery(); // FIXME - remove this line when antiforgery is implemented
 
