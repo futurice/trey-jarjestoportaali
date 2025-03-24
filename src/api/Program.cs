@@ -47,6 +47,9 @@ builder.Services.AddCors();
 builder.Services.AddApplicationInsightsTelemetry(builder.Configuration);
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+
+builder.Services.AddStytchClient(builder.Configuration);
+builder.Services.AddTreyAuth();
 var app = builder.Build();
 
 app.UseCors(policy =>

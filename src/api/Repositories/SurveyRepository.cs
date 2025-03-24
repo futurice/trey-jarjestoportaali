@@ -5,18 +5,32 @@ namespace Trey.Api.Repositories;
 
 public class SurveyRepository
 {
-  private readonly Container _surveyCollection;
+    private readonly Container _surveyCollection;
 
-  public SurveyRepository(CosmosClient client, IConfiguration configuration)
-  {
-    var database = client.GetDatabase(configuration["AZURE_COSMOS_DATABASE_NAME"]);
-    _surveyCollection = database.GetContainer("Survey");
-  }
+    public SurveyRepository(CosmosClient client, IConfiguration configuration)
+    {
+        var database = client.GetDatabase(configuration["AZURE_COSMOS_DATABASE_NAME"]);
+        _surveyCollection = database.GetContainer("Survey");
+    }
 
     public async Task<IEnumerable<Survey>> GetAllSurveysAsync()
     {
         var surveys = new List<Survey>();
         var iterator = _surveyCollection.GetItemQueryIterator<Survey>();
+        while (iterator.HasMoreResults)
+        {
+            var response = await iterator.ReadNextAsync();
+            surveys.AddRange(response);
+        }
+
+        return surveys;
+    }
+
+    public async Task<IEnumerable<Survey>> GetAllSurveysForOrgAsync(string organizationId)
+    {
+        var surveys = new List<Survey>();
+        // Query only surveys for the organization
+        var iterator = _surveyCollection.GetItemQueryIterator<Survey>(new QueryDefinition($"SELECT * FROM c WHERE c.organizationId = '{organizationId}'"));
         while (iterator.HasMoreResults)
         {
             var response = await iterator.ReadNextAsync();

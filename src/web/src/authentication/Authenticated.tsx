@@ -1,6 +1,6 @@
 import {Navigate, useLocation} from "react-router-dom";
 import {ReactNode} from "react";
-import {useStytchUser} from "@stytch/react";
+import {useStytch, useStytchUser} from "@stytch/react";
 import {Roles} from "./Roles.tsx";
 
 interface AuthenticatedProps {
@@ -13,6 +13,9 @@ interface AuthenticatedProps {
 export const Authenticated = ({children, requiredRoles = [], redirectUrl = "/"}: AuthenticatedProps) => {
     const location = useLocation();
     const { user } = useStytchUser();
+    const stytch = useStytch()
+    const tokens = stytch.session.getTokens()
+    alert(tokens?.session_token);
 
     // The role is stored in the trusted_metadata field of the user object in Stytch.
     const role = user?.trusted_metadata.role as string ?? Roles.NONE;

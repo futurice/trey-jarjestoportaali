@@ -1,6 +1,7 @@
 
 using Trey.Api.Models;
 using Trey.Api.Repositories;
+using Trey.Api.Services;
 
 namespace Trey.Api.Extensions;
 public static class SurveyEndpointExtensions
@@ -8,6 +9,7 @@ public static class SurveyEndpointExtensions
     public static RouteGroupBuilder MapSurveyEndpoints(this RouteGroupBuilder group)
     {
         group.MapGet("/", GetAllSurveys);
+        group.MapGet("/organization", GetAllSurveysForOrg);
         group.MapGet("/{id:guid}", GetSurveyById);
         group.MapPost("/", CreateSurvey);
         group.MapPut("/{id:guid}", UpdateSurvey);
@@ -18,10 +20,38 @@ public static class SurveyEndpointExtensions
         return group;
     }
 
-    private static async Task<IResult> GetAllSurveys(SurveyRepository repo)
+    private static async Task<IResult> GetAllSurveys(SurveyRepository repo, IAuthService auth, HttpContext context)
     {
-        var surveys = await repo.GetAllSurveysAsync();
-        return Results.Ok(surveys);
+        try
+        {
+            var user = await auth.GetUserFromContext(context);
+            // Only admins can see all surveys
+            if (user.Role != TreyRole.Admin) throw new UnauthorizedAccessException();
+            
+            var surveys = await repo.GetAllSurveysForOrgAsync(user.OrganizationId);
+            return Results.Ok(surveys);
+        }
+        catch (UnauthorizedAccessException)
+        {
+            return Results.Unauthorized();
+        }
+    }
+    
+    private static async Task<IResult> GetAllSurveysForOrg(SurveyRepository repo, IAuthService auth, HttpContext context)
+    {
+        try
+        {
+            var user = await auth.GetUserFromContext(context);
+            // Only admins can see all surveys
+            if (user.Role != TreyRole.Admin) throw new UnauthorizedAccessException();
+            
+            var surveys = await repo.GetAllSurveysForOrgAsync(user.OrganizationId);
+            return Results.Ok(surveys);
+        }
+        catch (UnauthorizedAccessException)
+        {
+            return Results.Unauthorized();
+        }
     }
 
     private static async Task<IResult> GetSurveyById(Guid id, SurveyRepository repo)
