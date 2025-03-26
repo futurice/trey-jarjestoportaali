@@ -40,7 +40,7 @@
                 "watch",
                 "run",
                 "--project",
-                "${workspaceFolder}/src/api/Todo.Api.csproj"
+                "${workspaceFolder}/src/api/Trey.Api.csproj"
             ],
             "problemMatcher": "$msCompile"
         },
