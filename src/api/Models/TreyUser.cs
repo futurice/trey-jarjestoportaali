@@ -3,7 +3,7 @@ namespace Trey.Api.Models;
 public enum TreyRole
 {
     PendingApproval, // User has registered but is pending approval
-    Organisation,
+    Organization,
     TreyBoard,
     Admin,
     None, // User has not registered yet
@@ -23,7 +23,7 @@ public static class TreyRoleExtensions
         return normalizedString switch
         {
             "pending_approval" => TreyRole.PendingApproval,
-            "organisation" or "organization" => TreyRole.Organisation,
+            "organization" => TreyRole.Organization,
             "trey_board" => TreyRole.TreyBoard,
             "admin" => TreyRole.Admin,
             "none" => TreyRole.None,
