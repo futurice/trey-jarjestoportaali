@@ -1,9 +1,5 @@
-using System.IdentityModel.Tokens.Jwt;
-using System.Runtime.InteropServices.JavaScript;
-using System.Security.Authentication;
-using Microsoft.AspNetCore.Mvc.Diagnostics;
+using Newtonsoft.Json.Linq;
 using Stytch.net.Clients;
-using Stytch.net.Clients.Consumer;
 using Stytch.net.Models.Consumer;
 using Trey.Api.Models;
 
@@ -20,18 +16,38 @@ internal sealed class AuthService(ConsumerClient client, ILogger<AuthService> lo
     {
         var token = GetTokenFromHeader(context);
         var session = await AuthenticateSession(token);
-        if (session.CustomClaims is Dictionary<string, string> claims)
+        if (session.UserId == null)
         {
-            return new TreyUser
-            {
-                Name = session.UserId,
-                OrganizationId = claims.GetValueOrDefault("organization", ""),
-                Role = claims.GetValueOrDefault("role", "")?.ToTreyRole() ?? TreyRole.None
-            };
+            throw new UnauthorizedAccessException("No valid session found");
         }
-        throw new UnauthorizedAccessException($"Custom claims missing from session");
+
+        var user = await GetUserById(session.UserId);
+
+        return user;
     }
 
+    private async Task<TreyUser> GetUserById(string userId)
+    {
+        var user = await client.Users.Get(new UsersGetRequest(userId));
+
+        var metadata = MetadataToDictionary(user.TrustedMetadata);
+        return new TreyUser {
+            Name = user.Name.FirstName + " " + user.Name.LastName,
+            OrganizationId = "",
+            Role = metadata["role"].ToTreyRole()
+        };
+    }
+
+    private static Dictionary<string, string> MetadataToDictionary(object metadata)
+    {
+        if (metadata is JObject metadataObject)
+        {
+            return metadataObject.ToObject<Dictionary<string, string>>() ?? [];
+        }
+
+        return [];
+    }
+    
     private static string GetTokenFromHeader(HttpContext context)
     {
         var authHeader = context.Request.Headers.Authorization.FirstOrDefault();
@@ -49,10 +65,10 @@ internal sealed class AuthService(ConsumerClient client, ILogger<AuthService> lo
         {
             var request = new SessionsAuthenticateRequest
             {
-                SessionToken = sessionJwt,
+                SessionJwt = sessionJwt,
                 SessionDurationMinutes = 60
             };
-            
+
             var response = await client.Sessions.Authenticate(request);
             return response.Session;
         }
