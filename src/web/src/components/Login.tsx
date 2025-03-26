@@ -1,36 +1,40 @@
-import { StytchLogin } from "@stytch/react"
-import { Callbacks, Products } from "@stytch/vanilla-js"
+import { Navigate, useNavigate } from "react-router-dom"
+import { StytchLogin, useStytchSession } from "@stytch/react"
+import { type Callbacks, Products } from "@stytch/vanilla-js"
 import { LoginContainer } from "../components/LoginContainer/LoginContainer"
 
+export const STYTCH_CONFIG = {
+  products: [Products.passwords],
+  passwordOptions: {
+    loginExpirationMinutes: 30,
+    loginRedirectURL: `${window.location.origin}/authenticate`,
+    resetPasswordExpirationMinutes: 30,
+    resetPasswordRedirectURL: `${window.location.origin}/reset-password`,
+  },
+}
+
 const Login = () => {
-  const REDIRECT_URL = "/dashboard"
-  const config = {
-    products: [Products.passwords],
-    passwordOptions: {
-      loginExpirationMinutes: 30,
-      loginRedirectURL: REDIRECT_URL,
-      resetPasswordExpirationMinutes: 30,
-      resetPasswordRedirectURL: REDIRECT_URL,
-    },
-  }
+  const navigate = useNavigate()
+  const { session } = useStytchSession()
 
   const callbacks: Callbacks = {
     onEvent: (event) => {
-      // TODO: add more event types as needed
-      console.log(event)
       if (
         (event.type === "AUTHENTICATE_FLOW_COMPLETE" || event.type === "PASSWORD_AUTHENTICATE") &&
         event.data?.user
       ) {
-        window.location.href = REDIRECT_URL
+        navigate("/dashboard")
       }
     },
   }
 
+  if (session) {
+    return <Navigate to="/dashboard" />
+  }
   return (
     <LoginContainer>
       <StytchLogin
-        config={config}
+        config={STYTCH_CONFIG}
         callbacks={callbacks}
         styles={{
           logo: {
