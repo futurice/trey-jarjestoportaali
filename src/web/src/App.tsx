@@ -3,7 +3,7 @@ import "./App.css"
 import { Authenticated, Roles, useRefreshSession } from "./authentication"
 import Dashboard from "./components/Dashboard"
 import { Layout } from "./components/Layout/Layout"
-import Login from "./components/Login"
+import Login, { Authenticate, ResetPassword } from "./components/Login"
 import { Logout } from "./components/Logout.tsx"
 import MyFiles from "./components/MyFiles"
 import { Registration } from "./components/Registration/Registration.tsx"
@@ -39,6 +39,8 @@ const App = () => {
         />
 
         <Route path="/login" element={<Login />} />
+        <Route path="/authenticate" element={<Authenticate />} />
+        <Route path="/reset-password" element={<ResetPassword />} />
         <Route path="/" element={<Login />} />
 
         <Route
@@ -50,7 +52,7 @@ const App = () => {
               </Layout>
             </Authenticated>
           }
-        ></Route>
+        />
         <Route path="/logout" element={<Logout />} />
       </Routes>
     </BrowserRouter>
