@@ -1,7 +1,8 @@
 import { useEffect, useState } from "react"
 import { Container, Table } from "@radix-ui/themes"
-import { getOrganizations } from "../../api/organizations"
 import { Organization } from "../../models/organization"
+import config from "../../config";
+import {OrganizationService} from "../../services/organizationService.ts";
 
 // TODO: Implement final component
 const OrganizationsTable = ({ organizations }: { organizations: Organization[] }) => {
@@ -30,8 +31,13 @@ export const Organizations = () => {
   const [organizations, setOrganizations] = useState<Organization[]>([])
 
   useEffect(() => {
+    const organizationService = new OrganizationService(
+      config.api.baseUrl,
+      "organizations"
+    );
+
     const fetchData = async () => {
-      const result = await getOrganizations()
+      const result = await organizationService.getList();
       setOrganizations(result)
     }
     fetchData()
