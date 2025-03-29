@@ -1,5 +1,3 @@
-using System.Security.Claims;
-
 namespace Trey.Api.Models;
 
 [AttributeUsage(AttributeTargets.Method)]
