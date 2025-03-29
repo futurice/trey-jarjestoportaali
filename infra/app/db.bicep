@@ -8,6 +8,11 @@ param containers array = [
     id: 'Organization'
     partitionKey: '/id'
   }
+  {
+      name: 'Survey'
+      id: 'Survey'
+      partitionKey: '/id'
+  }
 ]
 
 param databaseName string = ''
