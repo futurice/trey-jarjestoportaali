@@ -1,6 +1,8 @@
+import config from '../config';
+
 export async function getOrganizations() {
   try {
-    const response = await fetch('http://localhost:3100/organizations');
+    const response = await fetch(`${config.baseUrl}/organizations`);
     if (!response.ok) {
       throw new Error('Network response was not ok');
     }
