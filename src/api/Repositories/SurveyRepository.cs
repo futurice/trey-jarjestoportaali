@@ -30,12 +30,15 @@ public class SurveyRepository
     {
         var surveys = new List<Survey>();
         // Query only surveys for the organization
-        var iterator = _surveyCollection.GetItemQueryIterator<Survey>(new QueryDefinition($"SELECT * FROM c WHERE c.organizationId = '{organizationId}'"));
+        var iterator = _surveyCollection.GetItemQueryIterator<Survey>(
+            new QueryDefinition("SELECT * FROM c WHERE c.organizationId = @organizationId")
+                .WithParameter("@organizationId", organizationId));
         while (iterator.HasMoreResults)
         {
             var response = await iterator.ReadNextAsync();
             surveys.AddRange(response);
         }
+
         return surveys;
     }
 
@@ -70,12 +73,16 @@ public class SurveyRepository
     public async Task<IEnumerable<SurveyAnswer>> GetSurveyAnswersAsync(Guid surveyId)
     {
         var answers = new List<SurveyAnswer>();
-        var iterator = _surveyCollection.GetItemQueryIterator<SurveyAnswer>(new QueryDefinition($"SELECT * FROM c WHERE c.surveyId = '{surveyId}'"));
+        var iterator =
+            _surveyCollection.GetItemQueryIterator<SurveyAnswer>(
+                new QueryDefinition("SELECT * FROM c WHERE c.surveyId = @surveyId")
+                    .WithParameter("@surveyId", surveyId.ToString()));
         while (iterator.HasMoreResults)
         {
             var response = await iterator.ReadNextAsync();
             answers.AddRange(response);
         }
+
         return answers;
     }
 }
