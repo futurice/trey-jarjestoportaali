@@ -8,7 +8,7 @@ namespace Trey.Api.Repositories;
 public class OrganizationsRepository
 {
   private readonly Container _organizationsCollection;
-
+  
   public OrganizationsRepository(CosmosClient client, IConfiguration configuration)
   {
     var database = client.GetDatabase(configuration["AZURE_COSMOS_DATABASE_NAME"]);

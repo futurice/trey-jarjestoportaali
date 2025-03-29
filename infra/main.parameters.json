@@ -16,6 +16,12 @@
     },
     "apimSku": {
       "value": "${APIM_SKU=Consumption}"
+    },
+    "stytchProjectId": {
+      "value": "${STYTCH_PROJECT_ID}"
+    },
+    "stytchProjectSecret": {
+      "value": "${STYTCH_PROJECT_SECRET}"
     }
   }
 }
