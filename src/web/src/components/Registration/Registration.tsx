@@ -594,6 +594,12 @@ export const Registration = () => {
         },
         actionBar: {
             root: "survey-footer"
+        },
+        footer: {
+            container: "survey-footer"
+        },
+        navigation: {
+            prev: "survey-prev-button"
         }
     };
 

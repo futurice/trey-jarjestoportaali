@@ -1,15 +1,13 @@
 .survey-body {
     margin: auto;
-    width: 60%;
-    padding: 20px;
+    width: 80%;
+    padding-top: 20px;
 }
 
 .survey-question-title {
     text-align: left;
     font-size: 16px;
     font-weight: normal;
-    min-width: 60%;
-    max-width: 100%;
 }
 
 .question-frame {
@@ -19,6 +17,10 @@
 }
 
 .survey-footer {
-    padding-left: 555px;
     padding-top: 10px;
+    display: inline-flex;
+}
+
+.survey-prev-button {
+    margin-right: 2px;
 }
