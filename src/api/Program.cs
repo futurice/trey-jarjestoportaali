@@ -2,6 +2,7 @@ using Azure.Identity;
 using Azure.Storage.Blobs;
 using Microsoft.Azure.Cosmos;
 using Trey.Api.Extensions;
+using Trey.Api.Middleware;
 using Trey.Api.Repositories;
 using Trey.Api.Services;
 
@@ -59,6 +60,9 @@ app.UseCors(policy =>
     policy.AllowAnyHeader();
     policy.AllowAnyMethod();
 });
+
+// Add role authorization middleware
+app.UseMiddleware<RoleAuthorizationMiddleware>();
 
 // Swagger UI
 app.UseSwaggerUI(options =>
