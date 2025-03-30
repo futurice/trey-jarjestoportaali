@@ -23,7 +23,7 @@ public static class SurveyEndpointExtensions
     private static async Task<IResult> GetAllSurveys(SurveyRepository repo, IAuthService auth, HttpContext context)
     {
         var user = await auth.GetUserFromContext(context);
-        var surveys = await repo.GetAllSurveysForOrgAsync(user.OrganizationId);
+        var surveys = await repo.GetAllSurveysAsync();
         return Results.Ok(surveys);
     }
     
