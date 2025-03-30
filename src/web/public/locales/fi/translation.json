@@ -28,5 +28,13 @@
 	"language": {
 		"fi": "Suomi",
 		"en": "Englanti"
+	},
+	"dashboard": {
+		"title": "Hallintapaneeli",
+		"availableSurveys": "Käytettävissä olevat kyselyt",
+		"noSurveys": "Ei käytettävissä olevia kyselyitä"
+	},
+	"common": {
+		"loading": "Ladataan..."
 	}
 }

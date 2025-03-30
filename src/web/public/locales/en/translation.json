@@ -28,5 +28,13 @@
 	"language": {
 		"fi": "Finnish",
 		"en": "English"
+	},
+	"dashboard": {
+		"title": "Dashboard",
+		"availableSurveys": "Available Surveys",
+		"noSurveys": "No surveys available"
+	},
+	"common": {
+		"loading": "Loading..."
 	}
 }
