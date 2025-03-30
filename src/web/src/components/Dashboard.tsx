@@ -1,6 +1,5 @@
 import { useTranslation } from "react-i18next"
 import { Container, Typography, List, ListItem, ListItemText, Paper } from "@mui/material"
-import { ApplicationForm } from "./ApplicationForm/ApplicationForm"
 import { useSurveyService } from "../hooks/useSurveyService"
 import { useSurveys } from "../hooks/useSurveys"
 import { useAuth } from "../hooks/useAuth"
@@ -51,7 +50,6 @@ const Dashboard = () => {
         )}
       </Paper>
 
-      <ApplicationForm />
     </Container>
   )
 }
