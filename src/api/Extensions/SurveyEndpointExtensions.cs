@@ -19,7 +19,7 @@ public static class SurveyEndpointExtensions
         return group;
     }
 
-    [RequiredRole(TreyRole.Admin)]
+    [RequiredRole(TreyRole.Admin, TreyRole.TreyBoard)]
     private static async Task<IResult> GetAllSurveys(SurveyRepository repo, IAuthService auth, HttpContext context)
     {
         var user = await auth.GetUserFromContext(context);

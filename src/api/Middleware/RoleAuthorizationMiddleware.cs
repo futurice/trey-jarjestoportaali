@@ -3,11 +3,11 @@ using Trey.Api.Services;
 
 namespace Trey.Api.Middleware;
 
-public class RoleAuthorizationMiddleware(RequestDelegate next, IServiceScopeFactory serviceScopeFactory)
+public class RoleAuthorizationMiddleware(RequestDelegate next, IServiceScopeFactory serviceScopeFactory, ILogger<RoleAuthorizationMiddleware> logger)
 {
-    public static RequestDelegate Create(RequestDelegate next, IServiceScopeFactory serviceScopeFactory)
+    public static RequestDelegate Create(RequestDelegate next, IServiceScopeFactory serviceScopeFactory, ILogger<RoleAuthorizationMiddleware> logger)
     {
-        var middleware = new RoleAuthorizationMiddleware(next, serviceScopeFactory);
+        var middleware = new RoleAuthorizationMiddleware(next, serviceScopeFactory, logger);
         return middleware.InvokeAsync;
     }
 
@@ -33,11 +33,12 @@ public class RoleAuthorizationMiddleware(RequestDelegate next, IServiceScopeFact
             {
                 var authService = scope.ServiceProvider.GetRequiredService<IAuthService>();
                 var user = await authService.GetUserFromContext(context);
-                if (user.Role != requiredRoleAttribute.Role)
+                if (!requiredRoleAttribute.Roles.Contains(user.Role))
                 {
                     context.Response.StatusCode = StatusCodes.Status403Forbidden;
                     return;
                 }
+                logger.LogDebug("User {user} has required role {role}", user.Name, user.Role);
             }
 
             await next(context);
