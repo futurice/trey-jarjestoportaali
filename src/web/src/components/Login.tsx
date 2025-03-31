@@ -1,17 +1,8 @@
 import { Navigate, useNavigate } from "react-router-dom"
 import { StytchLogin, StytchPasswordReset, useStytch, useStytchSession } from "@stytch/react"
-import { type Callbacks, Products } from "@stytch/vanilla-js"
+import { type Callbacks } from "@stytch/vanilla-js"
+import { SESSION_DURATION_MINUTES, STYTCH_CONFIG } from "../authentication/stytchConfig"
 import { LoginContainer } from "../components/LoginContainer/LoginContainer"
-
-export const STYTCH_CONFIG = {
-  products: [Products.passwords],
-  passwordOptions: {
-    loginExpirationMinutes: 30,
-    loginRedirectURL: `${window.location.origin}/authenticate`,
-    resetPasswordExpirationMinutes: 30,
-    resetPasswordRedirectURL: `${window.location.origin}/reset-password`,
-  },
-}
 
 export const Authenticate = () => {
   const stytchClient = useStytch()
@@ -20,7 +11,7 @@ export const Authenticate = () => {
   const token = new URLSearchParams(window.location.search).get("token")
   if (token && !session) {
     stytchClient.magicLinks.authenticate(token, {
-      session_duration_minutes: 60,
+      session_duration_minutes: SESSION_DURATION_MINUTES,
     })
     return <Navigate to="/dashboard" />
   }
