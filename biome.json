@@ -1,7 +1,8 @@
 {
   "$schema": "./node_modules/@biomejs/biome/configuration_schema.json",
   "files": {
-    "ignore": ["dist/**"]
+    "include": ["src/**/*.{ts,tsx}"],
+    "ignore": ["dist", "dist/**/*", "node_modules/**"]
   },
   "linter": {
     "enabled": true,
