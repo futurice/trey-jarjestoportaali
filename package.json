@@ -1,5 +1,18 @@
 {
   "dependencies": {
     "madr": "^3.0.0"
+  },
+  "devDependencies": {
+    "husky": "^8.0.0",
+    "lint-staged": "^15.5.0"
+  },
+  "scripts": {
+    "prepare": "husky install"
+  },
+  "lint-staged": {
+    "src/web/src/**/*.{ts,tsx}": [
+      "cd src/web && npx biome check --write --unsafe",
+      "cd src/web && npx biome format --write"
+    ]
   }
 }
