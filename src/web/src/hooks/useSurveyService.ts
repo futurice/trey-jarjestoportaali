@@ -1,7 +1,7 @@
 import { useMemo } from 'react';
-import { SurveyService } from '../services/surveyService';
-import { Roles } from '../authentication';
+import type { Roles } from '../authentication';
 import config from '../config';
+import { SurveyService } from '../services/surveyService';
 
 export const useSurveyService = (role: Roles | undefined, authToken: string | undefined) => {
   return useMemo(() => {
@@ -10,4 +10,4 @@ export const useSurveyService = (role: Roles | undefined, authToken: string | un
     }
     return new SurveyService(config.api.baseUrl, role, authToken);
   }, [role, authToken]);
-}; 
+};

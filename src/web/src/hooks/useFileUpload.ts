@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { FileService } from "../services/fileService.ts";
+import type { FileService } from '../services/fileService.ts';
 
 /**
  * Custom hook to handle file upload logic.
@@ -22,7 +22,7 @@ export const useFileUpload = (fileService: FileService) => {
 
     try {
       await fileService.upload(formData);
-    } catch (error) {
+    } catch (_error) {
       setUploadError('Failed to upload file. Please try again');
     } finally {
       setIsUploading(false);
@@ -30,4 +30,4 @@ export const useFileUpload = (fileService: FileService) => {
   };
 
   return { isUploading, uploadError, uploadFile };
-}; 
+};

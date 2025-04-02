@@ -1,4 +1,4 @@
-import { BlobFile } from "../../models/file.ts";
+import type { BlobFile } from '../../models/file.ts';
 import styles from './ListFiles.module.css';
 
 /**
@@ -17,14 +17,14 @@ import styles from './ListFiles.module.css';
  * @param {BlobFile[]} props.files - Array of file objects to display
  * @param {boolean} props.isLoading - Flag indicating if the files are being loaded
  */
-function ListFiles(props: { files: BlobFile[], isLoading: boolean }) {
+function ListFiles(props: { files: BlobFile[]; isLoading: boolean }) {
   return (
     <div className={styles.listFilesContainer}>
       {props.isLoading ? (
         <p className={styles.loadingMessage}>Loading...</p>
       ) : (
         <ul>
-          {props.files.map(file => (
+          {props.files.map((file) => (
             <li key={file.id}>
               <a href={file.uri} aria-label={`Download file ${file.id}`}>
                 {file.id}

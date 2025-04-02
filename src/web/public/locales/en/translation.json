@@ -1,40 +1,40 @@
 {
-	"form": {
-		"info": "Basic information of the form",
-		"name": {
-			"label": "Form name",
-			"placeholder": "Write the name of the form"
-		},
-		"required": "Required information",
-		"description": {
-			"label": "Form description",
-			"placeholder": "Write the description of the form"
-		},
-		"questions": "Questions",
-		"question": {
-			"placeholder": "Question title",
-			"textField": "Text field",
-			"add": "Add new question"
-		},
-		"submit": "Save form",
-		"create": ""
-	},
-	"delete": "Delete",
-	"logout": "Log out",
-	"navigation": {
-		"dashboard": "Dashboard",
-		"files": "Files"
-	},
-	"language": {
-		"fi": "Finnish",
-		"en": "English"
-	},
-	"dashboard": {
-		"title": "Dashboard",
-		"availableSurveys": "Available Surveys",
-		"noSurveys": "No surveys available"
-	},
-	"common": {
-		"loading": "Loading..."
-	}
+  "form": {
+    "info": "Basic information of the form",
+    "name": {
+      "label": "Form name",
+      "placeholder": "Write the name of the form"
+    },
+    "required": "Required information",
+    "description": {
+      "label": "Form description",
+      "placeholder": "Write the description of the form"
+    },
+    "questions": "Questions",
+    "question": {
+      "placeholder": "Question title",
+      "textField": "Text field",
+      "add": "Add new question"
+    },
+    "submit": "Save form",
+    "create": ""
+  },
+  "delete": "Delete",
+  "logout": "Log out",
+  "navigation": {
+    "dashboard": "Dashboard",
+    "files": "Files"
+  },
+  "language": {
+    "fi": "Finnish",
+    "en": "English"
+  },
+  "dashboard": {
+    "title": "Dashboard",
+    "availableSurveys": "Available Surveys",
+    "noSurveys": "No surveys available"
+  },
+  "common": {
+    "loading": "Loading..."
+  }
 }

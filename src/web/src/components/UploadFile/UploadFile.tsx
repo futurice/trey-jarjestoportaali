@@ -1,13 +1,14 @@
-import React, {useMemo, useState} from 'react';
-import styles from './UploadFile.module.css';
-import {useStytch} from "@stytch/react";
+import { useStytch } from '@stytch/react';
+import type React from 'react';
+import { useMemo, useState } from 'react';
 import { useFileService } from '../../hooks/useFileService';
 import { useFileUpload } from '../../hooks/useFileUpload';
+import styles from './UploadFile.module.css';
 
 const UploadFile = () => {
   const [file, setFile] = useState<File | null>(null);
 
-  const { session } = useStytch()
+  const { session } = useStytch();
   const sessionJwt = useMemo(() => session?.getTokens()?.session_jwt, [session]);
 
   const fileService = useFileService(sessionJwt);
@@ -39,6 +40,7 @@ const UploadFile = () => {
         aria-describedby="file-upload-description"
       />
       <button
+        type="button"
         onClick={handleUpload}
         disabled={isUploading || !file}
         className={styles.uploadButton}

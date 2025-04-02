@@ -1,6 +1,6 @@
-import { useState, useEffect } from 'react';
-import { FileService } from "../services/fileService.ts";
-import { BlobFile } from "../models/file.ts";
+import { useEffect, useState } from 'react';
+import type { BlobFile } from '../models/file.ts';
+import type { FileService } from '../services/fileService.ts';
 
 export const useFileList = (fileService: FileService) => {
   const [isLoading, setIsLoading] = useState(false);
@@ -14,7 +14,7 @@ export const useFileList = (fileService: FileService) => {
       try {
         const fileList = await fileService.getList();
         setFiles(fileList);
-      } catch (err) {
+      } catch (_err) {
         setError('Failed to fetch files. Please try again later.');
       } finally {
         setIsLoading(false);
@@ -25,4 +25,4 @@ export const useFileList = (fileService: FileService) => {
   }, [fileService]);
 
   return { files, isLoading, error };
-}; 
+};

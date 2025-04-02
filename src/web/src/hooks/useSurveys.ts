@@ -1,6 +1,6 @@
-import { useState, useEffect, useCallback } from 'react';
-import { Survey } from '../models/survey';
-import { SurveyService } from '../services/surveyService';
+import { useCallback, useEffect, useState } from 'react';
+import type { Survey } from '../models/survey';
+import type { SurveyService } from '../services/surveyService';
 
 export const useSurveys = (surveyService: SurveyService | null) => {
   const [surveys, setSurveys] = useState<Survey[]>([]);
@@ -16,7 +16,7 @@ export const useSurveys = (surveyService: SurveyService | null) => {
     try {
       const surveyList = await surveyService.getList();
       setSurveys(surveyList);
-    } catch (error) {
+    } catch (_error) {
       setSurveys([]);
     } finally {
       setLoading(false);
@@ -29,4 +29,4 @@ export const useSurveys = (surveyService: SurveyService | null) => {
   }, [fetchSurveys]);
 
   return { surveys, loading };
-}; 
+};
