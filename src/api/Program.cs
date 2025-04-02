@@ -1,8 +1,8 @@
 using Azure.Identity;
 using Azure.Storage.Blobs;
 using Microsoft.Azure.Cosmos;
-using Trey.Api;
 using Trey.Api.Extensions;
+using Trey.Api.Middleware;
 using Trey.Api.Repositories;
 using Trey.Api.Services;
 
@@ -42,11 +42,15 @@ builder.Services.AddSingleton<BlobContainerClient>(serviceProvider =>
 
 builder.Services.AddSingleton<FileService>();
 builder.Services.AddSingleton<OrganizationsRepository>();
+builder.Services.AddSingleton<SurveyRepository>();
 
 builder.Services.AddCors();
 builder.Services.AddApplicationInsightsTelemetry(builder.Configuration);
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+
+builder.Services.AddStytchClient(builder.Configuration);
+builder.Services.AddTreyAuth();
 var app = builder.Build();
 
 app.UseCors(policy =>
@@ -56,6 +60,9 @@ app.UseCors(policy =>
     policy.AllowAnyHeader();
     policy.AllowAnyMethod();
 });
+
+// Add role authorization middleware
+app.UseMiddleware<RoleAuthorizationMiddleware>();
 
 // Swagger UI
 app.UseSwaggerUI(options =>
@@ -77,6 +84,11 @@ app.MapGroup("/files")
 
 app.MapGroup("/organizations")
     .MapOrganizationApi()
+    .WithOpenApi()
+    .DisableAntiforgery(); // FIXME - remove this line when antiforgery is implemented
+
+app.MapGroup("/surveys")
+    .MapSurveyEndpoints()
     .WithOpenApi()
     .DisableAntiforgery(); // FIXME - remove this line when antiforgery is implemented
 

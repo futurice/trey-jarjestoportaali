@@ -23,19 +23,38 @@ export interface Result<T extends Entity> {
 export abstract class RestService<T extends Entity> {
     protected client: AxiosInstance;
 
-    public constructor(baseUrl: string, baseRoute: string) {
+    public constructor(baseUrl: string, baseRoute: string, authToken: string) {
+        // Ensure baseUrl doesn't end with a slash and baseRoute doesn't start with a slash
+        const normalizedBaseUrl = baseUrl.endsWith('/') ? baseUrl.slice(0, -1) : baseUrl;
+        const normalizedBaseRoute = baseRoute.startsWith('/') ? baseRoute.slice(1) : baseRoute;
+        
         this.client = axios.create({
-            baseURL: `${baseUrl}${baseRoute}`
+            baseURL: `${normalizedBaseUrl}/${normalizedBaseRoute}`
+        });
+
+        this.client.interceptors.request.use((config) => {
+            config.headers.Authorization = `Bearer ${authToken}`;
+            return config;
         });
     }
 
     public async getList(queryOptions?: QueryOptions): Promise<T[]> {
-        const response = await this.client.request<Result<T>>({
+        const response = await this.client.request<T[] | Result<T>>({
             method: 'GET',
             data: queryOptions
         });
 
-        return response.data.result as T[];
+        // Handle both wrapped and unwrapped responses
+        if (Array.isArray(response.data)) {
+            return response.data;
+        }
+
+        const result = response.data as Result<T>;
+        if (!result.result) {
+            return [];
+        }
+
+        return Array.isArray(result.result) ? result.result : [result.result];
     }
 
     public async get(id: string): Promise<T> {

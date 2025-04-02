@@ -25,10 +25,8 @@ const useFileUpload = (baseUrl: string, baseRoute: string) => {
 
     try {
       const fileService = new FileService(baseUrl, baseRoute);
-      const response = await fileService.upload(formData);
-      console.log('File uploaded successfully:', response.data);
+      await fileService.upload(formData);
     } catch (error) {
-      console.error('Error uploading file:', error);
       setUploadError('Failed to upload file. Please try again.');
     } finally {
       setIsUploading(false);
