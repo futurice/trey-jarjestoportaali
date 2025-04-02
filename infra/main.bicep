@@ -9,10 +9,6 @@ param environmentName string
 @description('Primary location for all resources')
 param location string
 
-param stytchProjectId string
-@secure()
-param stytchProjectSecret string
-
 // Optional parameters to override the default azd resource naming conventions. Update the main.parameters.json file to provide values. e.g.,:
 // "resourceGroupName": {
 //      "value": "myGroupName"
@@ -84,8 +80,8 @@ module api './app/api.bicep' = {
       AZURE_COSMOS_ENDPOINT: cosmos.outputs.endpoint
       AZURE_STORAGE_BLOB_ENDPOINT: storage.outputs.primaryEndpoints.blob
       API_ALLOW_ORIGINS: web.outputs.SERVICE_WEB_URI
-      STYTCH_PROJECT_ID: stytchProjectId
-      STYTCH_PROJECT_SECRET: stytchProjectSecret
+      STYTCH_PROJECT_ID: '@Microsoft.KeyVault(VaultName=${keyVault.outputs.name};SecretName=STYTCH-PROJECT-ID)'
+      STYTCH_PROJECT_SECRET: '@Microsoft.KeyVault(VaultName=${keyVault.outputs.name};SecretName=STYTCH-PROJECT-SECRET)'
     }
   }
 }
@@ -255,5 +251,3 @@ output API_BASE_URL string = useAPIM ? apimApi.outputs.SERVICE_API_URI : api.out
 output REACT_APP_WEB_BASE_URL string = web.outputs.SERVICE_WEB_URI
 output USE_APIM bool = useAPIM
 output SERVICE_API_ENDPOINTS array = useAPIM ? [ apimApi.outputs.SERVICE_API_URI, api.outputs.SERVICE_API_URI ]: []
-output STYTCH_PROJECT_ID string = stytchProjectId
-output STYTCH_PROJECT_SECRET string = stytchProjectSecret
