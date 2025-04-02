@@ -10,7 +10,7 @@ public interface IAuthService
     Task<TreyUser> GetUserFromContext(HttpContext context);
 }
 
-internal sealed class AuthService(ConsumerClient client, ILogger<AuthService> logger) : IAuthService
+internal sealed class AuthService(ConsumerClient client) : IAuthService
 {
     public async Task<TreyUser> GetUserFromContext(HttpContext context)
     {
