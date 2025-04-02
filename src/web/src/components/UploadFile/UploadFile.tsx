@@ -1,44 +1,17 @@
-import React, { useState } from 'react';
-import config from "../../config";
-import { FileService } from "../../services/fileService.ts";
+import React, {useMemo, useState} from 'react';
 import styles from './UploadFile.module.css';
-
-/**
- * Custom hook to handle file upload logic.
- *
- * @param {string} baseUrl - The base URL for the API.
- * @param {string} baseRoute - The base route for the file upload endpoint.
- * @returns {Object} The upload state and the upload function.
- * @returns {boolean} isUploading - Indicates if a file is currently being uploaded.
- * @returns {string|null} uploadError - Error message if the upload fails.
- */
-const useFileUpload = (baseUrl: string, baseRoute: string) => {
-  const [isUploading, setIsUploading] = useState(false);
-  const [uploadError, setUploadError] = useState<string | null>(null);
-
-  const uploadFile = async (file: File) => {
-    const formData = new FormData();
-    formData.append('file', file);
-
-    setIsUploading(true);
-    setUploadError(null);
-
-    try {
-      const fileService = new FileService(baseUrl, baseRoute);
-      await fileService.upload(formData);
-    } catch (error) {
-      setUploadError('Failed to upload file. Please try again.');
-    } finally {
-      setIsUploading(false);
-    }
-  };
-
-  return { isUploading, uploadError, uploadFile };
-};
+import {useStytch} from "@stytch/react";
+import { useFileService } from '../../hooks/useFileService';
+import { useFileUpload } from '../../hooks/useFileUpload';
 
 const UploadFile = () => {
   const [file, setFile] = useState<File | null>(null);
-  const { isUploading, uploadError, uploadFile } = useFileUpload(config.api.baseUrl, '/files');
+
+  const { session } = useStytch()
+  const sessionJwt = useMemo(() => session?.getTokens()?.session_jwt, [session]);
+
+  const fileService = useFileService(sessionJwt);
+  const { isUploading, uploadError, uploadFile } = useFileUpload(fileService);
 
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     if (event.target.files && event.target.files.length > 0) {

@@ -1,28 +1,23 @@
-import {useEffect, useState} from "react";
-import {FileService} from "../services/fileService.ts";
-import config from "../config";
-import {BlobFile} from "../models/file.ts";
-import UploadFile from "./UploadFile/UploadFile.tsx";
-import ListFiles from "./ListFiles/ListFiles.tsx";
+import { useMemo } from "react";
+import { useStytch } from "@stytch/react";
+import UploadFile from "./UploadFile/UploadFile";
+import ListFiles from "./ListFiles/ListFiles";
+import { useFileService } from "../hooks/useFileService";
+import { useFileList } from "../hooks/useFileList";
 
 const MyFiles = () => {
-  const [isLoading, setIsLoading] = useState(false);
-  const [files, setFiles] = useState<BlobFile[]>([]);
+  const { session } = useStytch();
+  const sessionJwt = useMemo(() => session?.getTokens()?.session_jwt, [session]);
 
-  useEffect(() => {
-    const fileService = new FileService(config.api.baseUrl, '/files');
-    setIsLoading(true);
-    fileService.getList() // Todo: add user id
-        .then(files => setFiles(files))
-        .finally(() => setIsLoading(false));
-  }, []);
+  const fileService = useFileService(sessionJwt);
+  const { files, isLoading, error } = useFileList(fileService);
 
   return <>
     <h1>MyFiles</h1>
     <ListFiles files={files} isLoading={isLoading} />
-
+    {error && <p style={{ color: 'red' }}>{error}</p>}
     <UploadFile />
   </>;
 }
 
-export default MyFiles
+export default MyFiles;
