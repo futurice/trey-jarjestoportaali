@@ -9,6 +9,7 @@ import MyFiles from "./components/MyFiles"
 import { OrganizationPage } from "./components/Organizations/Organization.tsx"
 import { Organizations } from "./components/Organizations/Organizations.tsx"
 import { Registration } from "./components/Registration/Registration.tsx"
+import { SurveyPage } from "./components/Survey/Survey.tsx"
 
 const approvedRoles = [Roles.ORGANISATION, Roles.TREY_BOARD, Roles.ADMIN]
 
@@ -61,6 +62,16 @@ const App = () => {
             >
               <Layout>
                 <OrganizationPage />
+              </Layout>
+            </Authenticated>
+          }
+        />
+        <Route
+          path="/survey/:surveyId"
+          element={
+            <Authenticated requiredRoles={approvedRoles} redirectUrl={"/registration"}>
+              <Layout>
+                <SurveyPage />
               </Layout>
             </Authenticated>
           }
