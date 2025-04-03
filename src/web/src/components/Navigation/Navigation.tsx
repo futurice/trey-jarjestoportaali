@@ -1,4 +1,4 @@
-import { useState } from "react"
+import { useMemo, useState } from "react"
 import { useTranslation } from "react-i18next"
 import { Link as RouterLink, useLocation, useNavigate } from "react-router-dom"
 import { Language, Person } from "@mui/icons-material"
@@ -17,16 +17,23 @@ import {
 } from "@mui/material"
 import { useStytchUser } from "@stytch/react"
 import TreyLogo from "../../assets/TreyLogo"
+import { Roles } from "../../authentication/Roles"
 import i18n from "../../i18n"
 
 interface NavigationRoute {
   name: string
   href: string
+  allowedRoles?: Roles[]
 }
 
 const navigationRoutes = [
   { name: "navigation.dashboard", href: "/dashboard" },
   { name: "navigation.files", href: "/my-files" },
+  {
+    name: "navigation.organizations",
+    href: "/organizations",
+    allowedRoles: [Roles.ADMIN, Roles.TREY_BOARD],
+  },
 ] as NavigationRoute[]
 
 const NavigationItem = ({ item, isOpen }: { item: NavigationRoute; isOpen: boolean }) => {
@@ -60,6 +67,8 @@ const Navigation = () => {
   const { t } = useTranslation()
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null)
   const [lngAnchorEl, setLngAnchorEl] = useState<null | HTMLElement>(null)
+
+  const userRole = useMemo(() => (user?.trusted_metadata.role as Roles) ?? Roles.NONE, [user])
 
   const lngOpen = Boolean(lngAnchorEl)
   const handleLngClick = (event: React.MouseEvent<HTMLElement>) => {
@@ -190,13 +199,15 @@ const Navigation = () => {
           <TreyLogo sx={{ fontSize: 120, mr: 4, height: "auto" }} />
         </Link>
         <Box sx={{ flexGrow: 1, display: { xs: "none", md: "flex" } }}>
-          {navigationRoutes.map((route) => (
-            <NavigationItem
-              key={route.name}
-              item={route}
-              isOpen={location.pathname === route.href}
-            />
-          ))}
+          {navigationRoutes
+            .filter((route) => !route.allowedRoles || route.allowedRoles.includes(userRole))
+            .map((route) => (
+              <NavigationItem
+                key={route.name}
+                item={route}
+                isOpen={location.pathname === route.href}
+              />
+            ))}
         </Box>
         <Box sx={{ flexGrow: 0 }}>
           <IconButton className="languageMenuButton" sx={{ p: 1 }} onClick={handleLngClick}>
