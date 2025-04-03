@@ -23,7 +23,8 @@
 	"logout": "Log out",
 	"navigation": {
 		"dashboard": "Dashboard",
-		"files": "Files"
+		"files": "Files",
+		"organizations": "Organizations"
 	},
 	"language": {
 		"fi": "Finnish",
@@ -35,6 +36,9 @@
 		"noSurveys": "No surveys available"
 	},
 	"common": {
-		"loading": "Loading..."
-	}
+		"loading": "Loading...",
+		"all": "All"
+	},
+	"name": "Name",
+	"email": "Email"
 }

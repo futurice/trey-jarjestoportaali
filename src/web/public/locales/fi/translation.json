@@ -23,7 +23,8 @@
 	"logout": "Kirjaudu ulos",
 	"navigation": {
 		"dashboard": "Dashboard",
-		"files": "Tiedostot"
+		"files": "Tiedostot",
+		"organizations": "Järjestöt"
 	},
 	"language": {
 		"fi": "Suomi",
@@ -35,6 +36,9 @@
 		"noSurveys": "Ei käytettävissä olevia kyselyitä"
 	},
 	"common": {
-		"loading": "Ladataan..."
-	}
+		"loading": "Ladataan...",
+		"all": "Kaikki"
+	},
+	"name": "Nimi",
+	"email": "Sähköposti"
 }
