@@ -30,3 +30,35 @@ export const useOrganizations = (organizationService: OrganizationService | null
 
   return { organizations, loading }
 }
+
+export const useGetOrganizationById = (
+  OrganizationService: OrganizationService | null,
+  id: string,
+) => {
+  const [organization, setOrganization] = useState<Organization | null>(null)
+  const [loading, setLoading] = useState(true)
+
+  const fetchOrganization = useCallback(async () => {
+    if (!OrganizationService) {
+      setOrganization(null)
+      setLoading(false)
+      return
+    }
+
+    try {
+      const organizationData = await OrganizationService.get(id)
+      setOrganization(organizationData)
+    } catch (error) {
+      setOrganization(null)
+    } finally {
+      setLoading(false)
+    }
+  }, [OrganizationService, id])
+
+  useEffect(() => {
+    setLoading(true)
+    fetchOrganization()
+  }, [fetchOrganization])
+
+  return { organization, loading }
+}

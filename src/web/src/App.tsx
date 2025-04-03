@@ -6,6 +6,7 @@ import { Layout } from "./components/Layout/Layout"
 import Login, { Authenticate, ResetPassword } from "./components/Login"
 import { Logout } from "./components/Logout.tsx"
 import MyFiles from "./components/MyFiles"
+import { OrganizationPage } from "./components/Organizations/Organization.tsx"
 import { Organizations } from "./components/Organizations/Organizations.tsx"
 import { Registration } from "./components/Registration/Registration.tsx"
 
@@ -47,6 +48,19 @@ const App = () => {
             >
               <Layout>
                 <Organizations />
+              </Layout>
+            </Authenticated>
+          }
+        />
+        <Route
+          path="/organizations/:id"
+          element={
+            <Authenticated
+              requiredRoles={[Roles.TREY_BOARD, Roles.ADMIN]}
+              redirectUrl={"/dashboard"}
+            >
+              <Layout>
+                <OrganizationPage />
               </Layout>
             </Authenticated>
           }
