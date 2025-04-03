@@ -1,17 +1,21 @@
 import { useMemo } from "react"
+import { useTranslation } from "react-i18next"
 import { useParams } from "react-router-dom"
-import { CircularProgress, Container } from "@mui/material"
+import { Box, CircularProgress, Container } from "@mui/material"
 import { useStytch } from "@stytch/react"
+import "survey-core/i18n/finnish"
 import "survey-core/survey-core.css"
 import { Model, Survey } from "survey-react-ui"
 import { useAuth } from "../../hooks/useAuth"
 import { useSurveyService } from "../../hooks/useSurveyService"
 import { useGetSurveyById } from "../../hooks/useSurveys"
+import surveyTheme from "./SurveyTheme"
 
 export const SurveyPage = () => {
   const { surveyId } = useParams()
   const { user } = useAuth()
   const { session } = useStytch()
+  const { i18n } = useTranslation()
 
   const sessionJwt = useMemo(() => session?.getTokens()?.session_jwt, [session])
 
@@ -30,10 +34,12 @@ export const SurveyPage = () => {
   }
 
   const surveyJson = new Model(survey?.surveyJson)
+  surveyJson.locale = i18n.language ?? "en"
+  surveyJson.applyTheme(surveyTheme)
 
   return (
-    <Container>
+    <Box sx={{ width: "100vw", overflow: "hidden" }}>
       <Survey model={surveyJson} />
-    </Container>
+    </Box>
   )
 }
