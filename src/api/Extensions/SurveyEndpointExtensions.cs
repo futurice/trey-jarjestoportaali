@@ -15,18 +15,19 @@ public static class SurveyEndpointExtensions
         group.MapDelete("/{id:guid}", DeleteSurvey);
         group.MapPost("/{surveyId:guid}/answers", CreateSurveyAnswer);
         group.MapGet("/{surveyId:guid}/answers", GetSurveyAnswers);
+        group.MapPut("/{surveyId:guid}/answers/{responseId:guid}", UpdateSurveyAnswer);
 
         return group;
     }
 
-    [RequiredRole(TreyRole.Admin, TreyRole.TreyBoard)]
+    [RequiredRole(TreyRole.Admin, TreyRole.TreyBoard, TreyRole.Organization)]
     private static async Task<IResult> GetAllSurveys(SurveyRepository repo, IAuthService auth, HttpContext context)
     {
         var user = await auth.GetUserFromContext(context);
         var surveys = await repo.GetAllSurveysAsync();
         return Results.Ok(surveys);
     }
-    
+
     [RequiredRole(TreyRole.Organization)]
     private static async Task<IResult> GetAllSurveysForOrg(SurveyRepository repo, IAuthService auth, HttpContext context)
     {
@@ -35,9 +36,10 @@ public static class SurveyEndpointExtensions
         return Results.Ok(surveys);
     }
 
-    [RequiredRole(TreyRole.Admin)]
-    private static async Task<IResult> GetSurveyById(Guid id, SurveyRepository repo)
+    [RequiredRole(TreyRole.Admin, TreyRole.TreyBoard, TreyRole.Organization)]
+    private static async Task<IResult> GetSurveyById(Guid id, SurveyRepository repo, IAuthService auth, HttpContext context)
     {
+        var user = await auth.GetUserFromContext(context);
         var survey = await repo.GetSurveyByIdAsync(id);
         return survey is null ? Results.NotFound() : Results.Ok(survey);
     }
@@ -64,12 +66,21 @@ public static class SurveyEndpointExtensions
         return deleted ? Results.Ok() : Results.NotFound();
     }
 
-    [RequiredRole(TreyRole.Organization)]
+    [RequiredRole(TreyRole.Organization, TreyRole.Admin, TreyRole.TreyBoard)]
     private static async Task<IResult> CreateSurveyAnswer(Guid surveyId, SurveyAnswer answer, SurveyRepository repo)
     {
         answer.SurveyId = surveyId;
         await repo.CreateSurveyAnswerAsync(answer);
         return Results.Created($"/surveys/{surveyId}/answers/{answer.Id}", answer);
+    }
+
+    [RequiredRole(TreyRole.Organization, TreyRole.Admin, TreyRole.TreyBoard)]
+    private static async Task<IResult> UpdateSurveyAnswer(Guid surveyId, Guid responseId, SurveyAnswer answer, SurveyRepository repo)
+    {
+        answer.SurveyId = surveyId;
+        answer.Id = responseId;
+        await repo.UpdateSurveyAnswerAsync(answer);
+        return Results.Ok(answer);
     }
 
     [RequiredRole(TreyRole.Admin)]
