@@ -31,9 +31,10 @@ internal sealed class AuthService(ConsumerClient client) : IAuthService
         var user = await client.Users.Get(new UsersGetRequest(userId));
 
         var metadata = MetadataToDictionary(user.TrustedMetadata);
-        return new TreyUser {
+        return new TreyUser
+        {
             Name = user.Name.FirstName + " " + user.Name.LastName,
-            OrganizationId = "",
+            OrganizationId = metadata["organizationId"] ?? "",
             Role = metadata["role"].ToTreyRole()
         };
     }
@@ -47,7 +48,7 @@ internal sealed class AuthService(ConsumerClient client) : IAuthService
 
         return [];
     }
-    
+
     private static string GetTokenFromHeader(HttpContext context)
     {
         var authHeader = context.Request.Headers.Authorization.FirstOrDefault();
