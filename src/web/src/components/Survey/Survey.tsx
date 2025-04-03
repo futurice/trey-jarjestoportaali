@@ -33,13 +33,13 @@ export const SurveyPage = () => {
     )
   }
 
-  const surveyJson = new Model(survey?.surveyJson)
-  surveyJson.locale = i18n.language ?? "en"
-  surveyJson.applyTheme(surveyTheme)
+  const surveyModel = new Model(survey?.surveyJson)
+  surveyModel.locale = i18n.language ?? "en"
+  surveyModel.applyTheme(surveyTheme)
 
   return (
     <Box sx={{ width: "100vw", overflow: "hidden" }}>
-      <Survey model={surveyJson} />
+      <Survey model={surveyModel} />
     </Box>
   )
 }
