@@ -36,5 +36,24 @@
 	},
 	"common": {
 		"loading": "Loading..."
+	},
+	"feedback": {
+		"title": "Give feedback",
+		"label": "Feedback",
+		"trigger": "Give feedback",
+		"cancel": "Cancel",
+		"confirm": "Send",
+		"addScreenshot": "Add screenshot",
+		"removeScreenshot": "Remove screenshot",
+		"name": "Name",
+		"namePlaceholder": "Write your name",
+		"email": "Email",
+		"emailPlaceholder": "Write your email address",
+		"isRequired": "Required information",
+		"message": "Feedback",
+		"messageLabel": "Feedback",
+		"messagePlaceholder": "Did you find a bug? Do you want to give feedback? Tell us!",
+		"successMessage": "Thank you for your feedback!",
+		"submit": "Send"
 	}
 }
