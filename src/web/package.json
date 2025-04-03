@@ -14,6 +14,7 @@
     "@emotion/styled": "^11.14.0",
     "@mui/icons-material": "^6.4.7",
     "@mui/material": "^6.4.7",
+    "@mui/x-data-grid": "^7.28.2",
     "@stytch/react": "^19.1.0",
     "@stytch/vanilla-js": "^5.3.0",
     "axios": "^1.7.7",
