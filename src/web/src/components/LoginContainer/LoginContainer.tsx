@@ -1,4 +1,4 @@
-import React from "react"
+import { Container } from "@mui/material"
 import styles from "./Logincontainer.module.css"
 
 interface ILoginContainer {
@@ -6,5 +6,9 @@ interface ILoginContainer {
 }
 
 export const LoginContainer: React.FC<ILoginContainer> = ({ children }) => {
-  return <div className={styles["login-container"]}>{children}</div>
+  return (
+    <Container className={styles["login-container"]} maxWidth="sm">
+      {children}
+    </Container>
+  )
 }

@@ -1,36 +1,59 @@
-import { StytchLogin } from "@stytch/react"
-import { Callbacks, Products } from "@stytch/vanilla-js"
+import { Navigate, useNavigate } from "react-router-dom"
+import { StytchLogin, StytchPasswordReset, useStytch, useStytchSession } from "@stytch/react"
+import { type Callbacks } from "@stytch/vanilla-js"
+import { SESSION_DURATION_MINUTES, STYTCH_CONFIG } from "../authentication/stytchConfig"
 import { LoginContainer } from "../components/LoginContainer/LoginContainer"
 
-const Login = () => {
-  const REDIRECT_URL = "/dashboard"
-  const config = {
-    products: [Products.passwords],
-    passwordOptions: {
-      loginExpirationMinutes: 30,
-      loginRedirectURL: REDIRECT_URL,
-      resetPasswordExpirationMinutes: 30,
-      resetPasswordRedirectURL: REDIRECT_URL,
-    },
+export const Authenticate = () => {
+  const stytchClient = useStytch()
+  const { session } = useStytchSession()
+
+  const token = new URLSearchParams(window.location.search).get("token")
+  if (token && !session) {
+    stytchClient.magicLinks.authenticate(token, {
+      session_duration_minutes: SESSION_DURATION_MINUTES,
+    })
+    return <Navigate to="/dashboard" />
   }
+
+  return <Navigate to="/" />
+}
+
+export const ResetPassword = () => {
+  const passwordResetToken = new URLSearchParams(window.location.search).get("token")
+
+  if (passwordResetToken) {
+    return (
+      <LoginContainer>
+        <StytchPasswordReset config={STYTCH_CONFIG} passwordResetToken={passwordResetToken} />
+      </LoginContainer>
+    )
+  }
+  return <Navigate to="/" />
+}
+
+const Login = () => {
+  const navigate = useNavigate()
+  const { session } = useStytchSession()
 
   const callbacks: Callbacks = {
     onEvent: (event) => {
-      // TODO: add more event types as needed
-      console.log(event)
       if (
         (event.type === "AUTHENTICATE_FLOW_COMPLETE" || event.type === "PASSWORD_AUTHENTICATE") &&
         event.data?.user
       ) {
-        window.location.href = REDIRECT_URL
+        navigate("/dashboard")
       }
     },
   }
 
+  if (session) {
+    return <Navigate to="/dashboard" />
+  }
   return (
     <LoginContainer>
       <StytchLogin
-        config={config}
+        config={STYTCH_CONFIG}
         callbacks={callbacks}
         styles={{
           logo: {
