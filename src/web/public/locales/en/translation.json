@@ -1,44 +1,63 @@
 {
-	"form": {
-		"info": "Basic information of the form",
-		"name": {
-			"label": "Form name",
-			"placeholder": "Write the name of the form"
-		},
-		"required": "Required information",
-		"description": {
-			"label": "Form description",
-			"placeholder": "Write the description of the form"
-		},
-		"questions": "Questions",
-		"question": {
-			"placeholder": "Question title",
-			"textField": "Text field",
-			"add": "Add new question"
-		},
-		"submit": "Save form",
-		"create": ""
-	},
-	"delete": "Delete",
-	"logout": "Log out",
-	"navigation": {
-		"dashboard": "Dashboard",
-		"files": "Files",
-		"organizations": "Organizations"
-	},
-	"language": {
-		"fi": "Finnish",
-		"en": "English"
-	},
-	"dashboard": {
-		"title": "Dashboard",
-		"availableSurveys": "Available Surveys",
-		"noSurveys": "No surveys available"
-	},
-	"common": {
-		"loading": "Loading...",
-		"all": "All"
-	},
-	"name": "Name",
-	"email": "Email"
+  "form": {
+    "info": "Basic information of the form",
+    "name": {
+      "label": "Form name",
+      "placeholder": "Write the name of the form"
+    },
+    "required": "Required information",
+    "description": {
+      "label": "Form description",
+      "placeholder": "Write the description of the form"
+    },
+    "questions": "Questions",
+    "question": {
+      "placeholder": "Question title",
+      "textField": "Text field",
+      "add": "Add new question"
+    },
+    "submit": "Save form",
+    "create": ""
+  },
+  "delete": "Delete",
+  "logout": "Log out",
+  "navigation": {
+    "dashboard": "Dashboard",
+    "files": "Files",
+    "organizations": "Organizations"
+  },
+  "language": {
+    "fi": "Finnish",
+    "en": "English"
+  },
+  "dashboard": {
+    "title": "Dashboard",
+    "availableSurveys": "Available Surveys",
+    "noSurveys": "No surveys available"
+  },
+  "common": {
+    "loading": "Loading...",
+    "all": "All"
+  },
+  "feedback": {
+    "title": "Give feedback",
+    "label": "Feedback",
+    "trigger": "Give feedback",
+    "cancel": "Cancel",
+    "confirm": "Send",
+    "addScreenshot": "Add screenshot",
+    "removeScreenshot": "Remove screenshot",
+    "name": "Name",
+    "namePlaceholder": "Write your name",
+    "email": "Email",
+    "emailPlaceholder": "Write your email address",
+    "isRequired": "Required information",
+    "message": "Feedback",
+    "messageLabel": "Feedback",
+    "messagePlaceholder": "Did you find a bug? Do you want to give feedback? Tell us!",
+    "successMessage": "Thank you for your feedback!",
+    "submit": "Send"
+  },
+  "name": "Name",
+  "email": "Email"
 }

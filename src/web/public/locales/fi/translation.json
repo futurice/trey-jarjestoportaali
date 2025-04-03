@@ -1,44 +1,63 @@
 {
-	"form": {
-		"info": "Hakemuksen perustiedot",
-		"name": {
-			"label": "Hakemuksen nimi",
-			"placeholder": "Kirjoita hakemuksen nimi"
-		},
-		"required": "Pakollinen tieto",
-		"description": {
-			"label": "Hakemuksen kuvaus",
-			"placeholder": "Kirjoita hakemuksen kuvaus"
-		},
-		"questions": "Kysymykset",
-		"question": {
-			"placeholder": "Kysymyksen otsikko",
-			"textField": "Tekstikenttä",
-			"add": "Lisää uusi kysymys"
-		},
-		"submit": "Tallenna hakemus",
-		"create": ""
-	},
-	"delete": "Poista",
-	"logout": "Kirjaudu ulos",
-	"navigation": {
-		"dashboard": "Dashboard",
-		"files": "Tiedostot",
-		"organizations": "Järjestöt"
-	},
-	"language": {
-		"fi": "Suomi",
-		"en": "Englanti"
-	},
-	"dashboard": {
-		"title": "Hallintapaneeli",
-		"availableSurveys": "Käytettävissä olevat kyselyt",
-		"noSurveys": "Ei käytettävissä olevia kyselyitä"
-	},
-	"common": {
-		"loading": "Ladataan...",
-		"all": "Kaikki"
-	},
-	"name": "Nimi",
-	"email": "Sähköposti"
+  "form": {
+    "info": "Hakemuksen perustiedot",
+    "name": {
+      "label": "Hakemuksen nimi",
+      "placeholder": "Kirjoita hakemuksen nimi"
+    },
+    "required": "Pakollinen tieto",
+    "description": {
+      "label": "Hakemuksen kuvaus",
+      "placeholder": "Kirjoita hakemuksen kuvaus"
+    },
+    "questions": "Kysymykset",
+    "question": {
+      "placeholder": "Kysymyksen otsikko",
+      "textField": "Tekstikenttä",
+      "add": "Lisää uusi kysymys"
+    },
+    "submit": "Tallenna hakemus",
+    "create": ""
+  },
+  "delete": "Poista",
+  "logout": "Kirjaudu ulos",
+  "navigation": {
+    "dashboard": "Dashboard",
+    "files": "Tiedostot",
+    "organizations": "Järjestöt"
+  },
+  "language": {
+    "fi": "Suomi",
+    "en": "Englanti"
+  },
+  "dashboard": {
+    "title": "Hallintapaneeli",
+    "availableSurveys": "Käytettävissä olevat kyselyt",
+    "noSurveys": "Ei käytettävissä olevia kyselyitä"
+  },
+  "common": {
+    "loading": "Ladataan...",
+    "all": "Kaikki"
+  },
+  "feedback": {
+    "title": "Anna palautetta",
+    "label": "Palaute",
+    "trigger": "Anna palautetta",
+    "cancel": "Peruuta",
+    "confirm": "Lähetä",
+    "addScreenshot": "Lisää kuvakaappaus",
+    "removeScreenshot": "Poista kuvakaappaus",
+    "name": "Nimi",
+    "namePlaceholder": "Kirjoita nimesi",
+    "email": "Sähköposti",
+    "emailPlaceholder": "Kirjoita sähköpostiosoitteesi",
+    "isRequired": "Pakollinen tieto",
+    "message": "Palaute",
+    "messageLabel": "Palaute",
+    "messagePlaceholder": "Löysitkö bugin? Haluatko antaa palautetta? Kerro meille!",
+    "successMessage": "Kiitos palautteestasi!",
+    "submit": "Lähetä"
+  },
+  "name": "Nimi",
+  "email": "Sähköposti"
 }
