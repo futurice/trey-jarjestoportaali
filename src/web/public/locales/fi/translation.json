@@ -36,5 +36,24 @@
 	},
 	"common": {
 		"loading": "Ladataan..."
+	},
+	"feedback": {
+		"title": "Anna palautetta",
+		"label": "Palaute",
+		"trigger": "Anna palautetta",
+		"cancel": "Peruuta",
+		"confirm": "Lähetä",
+		"addScreenshot": "Lisää kuvakaappaus",
+		"removeScreenshot": "Poista kuvakaappaus",
+		"name": "Nimi",
+		"namePlaceholder": "Kirjoita nimesi",
+		"email": "Sähköposti",
+		"emailPlaceholder": "Kirjoita sähköpostiosoitteesi",
+		"isRequired": "Pakollinen tieto",
+		"message": "Palaute",
+		"messageLabel": "Palaute",
+		"messagePlaceholder": "Löysitkö bugin? Haluatko antaa palautetta? Kerro meille!",
+		"successMessage": "Kiitos palautteestasi!",
+		"submit": "Lähetä"
 	}
 }
