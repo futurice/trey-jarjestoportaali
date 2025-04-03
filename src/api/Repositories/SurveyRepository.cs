@@ -50,6 +50,7 @@ public class SurveyRepository
 
     public async Task CreateSurveyAsync(Survey survey)
     {
+        survey.Id = Guid.NewGuid();
         await _surveyCollection.CreateItemAsync(survey);
     }
 
