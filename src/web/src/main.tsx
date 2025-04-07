@@ -6,13 +6,14 @@ import { StytchProvider } from "@stytch/react"
 import { StytchUIClient } from "@stytch/vanilla-js"
 import { t } from "i18next"
 import App from "./App.tsx"
+import config from "./config/index.ts"
 import "./i18n"
 import "./index.css"
 
-const stytch = new StytchUIClient("public-token-test-37e5d883-b15b-45cc-8615-a355d9bc27af")
+const stytch = new StytchUIClient(config.stytch.publicToken)
 
 Sentry.init({
-  dsn: "https://047c1dd7c269fc28cd01d8a19cb90843@o4509044461600768.ingest.de.sentry.io/4509044468613200",
+  dsn: config.sentry.dsn,
   integrations: [
     Sentry.feedbackAsyncIntegration({
       showBranding: false,
