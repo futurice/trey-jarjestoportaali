@@ -86,13 +86,16 @@ module api './app/api.bicep' = {
   }
 }
 
-// Give the API access to KeyVault
-module apiKeyVaultAccess './core/security/keyvault-access.bicep' = {
-  name: 'api-keyvault-access'
+// Give the API the Key Vault Secrets User role to access Key Vault
+module apiKeyVaultRoleAssignment 'core/security/resource-role.bicep' = {
+  name: 'api-keyvault-role'
   scope: rg
   params: {
-    keyVaultName: keyVault.outputs.name
     principalId: api.outputs.SERVICE_API_IDENTITY_PRINCIPAL_ID
+    // Key Vault Secrets User role
+    roleDefinitionId: '4633458b-17de-408a-b874-0445c86b69e6'
+    principalType: 'ServicePrincipal'
+    resourceId: keyVault.outputs.id
   }
 }
 
