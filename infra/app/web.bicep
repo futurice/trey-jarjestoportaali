@@ -5,6 +5,8 @@ param serviceName string = 'web'
 param appCommandLine string = 'pm2 serve /home/site/wwwroot --no-daemon --spa'
 param applicationInsightsName string = ''
 param appServicePlanId string
+param stytchPublicToken string = ''
+param sentryDsn string = ''
 
 module web '../core/host/appservice.bicep' = {
   name: '${name}-deployment'
@@ -17,6 +19,10 @@ module web '../core/host/appservice.bicep' = {
     runtimeName: 'node'
     runtimeVersion: '20-lts'
     tags: union(tags, { 'azd-service-name': serviceName })
+    appSettings: {
+      STYTCH_PUBLIC_TOKEN: stytchPublicToken
+      SENTRY_DSN: sentryDsn
+    }
   }
 }
 
