@@ -1,12 +1,13 @@
-name: Deploy to test environment
+name: Deploy to production
 on:
   workflow_dispatch:
   push:
     # Run when commits are pushed to mainline branch (main or master)
     # Set this to the mainline branch you are using
+    tags:
+      - 'release/*'
     branches:
-      - main
-      - feat/azd-template
+      - feat/release-pipeline
 
 # GitHub Actions workflow to deploy to Azure using azd
 # To configure required secrets for connecting to Azure, simply run `azd pipeline config`
@@ -20,7 +21,7 @@ permissions:
 jobs:
   build:
     runs-on: ubuntu-latest
-    environment: QA/testing
+    environment: Production
     env:
       AZURE_CLIENT_ID: ${{ vars.AZURE_CLIENT_ID }}
       AZURE_TENANT_ID: ${{ vars.AZURE_TENANT_ID }}
