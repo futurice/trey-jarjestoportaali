@@ -5,8 +5,8 @@ param serviceName string = 'web'
 param appCommandLine string = 'pm2 serve /home/site/wwwroot --no-daemon --spa'
 param applicationInsightsName string = ''
 param appServicePlanId string
-param stytchPublicToken string = ''
-param sentryDsn string = ''
+param stytchPublicToken string
+param sentryDsn string
 
 module web '../core/host/appservice.bicep' = {
   name: '${name}-deployment'

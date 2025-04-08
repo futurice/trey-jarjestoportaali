@@ -27,6 +27,8 @@ param apimServiceName string = ''
 param storageAccountName string = ''
 param storageContainerName string = 'trey'
 param storageSKU string = 'Standard_LRS'
+param stytchPublicToken string = ''
+param sentryDsn string = ''
 
 
 @description('Flag to use Azure API Management to mediate the calls between the Web frontend and the backend API')
@@ -59,6 +61,8 @@ module web './app/web.bicep' = {
     tags: tags
     applicationInsightsName: monitoring.outputs.applicationInsightsName
     appServicePlanId: appServicePlan.outputs.id
+    stytchPublicToken: stytchPublicToken
+    sentryDsn: sentryDsn
   }
 }
 
