@@ -21,12 +21,21 @@ export const Authenticate = () => {
 }
 
 export const ResetPassword = () => {
+  const navigate = useNavigate()
   const passwordResetToken = new URLSearchParams(window.location.search).get("token")
+
+  const callbacks: Callbacks = {
+    onEvent: (event) => {
+      if ((event.type === "AUTHENTICATE_FLOW_COMPLETE") || (event.type === "PASSWORD_RESET_BY_EMAIL" && event.data?.user)) {
+        navigate("/dashboard")
+      }
+    },
+  }
 
   if (passwordResetToken) {
     return (
       <LoginContainer>
-        <StytchPasswordReset config={STYTCH_CONFIG} passwordResetToken={passwordResetToken} />
+        <StytchPasswordReset config={STYTCH_CONFIG} passwordResetToken={passwordResetToken} callbacks={callbacks} />
       </LoginContainer>
     )
   }
