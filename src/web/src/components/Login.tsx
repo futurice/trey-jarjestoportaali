@@ -12,20 +12,30 @@ export const Authenticate = () => {
   if (token && !session) {
     stytchClient.magicLinks.authenticate(token, {
       session_duration_minutes: SESSION_DURATION_MINUTES,
+    }).then(() => {
+      return <Navigate to="/dashboard" />
     })
-    return <Navigate to="/dashboard" />
   }
 
   return <Navigate to="/" />
 }
 
 export const ResetPassword = () => {
+  const navigate = useNavigate()
   const passwordResetToken = new URLSearchParams(window.location.search).get("token")
+
+  const callbacks: Callbacks = {
+    onEvent: (event) => {
+      if ((event.type === "AUTHENTICATE_FLOW_COMPLETE") || (event.type === "PASSWORD_RESET_BY_EMAIL" && event.data?.user)) {
+        navigate("/dashboard")
+      }
+    },
+  }
 
   if (passwordResetToken) {
     return (
       <LoginContainer>
-        <StytchPasswordReset config={STYTCH_CONFIG} passwordResetToken={passwordResetToken} />
+        <StytchPasswordReset config={STYTCH_CONFIG} passwordResetToken={passwordResetToken} callbacks={callbacks} />
       </LoginContainer>
     )
   }

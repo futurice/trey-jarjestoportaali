@@ -1,4 +1,4 @@
-import { useState } from "react"
+import { useCallback, useState } from "react"
 import { useTranslation } from "react-i18next"
 import { Link as RouterLink, useLocation, useNavigate } from "react-router-dom"
 import { Language, Person } from "@mui/icons-material"
@@ -15,7 +15,7 @@ import {
   Toolbar,
   useTheme,
 } from "@mui/material"
-import { useStytchUser } from "@stytch/react"
+import { useStytch, useStytchUser } from "@stytch/react"
 import TreyLogo from "../../assets/TreyLogo"
 import i18n from "../../i18n"
 
@@ -135,6 +135,13 @@ const Navigation = () => {
   }
 
   const ProfileMenu = () => {
+    const stytch = useStytch()
+    const logout = useCallback(() => {
+      stytch.session.revoke().then(() => {
+        navigate("/login")
+      })
+    }, [stytch.session])
+
     return user ? (
       <Menu
         anchorEl={anchorEl}
@@ -173,7 +180,7 @@ const Navigation = () => {
         transformOrigin={{ horizontal: "right", vertical: "top" }}
         anchorOrigin={{ horizontal: "right", vertical: "bottom" }}
       >
-        <MenuItem onClick={() => navigate("/logout")}>
+        <MenuItem onClick={logout}>
           <ListItemIcon>
             <Logout fontSize="small" />
           </ListItemIcon>
