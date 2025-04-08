@@ -3,7 +3,7 @@ import { useTranslation } from "react-i18next"
 import { useParams } from "react-router-dom"
 import { Box, CircularProgress, Container, Typography } from "@mui/material"
 import { useStytch } from "@stytch/react"
-import { CompleteEvent } from "survey-core"
+import { CompleteEvent, getLocaleStrings } from "survey-core"
 import "survey-core/i18n/finnish"
 import "survey-core/survey-core.css"
 import { Model, Survey, SurveyModel } from "survey-react-ui"
@@ -19,7 +19,7 @@ export const SurveyPage = () => {
   const { surveyId } = useParams()
   const { user } = useAuth()
   const { session } = useStytch()
-  const { i18n } = useTranslation()
+  const { t, i18n } = useTranslation()
 
   const [surveyAnswerData, setSurveyAnswerData] = useState<SurveyAnswer | undefined>(undefined)
   const [surveyAnswers, setSurveyAnswers] = useState<SurveyModel | undefined>(undefined)
@@ -48,6 +48,16 @@ export const SurveyPage = () => {
     }
   }, [storageItemKey, surveyId, surveyResults])
 
+  // Hack to change the loading and completing survey messages
+  useEffect(() => {
+    const engLocale = getLocaleStrings("en");
+    const finLocale = getLocaleStrings("fi");
+    engLocale.loadingSurvey = "Loading..."
+    engLocale.completingSurvey = "Thank you for your responses!"
+    finLocale.loadingSurvey = "Ladataan..."
+    finLocale.completingSurvey = "Kiitos vastauksistasi!"
+  }, [])
+
   const saveToLocalStorage = (survey: SurveyModel) => {
     const data = survey.data;
     data.pageNo = survey.currentPageNo;
@@ -58,6 +68,7 @@ export const SurveyPage = () => {
     (survey: SurveyModel, options: CompleteEvent) => {
       options.showSaveInProgress()
       const dataObj: SurveyAnswer = {
+        id: surveyAnswerData?.id,
         surveyId: surveyId,
         organizationId: user?.organizationId ?? "",
         answerJson: JSON.stringify(survey.data),
@@ -74,7 +85,7 @@ export const SurveyPage = () => {
           })
       }
     },
-    [surveyAnswerService, surveyId, user?.organizationId],
+    [surveyAnswerData?.id, surveyAnswerService, surveyId, user?.organizationId],
   )
 
   const saveSurveyData = useCallback(
@@ -127,7 +138,7 @@ export const SurveyPage = () => {
     <Box sx={{ width: "100vw", overflow: "hidden", textAlign: "left" }}>
       <Survey model={surveyModel} />
       {responseSaved && (
-        <Typography>Vastaukset tallennettu: {responseSaved.toLocaleString()}</Typography>
+        <Typography>{t("responses_saved")}: {responseSaved.toLocaleString()}</Typography>
       )}
     </Box>
   )
