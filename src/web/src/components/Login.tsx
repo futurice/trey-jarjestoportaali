@@ -12,8 +12,9 @@ export const Authenticate = () => {
   if (token && !session) {
     stytchClient.magicLinks.authenticate(token, {
       session_duration_minutes: SESSION_DURATION_MINUTES,
+    }).then(() => {
+      return <Navigate to="/dashboard" />
     })
-    return <Navigate to="/dashboard" />
   }
 
   return <Navigate to="/" />

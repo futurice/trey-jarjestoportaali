@@ -14,13 +14,13 @@ export const Authenticated = ({children, requiredRoles = [], redirectUrl = "/"}:
     const location = useLocation();
     const { user } = useStytchUser();
 
-    // The role is stored in the trusted_metadata field of the user object in Stytch.
-    const role = user?.trusted_metadata.role as string ?? Roles.NONE;
-
     // If the user is not logged in, redirect to the login page.
     if (!user) {
         return <Navigate to="/login" state={{ from: location }} />;
     }
+
+    // The role is stored in the trusted_metadata field of the user object in Stytch.
+    const role = user?.trusted_metadata.role as string ?? Roles.NONE;
 
     // If the user is logged in but does not have the required role, redirect to the specified URL.
     if (requiredRoles.length > 0 && !requiredRoles.includes(role)) {

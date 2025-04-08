@@ -46,7 +46,7 @@ const App = () => {
         <Route
           path="registration"
           element={
-            <Authenticated requiredRoles={[Roles.NONE]} redirectUrl={"/registration"}>
+            <Authenticated requiredRoles={[Roles.NONE]} redirectUrl={"/dashboard"}>
               <Layout>
                 <Registration />
               </Layout>
