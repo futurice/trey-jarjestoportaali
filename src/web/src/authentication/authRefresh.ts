@@ -1,5 +1,6 @@
 import { useEffect } from "react"
 import { useStytch } from "@stytch/react"
+import { SESSION_DURATION_MINUTES } from "./stytchConfig"
 
 export const useRefreshSession = () => {
   const stytch = useStytch()
@@ -12,7 +13,7 @@ export const useRefreshSession = () => {
           session_jwt: tokens?.session_jwt ?? "",
         })
         stytch.session.authenticate({
-          session_duration_minutes: 30,
+          session_duration_minutes: SESSION_DURATION_MINUTES,
         })
       }
     }
