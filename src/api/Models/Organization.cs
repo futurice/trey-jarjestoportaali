@@ -28,8 +28,8 @@ public class Facility
 
 public class TimeRange
 {
-  public DateTime Start { get; set; }
-  public DateTime End { get; set; }
+  public DateTime? Start { get; set; }
+  public DateTime? End { get; set; }
 }
 
 public class Organization

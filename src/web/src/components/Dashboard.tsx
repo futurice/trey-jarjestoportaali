@@ -50,7 +50,10 @@ const Dashboard = () => {
             {surveys.map((survey) => (
               <ListItemButton component={Link} to={`/survey/${survey.id}`} key={survey.id}>
                 <ListItem key={survey.id} divider>
-                  <ListItemText primary={survey.name[currentLanguage]} secondary={survey.id} />
+                  <ListItemText
+                    primary={survey.name[currentLanguage]} 
+                    secondary={`${survey.responsePeriod?.start && new Date(survey.responsePeriod?.start).toLocaleDateString("fi-FI")} - ${survey.responsePeriod?.end && new Date(survey.responsePeriod?.end).toLocaleDateString("fi-FI")}`}
+                  />
                 </ListItem>
               </ListItemButton>
             ))}

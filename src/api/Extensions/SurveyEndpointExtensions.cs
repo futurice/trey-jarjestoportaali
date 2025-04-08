@@ -25,6 +25,10 @@ public static class SurveyEndpointExtensions
     {
         var user = await auth.GetUserFromContext(context);
         var surveys = await repo.GetAllSurveysAsync();
+        if (user.Role == TreyRole.Organization)
+        {
+            surveys = surveys.Where(s => s.ResponsePeriod == null || (s.ResponsePeriod.Start >= DateTime.UtcNow && s.ResponsePeriod.End <= DateTime.UtcNow));
+        }
         return Results.Ok(surveys);
     }
 
