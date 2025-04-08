@@ -21,10 +21,12 @@ export const SurveyPage = () => {
   const { session } = useStytch()
   const { i18n } = useTranslation()
 
-  const [surveyAnswers, setSurveyAnswers] = useState<SurveyAnswer | undefined>(undefined)
+  const [surveyAnswerData, setSurveyAnswerData] = useState<SurveyAnswer | undefined>(undefined)
+  const [surveyAnswers, setSurveyAnswers] = useState<SurveyModel | undefined>(undefined)
   const [responseSaved, setResponseSaved] = useState<Date | undefined>(undefined)
   const sessionJwt = useMemo(() => session?.getTokens()?.session_jwt, [session])
-
+  const storageItemKey = `trey-${surveyId}-${user?.organizationId ?? user?.id}`
+  
   const surveyService = useSurveyService(user?.role, sessionJwt)
   if (!surveyId) {
     throw new Error("Survey ID is required")
@@ -35,9 +37,22 @@ export const SurveyPage = () => {
   const { surveyResults } = useGetSurveyResults(surveyAnswerService)
 
   useEffect(() => {
+    const prevData = window.localStorage.getItem(storageItemKey) || null;
     const currentAnswers = surveyResults?.find((surveyAnswer) => surveyAnswer.surveyId === surveyId)
-    setSurveyAnswers(currentAnswers)
-  }, [surveyId, surveyResults])
+    setSurveyAnswerData(currentAnswers)
+    if (currentAnswers?.answerJson) {
+      setSurveyAnswers(currentAnswers?.answerJson ? JSON.parse(currentAnswers?.answerJson) : {})
+    } else if (prevData) {
+      const data = JSON.parse(prevData);
+      setSurveyAnswers(data);
+    }
+  }, [storageItemKey, surveyId, surveyResults])
+
+  const saveToLocalStorage = (survey: SurveyModel) => {
+    const data = survey.data;
+    data.pageNo = survey.currentPageNo;
+    window.localStorage.setItem(storageItemKey, JSON.stringify(data));
+}
 
   const completeSurvey = useCallback(
     (survey: SurveyModel, options: CompleteEvent) => {
@@ -65,25 +80,27 @@ export const SurveyPage = () => {
   const saveSurveyData = useCallback(
     (survey: SurveyModel) => {
       const data = survey.data
+      data.pageNo = survey.currentPageNo
+      setSurveyAnswers(data)
       if (!surveyAnswerService) {
         return
       }
       surveyAnswerService
         .save({
-          id: surveyAnswers?.id,
+          id: surveyAnswerData?.id,
           surveyId: surveyId,
-          organizationId: user?.organizationId ?? "",
+          organizationId: surveyAnswerData?.organizationId ?? user?.organizationId ?? "",
           answerJson: JSON.stringify(data),
         })
-        .then((data) => {
-          setSurveyAnswers(data)
+        .then((response) => {
+          setSurveyAnswerData(response)
           setResponseSaved(new Date())
         })
         .catch(() => {
           console.error("Failed to save survey data")
         })
     },
-    [surveyAnswerService, surveyAnswers?.id, surveyId, user?.organizationId],
+    [surveyAnswerData?.id, surveyAnswerData?.organizationId, surveyAnswerService, surveyId, user?.organizationId],
   )
 
   if (loading) {
@@ -97,14 +114,17 @@ export const SurveyPage = () => {
   const surveyModel = new Model(survey?.surveyJson)
   surveyModel.locale = i18n.language ?? "fi"
   surveyModel.applyTheme(surveyTheme)
-  surveyModel.data = surveyAnswers?.answerJson ? JSON.parse(surveyAnswers.answerJson) : {}
+  surveyModel.data = surveyAnswers ?? {}
+  if (surveyAnswers?.pageNo) {
+    surveyModel.currentPageNo = surveyAnswers?.pageNo
+  }
 
   surveyModel.onCurrentPageChanged.add(saveSurveyData)
   surveyModel.onComplete.add(completeSurvey)
-  surveyModel.onValueChanged.add(saveSurveyData)
+  surveyModel.onValueChanged.add(saveToLocalStorage)
 
   return (
-    <Box sx={{ width: "100vw", overflow: "hidden" }}>
+    <Box sx={{ width: "100vw", overflow: "hidden", textAlign: "left" }}>
       <Survey model={surveyModel} />
       {responseSaved && (
         <Typography>Vastaukset tallennettu: {responseSaved.toLocaleString()}</Typography>
