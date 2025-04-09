@@ -6,7 +6,17 @@ using Trey.Api.Middleware;
 using Trey.Api.Repositories;
 using Trey.Api.Services;
 
-var credential = new DefaultAzureCredential();
+var credentialOptions = new DefaultAzureCredentialOptions
+{
+    ExcludeSharedTokenCacheCredential = true,
+    ExcludeVisualStudioCredential = true,
+    ExcludeVisualStudioCodeCredential = true,
+    ExcludeAzureCliCredential = false,
+    ExcludeInteractiveBrowserCredential = true,
+    ManagedIdentityClientId = null, // Will automatically use the system-assigned managed identity
+    Diagnostics = { IsLoggingEnabled = true, IsAccountIdentifierLoggingEnabled = true, IsDistributedTracingEnabled = true },
+};
+var credential = new DefaultAzureCredential(credentialOptions);
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddSingleton(_ => new CosmosClient(builder.Configuration["AZURE_COSMOS_ENDPOINT"], credential,

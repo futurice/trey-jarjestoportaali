@@ -9,6 +9,8 @@ param principalId string = ''
 param enabledForDeployment bool = false
 @description('Allow the key vault to be used for template deployment.')
 param enabledForTemplateDeployment bool = false
+@description('Enable RBAC authorization for KeyVault')
+param enableRbacAuthorization bool = true
 
 resource keyVault 'Microsoft.KeyVault/vaults@2022-07-01' = {
   name: name
@@ -26,6 +28,7 @@ resource keyVault 'Microsoft.KeyVault/vaults@2022-07-01' = {
     ] : []
     enabledForDeployment: enabledForDeployment
     enabledForTemplateDeployment: enabledForTemplateDeployment
+    enableRbacAuthorization: enableRbacAuthorization
   }
 }
 
