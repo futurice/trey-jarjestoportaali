@@ -6,6 +6,7 @@ import { Layout } from "./components/Layout/Layout"
 import Login, { Authenticate, ResetPassword } from "./components/Login"
 import MyFiles from "./components/MyFiles"
 import { Registration } from "./components/Registration/Registration.tsx"
+import { SurveyPage } from "./components/Survey/Survey.tsx"
 
 const approvedRoles = [Roles.ORGANISATION, Roles.TREY_BOARD, Roles.ADMIN]
 
@@ -32,6 +33,16 @@ const App = () => {
             <Authenticated requiredRoles={approvedRoles} redirectUrl={"/registration"}>
               <Layout>
                 <MyFiles />
+              </Layout>
+            </Authenticated>
+          }
+        />
+        <Route
+          path="/survey/:surveyId"
+          element={
+            <Authenticated requiredRoles={approvedRoles} redirectUrl={"/registration"}>
+              <Layout>
+                <SurveyPage />
               </Layout>
             </Authenticated>
           }

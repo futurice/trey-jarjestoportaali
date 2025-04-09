@@ -3,10 +3,15 @@ export enum SurveyLanguage {
     Fi = "Fi"
 }
 
+interface TimeRange {
+    start?: Date;
+    end?: Date;
+}
 export interface Survey {
     id?: string;
     name: Record<SurveyLanguage, string>;
     surveyJson?: string;
+    responsePeriod?: TimeRange
 }
 
 export interface SurveyAnswer {

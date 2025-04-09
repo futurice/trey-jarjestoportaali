@@ -55,5 +55,6 @@
 		"messagePlaceholder": "Löysitkö bugin? Haluatko antaa palautetta? Kerro meille!",
 		"successMessage": "Kiitos palautteestasi!",
 		"submit": "Lähetä"
-	}
+	},
+	"responses_saved": "Vastaukset tallennettu"
 }

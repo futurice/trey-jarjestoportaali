@@ -55,5 +55,6 @@
 		"messagePlaceholder": "Did you find a bug? Do you want to give feedback? Tell us!",
 		"successMessage": "Thank you for your feedback!",
 		"submit": "Send"
-	}
+	},
+	"responses_saved": "Responses saved"
 }
