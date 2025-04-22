@@ -43,15 +43,15 @@ const Dashboard = () => {
         </Typography>
         {loading ? (
           <Typography>{t("common.loading")}</Typography>
-        ) : surveys.length === 0 ? (
+        ) : surveys?.length === 0 ? (
           <Typography>{t("dashboard.noSurveys")}</Typography>
         ) : (
           <List>
-            {surveys.map((survey) => (
+            {surveys?.map((survey) => (
               <ListItemButton component={Link} to={`/survey/${survey.id}`} key={survey.id}>
                 <ListItem key={survey.id} divider>
                   <ListItemText
-                    primary={survey.name[currentLanguage]} 
+                    primary={survey.name[currentLanguage]}
                     secondary={`${survey.responsePeriod?.start && new Date(survey.responsePeriod?.start).toLocaleDateString("fi-FI")} - ${survey.responsePeriod?.end && new Date(survey.responsePeriod?.end).toLocaleDateString("fi-FI")}`}
                   />
                 </ListItem>

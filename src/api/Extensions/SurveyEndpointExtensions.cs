@@ -23,11 +23,13 @@ public static class SurveyEndpointExtensions
     [RequiredRole(TreyRole.Admin, TreyRole.TreyBoard, TreyRole.Organization)]
     private static async Task<IResult> GetAllSurveys(SurveyRepository repo, IAuthService auth, HttpContext context)
     {
+        context.Response.Headers.CacheControl = "public, max-age=300"; // 5 minutes cache duration
+        context.Response.Headers.Vary = "User-Agent";
         var user = await auth.GetUserFromContext(context);
         var surveys = await repo.GetAllSurveysAsync();
         if (user.Role == TreyRole.Organization)
         {
-            surveys = surveys.Where(s => s.ResponsePeriod == null || (s.ResponsePeriod.Start >= DateTime.UtcNow && s.ResponsePeriod.End <= DateTime.UtcNow));
+            surveys = surveys.Where(s => s.ResponsePeriod == null || (s.ResponsePeriod.Start <= DateTime.UtcNow && s.ResponsePeriod.End >= DateTime.UtcNow));
         }
         return Results.Ok(surveys);
     }
@@ -43,6 +45,8 @@ public static class SurveyEndpointExtensions
     [RequiredRole(TreyRole.Admin, TreyRole.TreyBoard, TreyRole.Organization)]
     private static async Task<IResult> GetSurveyById(Guid id, SurveyRepository repo, IAuthService auth, HttpContext context)
     {
+        context.Response.Headers.CacheControl = "public, max-age=30";
+        context.Response.Headers.Vary = "User-Agent";
         var user = await auth.GetUserFromContext(context);
         var survey = await repo.GetSurveyByIdAsync(id);
         return survey is null ? Results.NotFound() : Results.Ok(survey);
