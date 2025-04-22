@@ -2,11 +2,11 @@ namespace Trey.Api.Models;
 
 public enum TreyRole
 {
+    None, // User has not registered yet
     PendingApproval, // User has registered but is pending approval
     Organization,
     TreyBoard,
     Admin,
-    None, // User has not registered yet
 }
 
 public static class TreyRoleExtensions
