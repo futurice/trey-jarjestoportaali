@@ -26,7 +26,7 @@ interface NavigationRoute {
 
 const navigationRoutes = [
   { name: "navigation.dashboard", href: "/dashboard" },
-  { name: "navigation.files", href: "/my-files" },
+  // { name: "navigation.files", href: "/my-files" },
 ] as NavigationRoute[]
 
 const NavigationItem = ({ item, isOpen }: { item: NavigationRoute; isOpen: boolean }) => {
