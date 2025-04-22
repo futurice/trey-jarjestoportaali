@@ -26,7 +26,7 @@ export const SurveyPage = () => {
   const [responseSaved, setResponseSaved] = useState<Date | undefined>(undefined)
   const sessionJwt = useMemo(() => session?.getTokens()?.session_jwt, [session])
   const storageItemKey = `trey-${surveyId}-${user?.organizationId ?? user?.id}`
-  
+
   const surveyService = useSurveyService(user?.role, sessionJwt)
   if (!surveyId) {
     throw new Error("Survey ID is required")
@@ -62,7 +62,7 @@ export const SurveyPage = () => {
     const data = survey.data;
     data.pageNo = survey.currentPageNo;
     window.localStorage.setItem(storageItemKey, JSON.stringify(data));
-}
+  }
 
   const completeSurvey = useCallback(
     (survey: SurveyModel, options: CompleteEvent) => {
