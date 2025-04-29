@@ -3,21 +3,54 @@ import { StytchLogin, StytchPasswordReset, useStytch, useStytchSession } from "@
 import { type Callbacks } from "@stytch/vanilla-js"
 import { SESSION_DURATION_MINUTES, STYTCH_CONFIG } from "../authentication/stytchConfig"
 import { LoginContainer } from "../components/LoginContainer/LoginContainer"
+import toast from "react-hot-toast"
+import { CircularProgress } from "@mui/material"
+import { useCallback, useEffect, useRef } from "react"
+import { useTranslation } from "react-i18next"
 
 export const Authenticate = () => {
   const stytchClient = useStytch()
   const { session } = useStytchSession()
+  const navigate = useNavigate();
+  const hasCalledAuthenticate = useRef(false);
+  const { t } = useTranslation();
 
   const token = new URLSearchParams(window.location.search).get("token")
-  if (token && !session) {
-    stytchClient.magicLinks.authenticate(token, {
-      session_duration_minutes: SESSION_DURATION_MINUTES,
-    }).then(() => {
-      return <Navigate to="/dashboard" />
-    })
-  }
 
-  return <Navigate to="/" />
+  const authenticate = useCallback(async () => {
+    if (hasCalledAuthenticate.current) return;
+    hasCalledAuthenticate.current = true;
+    if (token) {
+      try {
+        await stytchClient.magicLinks.authenticate(token, {
+          session_duration_minutes: SESSION_DURATION_MINUTES,
+        })
+        navigate("/dashboard")
+      } catch {
+        toast.error(t("error.loginLinkExpired"))
+        navigate("/")
+      }
+    } else {
+      toast.error(t("error.noToken"))
+      navigate("/")
+    }
+  }, [token, stytchClient.magicLinks, navigate, t])
+
+  useEffect(() => {
+    if (token && !session) {
+      authenticate()
+    } else if (session) {
+      navigate("/dashboard")
+    } else {
+      toast.error(t("error.noToken"))
+      navigate("/")
+    }
+  }, [token, session, navigate, authenticate, t])
+  return (
+    <LoginContainer>
+      <CircularProgress />
+    </LoginContainer>
+  )
 }
 
 export const ResetPassword = () => {
