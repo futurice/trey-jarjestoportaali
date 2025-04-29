@@ -14,6 +14,8 @@ import { useSurveyService } from "../../hooks/useSurveyService"
 import { useGetSurveyById } from "../../hooks/useSurveys"
 import { SurveyAnswer } from "../../models/survey"
 import surveyTheme from "./SurveyTheme"
+import toast from "react-hot-toast"
+import "./Survey.css"
 
 export const SurveyPage = () => {
   const { surveyId } = useParams()
@@ -41,7 +43,7 @@ export const SurveyPage = () => {
     const currentAnswers = surveyResults?.find((surveyAnswer) => surveyAnswer.surveyId === surveyId)
     setSurveyAnswerData(currentAnswers)
     if (currentAnswers?.answerJson) {
-      setSurveyAnswers(currentAnswers?.answerJson ? JSON.parse(currentAnswers?.answerJson) : {})
+      setSurveyAnswers(JSON.parse(currentAnswers.answerJson))
     } else if (prevData) {
       const data = JSON.parse(prevData);
       setSurveyAnswers(data);
@@ -56,13 +58,15 @@ export const SurveyPage = () => {
     engLocale.completingSurvey = "Thank you for your responses!"
     finLocale.loadingSurvey = "Ladataan..."
     finLocale.completingSurvey = "Kiitos vastauksistasi!"
+    engLocale.saveData = "Save answers"
+    finLocale.saveData = "Tallenna"
   }, [])
 
-  const saveToLocalStorage = (survey: SurveyModel) => {
+  const saveToLocalStorage = useCallback((survey: SurveyModel) => {
     const data = survey.data;
     data.pageNo = survey.currentPageNo;
     window.localStorage.setItem(storageItemKey, JSON.stringify(data));
-  }
+  }, [storageItemKey]);
 
   const completeSurvey = useCallback(
     (survey: SurveyModel, options: CompleteEvent) => {
@@ -91,27 +95,33 @@ export const SurveyPage = () => {
   const saveSurveyData = useCallback(
     (survey: SurveyModel) => {
       const data = survey.data
-      data.pageNo = survey.currentPageNo
-      setSurveyAnswers(data)
-      if (!surveyAnswerService) {
+      data.pageNo = survey.currentPageNo ?? 0
+      if (!data) {
         return
       }
-      surveyAnswerService
-        .save({
-          id: surveyAnswerData?.id,
-          surveyId: surveyId,
-          organizationId: surveyAnswerData?.organizationId ?? user?.organizationId ?? "",
-          answerJson: JSON.stringify(data),
-        })
-        .then((response) => {
-          setSurveyAnswerData(response)
-          setResponseSaved(new Date())
-        })
-        .catch(() => {
-          console.error("Failed to save survey data")
-        })
+      setSurveyAnswers(data)
+      window.localStorage.setItem(storageItemKey, JSON.stringify(data));
+      if (surveyAnswerService) {
+        surveyAnswerService
+          .save({
+            id: surveyAnswerData?.id,
+            surveyId: surveyId,
+            organizationId: surveyAnswerData?.organizationId ?? user?.organizationId ?? "",
+            answerJson: JSON.stringify(data),
+          })
+          .then((response) => {
+            setSurveyAnswerData(response)
+            setResponseSaved(new Date())
+            toast.success(t("responses_saved_to_server"))
+          })
+          .catch((e) => {
+            console.error("Failed to save survey data")
+            console.error(e)
+            toast.error(t("responses_save_failed"))
+          })
+      }
     },
-    [surveyAnswerData?.id, surveyAnswerData?.organizationId, surveyAnswerService, surveyId, user?.organizationId],
+    [storageItemKey, surveyAnswerData?.id, surveyAnswerData?.organizationId, surveyAnswerService, surveyId, t, user?.organizationId],
   )
 
   if (loading) {
@@ -133,6 +143,22 @@ export const SurveyPage = () => {
   surveyModel.onCurrentPageChanged.add(saveSurveyData)
   surveyModel.onComplete.add(completeSurvey)
   surveyModel.onValueChanged.add(saveToLocalStorage)
+
+  surveyModel.addNavigationItem({
+    id: "sv-nav-save",
+    // To set the button text, use the `title` property  if you don't use localization:
+    // title: "Clear Page",
+    // ... or the `locTitleName` property if you do use localization:
+    locTitleName: "saveData",
+    action: () => {
+      if (surveyModel) {
+        saveSurveyData(surveyModel)
+      }
+    },
+    css: "nav-button",
+    innerCss: "sd-btn nav-input"
+  });
+
 
   return (
     <Box sx={{ width: "100vw", overflow: "hidden", textAlign: "left" }}>
