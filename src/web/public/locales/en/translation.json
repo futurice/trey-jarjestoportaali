@@ -56,5 +56,16 @@
 		"successMessage": "Thank you for your feedback!",
 		"submit": "Send"
 	},
-	"responses_saved": "Responses saved"
+	"responses_saved": "Responses saved",
+	"responses_saved_to_server": "Responses saved to the server successfully!",
+	"responses_save_failed": "Failed to save responses to the server. The responses are still saved locally.",
+	"error": {
+		"noToken": "No login token provided. Please log in again.",
+		"loginLinkExpired": "The login link has expired or already used. Please request a new link by logging in again."
+	},
+	"no_organization": {
+		"title": "No association found",
+		"error": "Your account is not linked to any association. If you are a representative of an association, please contact TREY's association sector to add the missing information.",
+		"error2": "Please also ensure that you are logged in with the email address of your association to which the account creation notification was sent."
+	}
 }
