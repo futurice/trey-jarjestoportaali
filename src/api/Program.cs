@@ -1,3 +1,5 @@
+using System.Text.Json;
+using System.Text.Json.Serialization;
 using Azure.Identity;
 using Azure.Storage.Blobs;
 using Microsoft.Azure.Cosmos;
@@ -19,13 +21,18 @@ var credentialOptions = new DefaultAzureCredentialOptions
 var credential = new DefaultAzureCredential(credentialOptions);
 var builder = WebApplication.CreateBuilder(args);
 
+JsonSerializerOptions options = new()
+{
+    DefaultIgnoreCondition = JsonIgnoreCondition.Never,
+    WriteIndented = true,
+    PropertyNameCaseInsensitive = true,
+    PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
+};
+
 builder.Services.AddSingleton(_ => new CosmosClient(builder.Configuration["AZURE_COSMOS_ENDPOINT"], credential,
     new CosmosClientOptions
     {
-        SerializerOptions = new CosmosSerializationOptions
-        {
-            PropertyNamingPolicy = CosmosPropertyNamingPolicy.CamelCase
-        }
+        UseSystemTextJsonSerializerWithOptions = options
     }));
 
 builder.Services.AddSingleton<BlobServiceClient>(_ =>

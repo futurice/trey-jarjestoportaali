@@ -10,7 +10,7 @@ export const Layout: React.FC<ILayout> = ({ children }) => {
   return (
     <Box sx={{ width: "100vw", display: "flex", flexDirection: "column", height: "100vh" }}>
       <Header />
-      <Container sx={{ backgroundColor: "white", minWidth: "100vw", pb: 5 }}>{children}</Container>
+      <Container sx={{ backgroundColor: "white", minWidth: "100vw", p: 5 }}>{children}</Container>
     </Box>
   )
 }

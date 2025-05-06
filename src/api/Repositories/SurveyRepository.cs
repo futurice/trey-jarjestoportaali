@@ -6,11 +6,13 @@ namespace Trey.Api.Repositories;
 public class SurveyRepository
 {
     private readonly Container _surveyCollection;
+    private readonly Container _surveyResponseCollection;
 
     public SurveyRepository(CosmosClient client, IConfiguration configuration)
     {
         var database = client.GetDatabase(configuration["AZURE_COSMOS_DATABASE_NAME"]);
         _surveyCollection = database.GetContainer("Survey");
+        _surveyResponseCollection = database.GetContainer("SurveyResponse");
     }
 
     public async Task<IEnumerable<Survey>> GetAllSurveysAsync()
@@ -26,11 +28,11 @@ public class SurveyRepository
         return surveys;
     }
 
-    public async Task<IEnumerable<Survey>> GetAllSurveysForOrgAsync(string organizationId)
+    public async Task<IEnumerable<SurveyAnswer>> GetAllSurveysForOrgAsync(string organizationId)
     {
-        var surveys = new List<Survey>();
+        var surveys = new List<SurveyAnswer>();
         // Query only surveys for the organization
-        var iterator = _surveyCollection.GetItemQueryIterator<Survey>(
+        var iterator = _surveyResponseCollection.GetItemQueryIterator<SurveyAnswer>(
             new QueryDefinition("SELECT * FROM c WHERE c.organizationId = @organizationId")
                 .WithParameter("@organizationId", organizationId));
         while (iterator.HasMoreResults)
@@ -50,6 +52,7 @@ public class SurveyRepository
 
     public async Task CreateSurveyAsync(Survey survey)
     {
+        survey.Id = Guid.NewGuid();
         await _surveyCollection.CreateItemAsync(survey);
     }
 
@@ -67,14 +70,20 @@ public class SurveyRepository
 
     public async Task CreateSurveyAnswerAsync(SurveyAnswer answer)
     {
-        await _surveyCollection.CreateItemAsync(answer);
+        answer.Id = Guid.NewGuid();
+        await _surveyResponseCollection.CreateItemAsync(answer);
+    }
+
+    public async Task<SurveyAnswer> UpdateSurveyAnswerAsync(SurveyAnswer answer)
+    {
+        return await _surveyResponseCollection.UpsertItemAsync(answer);
     }
 
     public async Task<IEnumerable<SurveyAnswer>> GetSurveyAnswersAsync(Guid surveyId)
     {
         var answers = new List<SurveyAnswer>();
         var iterator =
-            _surveyCollection.GetItemQueryIterator<SurveyAnswer>(
+            _surveyResponseCollection.GetItemQueryIterator<SurveyAnswer>(
                 new QueryDefinition("SELECT * FROM c WHERE c.surveyId = @surveyId")
                     .WithParameter("@surveyId", surveyId.ToString()));
         while (iterator.HasMoreResults)
