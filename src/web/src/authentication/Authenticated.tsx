@@ -23,7 +23,7 @@ export const Authenticated = ({ children, requiredRoles = [], redirectUrl = "/" 
     const role = user?.trusted_metadata.role as string ?? Roles.NONE;
     const organizationId = user?.trusted_metadata.organizationId as string ?? null;
 
-    if (!organizationId) {
+    if (!organizationId && role !== Roles.ADMIN && role !== Roles.TREY_BOARD) {
         // If the user is logged in but does not have an organization ID, redirect to the no organization page.
         return <Navigate to="/error/no-organization" state={{ from: location }} />;
     }
