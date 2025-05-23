@@ -34,8 +34,8 @@ internal sealed class AuthService(ConsumerClient client) : IAuthService
         return new TreyUser
         {
             Name = user.Name.FirstName + " " + user.Name.LastName,
-            OrganizationId = metadata["organizationId"] ?? "",
-            Role = metadata["role"].ToTreyRole()
+            OrganizationId = metadata.TryGetValue("organizationId", out string? value) ? value : "",
+            Role = metadata.TryGetValue("role", out string? role) ? role.ToTreyRole() : TreyRole.None,
         };
     }
 
