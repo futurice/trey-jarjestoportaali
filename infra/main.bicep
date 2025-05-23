@@ -136,6 +136,16 @@ module storageContribRoleFunction 'core/security/role.bicep' = {
   }
 }
 
+module storageReaderRoleFunction 'core/security/role.bicep' = {
+  scope: rg
+  name: 'storage-readerrole-api'
+  params: {
+    principalId: api.outputs.SERVICE_API_IDENTITY_PRINCIPAL_ID
+    roleDefinitionId: '2a2b9908-6ea1-4ae2-8e65-a410df84e7d1'
+    principalType: 'ServicePrincipal'
+  }
+}
+
 // The application database
 module cosmos './app/db.bicep' = {
   name: 'cosmos'
