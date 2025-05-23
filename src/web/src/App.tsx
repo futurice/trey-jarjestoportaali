@@ -1,71 +1,72 @@
-import { BrowserRouter, Route, Routes } from "react-router-dom"
+import React from 'react';
+import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import { AuthProvider, useAuth } from './contexts/AuthContext';
+import { LoginForm } from './components/auth/LoginForm';
+import { UserManagement } from './components/admin/UserManagement';
+import { Box, CircularProgress } from '@mui/material';
 import "./App.css"
-import { Authenticated, Roles, useRefreshSession } from "./authentication"
+import { Roles } from "./authentication/Roles"
 import Dashboard from "./components/Dashboard"
 import { Layout } from "./components/Layout/Layout"
-import Login, { Authenticate, ResetPassword } from "./components/Login"
 import MyFiles from "./components/MyFiles"
 import { Registration } from "./components/Registration/Registration.tsx"
 import { SurveyPage } from "./components/Survey/Survey.tsx"
+import { EmailVerification } from './components/auth/EmailVerification';
 
 const approvedRoles = [Roles.ORGANISATION, Roles.TREY_BOARD, Roles.ADMIN]
 
-const App = () => {
-  useRefreshSession()
+const PrivateRoute: React.FC<{ children: React.ReactNode; requiredRoles?: Roles[] }> = ({ children, requiredRoles = [] }) => {
+  const { user, loading } = useAuth();
 
+  if (loading) {
+    return (
+      <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh' }}>
+        <CircularProgress />
+      </Box>
+    );
+  }
+
+  if (!user) {
+    return <Navigate to="/login" />;
+  }
+
+  if (requiredRoles.length > 0 && !requiredRoles.includes(user.role)) {
+    return <Navigate to="/dashboard" />;
+  }
+
+  return <>{children}</>;
+};
+
+const App: React.FC = () => {
   return (
-    <BrowserRouter>
-      <Routes>
-        <Route
-          path="/dashboard"
-          element={
-            <Authenticated requiredRoles={approvedRoles} redirectUrl={"/registration"}>
+    <Router>
+      <AuthProvider>
+        <Routes>
+          <Route path="/login" element={<LoginForm />} />
+          <Route path="/register" element={<Registration />} />
+          <Route path="/verify-email" element={<EmailVerification />} />
+          
+          <Route path="/" element={
+            <PrivateRoute>
               <Layout>
-                <Dashboard />
+                <Routes>
+                  <Route path="/" element={<Navigate to="/dashboard" />} />
+                  <Route path="/dashboard" element={<Dashboard />} />
+                  <Route path="/my-files" element={<MyFiles />} />
+                  <Route path="/surveys/:id" element={<SurveyPage />} />
+                  <Route path="/admin/users" element={
+                    <PrivateRoute requiredRoles={[Roles.ADMIN]}>
+                      <UserManagement />
+                    </PrivateRoute>
+                  } />
+                </Routes>
               </Layout>
-            </Authenticated>
-          }
-        />
+            </PrivateRoute>
+          } />
+        </Routes>
+      </AuthProvider>
+    </Router>
+  );
+};
 
-        <Route
-          path="/my-files"
-          element={
-            <Authenticated requiredRoles={approvedRoles} redirectUrl={"/registration"}>
-              <Layout>
-                <MyFiles />
-              </Layout>
-            </Authenticated>
-          }
-        />
-        <Route
-          path="/survey/:surveyId"
-          element={
-            <Authenticated requiredRoles={approvedRoles} redirectUrl={"/registration"}>
-              <Layout>
-                <SurveyPage />
-              </Layout>
-            </Authenticated>
-          }
-        />
-
-        <Route path="/login" element={<Login />} />
-        <Route path="/authenticate" element={<Authenticate />} />
-        <Route path="/reset-password" element={<ResetPassword />} />
-        <Route path="/" element={<Login />} />
-
-        <Route
-          path="registration"
-          element={
-            <Authenticated requiredRoles={[Roles.NONE]} redirectUrl={"/dashboard"}>
-              <Layout>
-                <Registration />
-              </Layout>
-            </Authenticated>
-          }
-        />
-      </Routes>
-    </BrowserRouter>
-  )
-}
-
-export default App
+export default App;

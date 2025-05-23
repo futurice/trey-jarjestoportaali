@@ -1,8 +1,12 @@
+using System.Text;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using Azure.Identity;
 using Azure.Storage.Blobs;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.Azure.Cosmos;
+using Microsoft.IdentityModel.Tokens;
+using Trey.Api.Endpoints;
 using Trey.Api.Extensions;
 using Trey.Api.Middleware;
 using Trey.Api.Repositories;
@@ -60,14 +64,33 @@ builder.Services.AddSingleton<BlobContainerClient>(serviceProvider =>
 builder.Services.AddSingleton<FileService>();
 builder.Services.AddSingleton<OrganizationsRepository>();
 builder.Services.AddSingleton<SurveyRepository>();
+builder.Services.AddSingleton<UsersRepository>();
+builder.Services.AddSingleton<IAuthService, AuthService>();
 
 builder.Services.AddCors();
 builder.Services.AddApplicationInsightsTelemetry(builder.Configuration);
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-builder.Services.AddStytchClient(builder.Configuration);
-builder.Services.AddTreyAuth();
+// Add JWT Authentication
+builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+    .AddJwtBearer(options =>
+    {
+        options.TokenValidationParameters = new TokenValidationParameters
+        {
+            ValidateIssuer = true,
+            ValidateAudience = true,
+            ValidateLifetime = true,
+            ValidateIssuerSigningKey = true,
+            ValidIssuer = builder.Configuration["JWT_ISSUER"],
+            ValidAudience = builder.Configuration["JWT_AUDIENCE"],
+            IssuerSigningKey = new SymmetricSecurityKey(
+                Encoding.UTF8.GetBytes(builder.Configuration["JWT_SECRET"] ?? throw new ArgumentNullException("JWT_SECRET")))
+        };
+    });
+
+builder.Services.AddAuthorization();
+
 var app = builder.Build();
 
 app.UseCors(policy =>
@@ -77,6 +100,10 @@ app.UseCors(policy =>
     policy.AllowAnyHeader();
     policy.AllowAnyMethod();
 });
+
+// Add authentication and authorization middleware
+app.UseAuthentication();
+app.UseAuthorization();
 
 // Add role authorization middleware
 app.UseMiddleware<RoleAuthorizationMiddleware>();
@@ -108,5 +135,7 @@ app.MapGroup("/surveys")
     .MapSurveyEndpoints()
     .WithOpenApi()
     .DisableAntiforgery(); // FIXME - remove this line when antiforgery is implemented
+
+app.MapAuthEndpoints();
 
 app.Run();

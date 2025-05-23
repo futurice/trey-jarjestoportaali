@@ -84,8 +84,9 @@ module api './app/api.bicep' = {
       AZURE_COSMOS_ENDPOINT: cosmos.outputs.endpoint
       AZURE_STORAGE_BLOB_ENDPOINT: storage.outputs.primaryEndpoints.blob
       API_ALLOW_ORIGINS: web.outputs.SERVICE_WEB_URI
-      STYTCH_PROJECT_ID: '@Microsoft.KeyVault(VaultName=${keyVault.outputs.name};SecretName=STYTCH-PROJECT-ID)'
-      STYTCH_PROJECT_SECRET: '@Microsoft.KeyVault(VaultName=${keyVault.outputs.name};SecretName=STYTCH-PROJECT-SECRET)'
+      JWT_SECRET: '@Microsoft.KeyVault(VaultName=${keyVault.outputs.name};SecretName=JWT-SECRET)'
+      JWT_ISSUER: '@Microsoft.KeyVault(VaultName=${keyVault.outputs.name};SecretName=JWT-ISSUER)'
+      JWT_AUDIENCE: '@Microsoft.KeyVault(VaultName=${keyVault.outputs.name};SecretName=JWT-AUDIENCE)'
     }
   }
 }
@@ -237,6 +238,17 @@ module apimApi './app/apim-api.bicep' = if (useAPIM) {
     webFrontendUrl: web.outputs.SERVICE_WEB_URI
     apiBackendUrl: api.outputs.SERVICE_API_URI
     apiAppName: api.outputs.SERVICE_API_NAME
+  }
+}
+
+// Add JWT secrets to Key Vault
+module jwtSecrets './core/security/jwt-secrets.bicep' = {
+  name: 'jwt-secrets'
+  scope: rg
+  params: {
+    keyVaultName: keyVault.outputs.name
+    apiName: api.outputs.SERVICE_API_NAME
+    webUri: web.outputs.SERVICE_WEB_URI
   }
 }
 
