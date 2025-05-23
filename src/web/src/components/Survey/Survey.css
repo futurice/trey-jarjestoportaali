@@ -1,0 +1,16 @@
+.nav-button {
+  margin-left: auto;
+  margin-right: 0;
+  width: fit-content;
+}
+
+.nav-input {
+  color: #ffffff;
+  background-color: #006069;
+  padding: calc(2 * (var(--sjs-base-unit, var(--base-unit, 8px))))
+    calc(4 * (var(--sjs-base-unit, var(--base-unit, 8px)))) !important;
+}
+
+.nav-input:hover {
+  background-color: #007e8a;
+}

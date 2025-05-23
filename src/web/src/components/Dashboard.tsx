@@ -47,16 +47,20 @@ const Dashboard = () => {
           <Typography>{t("dashboard.noSurveys")}</Typography>
         ) : (
           <List>
-            {surveys?.map((survey) => (
-              <ListItemButton component={Link} to={`/survey/${survey.id}`} key={survey.id}>
-                <ListItem key={survey.id} divider>
-                  <ListItemText
-                    primary={survey.name[currentLanguage]}
-                    secondary={`${survey.responsePeriod?.start && new Date(survey.responsePeriod?.start).toLocaleDateString("fi-FI")} - ${survey.responsePeriod?.end && new Date(survey.responsePeriod?.end).toLocaleDateString("fi-FI")}`}
-                  />
-                </ListItem>
-              </ListItemButton>
-            ))}
+            {surveys?.map((survey) => {
+              const responsePeriodStart = survey.responsePeriod?.start && new Date(survey.responsePeriod?.start).toLocaleDateString("fi-FI");
+              const responsePeriodEnd = survey.responsePeriod?.end && new Date(survey.responsePeriod?.end).toLocaleDateString("fi-FI");
+              return (
+                <ListItemButton component={Link} to={`/survey/${survey.id}`} key={survey.id}>
+                  <ListItem key={survey.id} divider>
+                    <ListItemText
+                      primary={survey.name[currentLanguage]}
+                      secondary={responsePeriodStart && responsePeriodEnd ? `${responsePeriodStart} - ${responsePeriodEnd}` : ""}
+                    />
+                  </ListItem>
+                </ListItemButton>
+              )
+            })}
           </List>
         )}
       </Paper>

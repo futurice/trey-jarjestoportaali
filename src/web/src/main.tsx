@@ -9,6 +9,7 @@ import App from "./App.tsx"
 import config from "./config/index.ts"
 import "./i18n"
 import "./index.css"
+import { Toaster } from "react-hot-toast"
 
 const stytch = new StytchUIClient(config.stytch.publicToken)
 
@@ -55,6 +56,22 @@ createRoot(document.getElementById("root")!).render(
     <CssBaseline />
     <StytchProvider stytch={stytch}>
       <ThemeProvider theme={theme}>
+        <Toaster
+          position="top-right"
+          reverseOrder={false}
+          toastOptions={{
+            error: {
+              duration: 10000,
+              removeDelay: 2000,
+            },
+            success: {
+              duration: 3000,
+            },
+          }}
+          containerStyle={{
+            textAlign: "left",
+          }}
+        />
         <App />
       </ThemeProvider>
     </StytchProvider>
