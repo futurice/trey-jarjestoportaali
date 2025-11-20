@@ -1,9 +1,7 @@
 using System.ComponentModel.DataAnnotations;
 using System.Net;
 using Microsoft.AspNetCore.Mvc;
-using Trey.Api.Models;
-using Trey.Api.Repositories;
-using static Supabase.Gotrue.StatelessClient;
+using Newtonsoft.Json;
 
 namespace Trey.Api.Extensions;
 
@@ -28,12 +26,12 @@ public static class AuthEndpointsExtensions
       return TypedResults.Ok(emailResponse);
     }
     var userEmailResponse = await supabase.Rpc("email_for_username", new { p_username = loginData.Username });
+    var userEmail = JsonConvert.DeserializeObject<string>(userEmailResponse?.Content?.ToString() ?? "");
     if (userEmailResponse?.Content == null || userEmailResponse.ResponseMessage?.StatusCode == HttpStatusCode.NotFound)
     {
       return TypedResults.Unauthorized();
     }
-    var userEmail = userEmailResponse.Content.ToString().Trim('"');
-    if (string.IsNullOrEmpty(userEmail))
+    else if (string.IsNullOrEmpty(userEmail) || !email.IsValid(userEmail))
     {
       return TypedResults.Unauthorized();
     }

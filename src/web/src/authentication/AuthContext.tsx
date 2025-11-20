@@ -126,7 +126,6 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         })
         .catch((err) => {
           toast.error("Error authorizing user: " + err.message)
-          setIsLoading(false)
         })
         .finally(() => setIsLoading(false))
     },
