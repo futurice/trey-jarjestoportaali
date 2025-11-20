@@ -1,110 +1,295 @@
+import { useState } from "react"
 import { Navigate, useNavigate } from "react-router-dom"
-import { StytchLogin, StytchPasswordReset, useStytch, useStytchSession } from "@stytch/react"
-import { type Callbacks } from "@stytch/vanilla-js"
-import { SESSION_DURATION_MINUTES, STYTCH_CONFIG } from "../authentication/stytchConfig"
+import { Person, VisibilityOff, Visibility, Lock } from "@mui/icons-material"
+import {
+  Alert,
+  Box,
+  Card,
+  CardContent,
+  CircularProgress,
+  Container,
+  IconButton,
+  InputAdornment,
+  TextField,
+  Typography,
+  Link,
+} from "@mui/material"
+import { useAuth } from "../authentication/AuthContext"
 import { LoginContainer } from "../components/LoginContainer/LoginContainer"
-import toast from "react-hot-toast"
-import { CircularProgress } from "@mui/material"
-import { useCallback, useEffect, useRef } from "react"
-import { useTranslation } from "react-i18next"
+import { LoginButton } from "./Button/LoginButton"
 
-export const Authenticate = () => {
-  const stytchClient = useStytch()
-  const { session } = useStytchSession()
-  const navigate = useNavigate();
-  const hasCalledAuthenticate = useRef(false);
-  const { t } = useTranslation();
+const Login = () => {
+  const { isLoading, signIn, session } = useAuth()
 
-  const token = new URLSearchParams(window.location.search).get("token")
+  if (isLoading) {
+    return <CircularProgress />
+  } else if (session?.user) {
+    return <Navigate to="/dashboard" />
+  }
 
-  const authenticate = useCallback(async () => {
-    if (hasCalledAuthenticate.current) return;
-    hasCalledAuthenticate.current = true;
-    if (token) {
-      try {
-        await stytchClient.magicLinks.authenticate(token, {
-          session_duration_minutes: SESSION_DURATION_MINUTES,
-        })
-        navigate("/dashboard")
-      } catch {
-        toast.error(t("error.loginLinkExpired"))
-        navigate("/")
-      }
-    } else {
-      toast.error(t("error.noToken"))
-      navigate("/")
-    }
-  }, [token, stytchClient.magicLinks, navigate, t])
-
-  useEffect(() => {
-    if (token && !session) {
-      authenticate()
-    } else if (session) {
-      navigate("/dashboard")
-    } else {
-      toast.error(t("error.noToken"))
-      navigate("/")
-    }
-  }, [token, session, navigate, authenticate, t])
   return (
     <LoginContainer>
-      <CircularProgress />
+      <LoginComponent onLogin={signIn} isLoading={isLoading} error={undefined} />
     </LoginContainer>
   )
 }
 
-export const ResetPassword = () => {
-  const navigate = useNavigate()
-  const passwordResetToken = new URLSearchParams(window.location.search).get("token")
-
-  const callbacks: Callbacks = {
-    onEvent: (event) => {
-      if ((event.type === "AUTHENTICATE_FLOW_COMPLETE") || (event.type === "PASSWORD_RESET_BY_EMAIL" && event.data?.user)) {
-        navigate("/dashboard")
-      }
-    },
-  }
-
-  if (passwordResetToken) {
-    return (
-      <LoginContainer>
-        <StytchPasswordReset config={STYTCH_CONFIG} passwordResetToken={passwordResetToken} callbacks={callbacks} />
-      </LoginContainer>
-    )
-  }
-  return <Navigate to="/" />
+interface LoginFormProps {
+  onLogin: ({
+    username,
+    password,
+    callbackFunction,
+  }: {
+    username: string
+    password: string
+    callbackFunction: () => void
+  }) => Promise<void>
+  isLoading?: boolean
+  error?: string
 }
 
-const Login = () => {
+interface FormData {
+  username: string
+  password: string
+}
+
+export interface FormErrors {
+  username?: string
+  password?: string
+}
+
+const LoginComponent = ({ onLogin, isLoading = false, error }: LoginFormProps) => {
+  const [formData, setFormData] = useState<FormData>({
+    username: "",
+    password: "",
+  })
   const navigate = useNavigate()
-  const { session } = useStytchSession()
 
-  const callbacks: Callbacks = {
-    onEvent: (event) => {
-      if (
-        (event.type === "AUTHENTICATE_FLOW_COMPLETE" || event.type === "PASSWORD_AUTHENTICATE") &&
-        event.data?.user
-      ) {
-        navigate("/dashboard")
-      }
-    },
+  const [errors, setErrors] = useState<FormErrors>({})
+  const [showPassword, setShowPassword] = useState(false)
+
+  const validateForm = (): boolean => {
+    const newErrors: FormErrors = {}
+
+    if (!formData.username.trim()) {
+      newErrors.username = "Username or email is required"
+    }
+
+    if (!formData.password) {
+      newErrors.password = "Password is required"
+    } else if (formData.password.length < 6) {
+      newErrors.password = "Password must be at least 6 characters"
+    }
+
+    setErrors(newErrors)
+    return Object.keys(newErrors).length === 0
   }
 
-  if (session) {
-    return <Navigate to="/dashboard" />
+  const signInCallback = () => {
+    navigate("/dashboard")
   }
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault()
+
+    if (validateForm()) {
+      onLogin({
+        username: formData.username,
+        password: formData.password,
+        callbackFunction: signInCallback,
+      })
+    }
+  }
+
+  const handleInputChange = (field: keyof FormData) => (e: React.ChangeEvent<HTMLInputElement>) => {
+    setFormData((prev) => ({
+      ...prev,
+      [field]: e.target.value,
+    }))
+
+    // Clear error when user starts typing
+    if (errors[field]) {
+      setErrors((prev) => ({
+        ...prev,
+        [field]: undefined,
+      }))
+    }
+  }
+
+  const handleClickShowPassword = () => {
+    setShowPassword(!showPassword)
+  }
+
+  const handleMouseDownPassword = (event: React.MouseEvent<HTMLButtonElement>) => {
+    event.preventDefault()
+  }
+
   return (
-    <LoginContainer>
-      <StytchLogin
-        config={STYTCH_CONFIG}
-        callbacks={callbacks}
-        styles={{
-          logo: {
-            logoImageUrl: "https://trey.fi/media/trey_tunnus_musta-1.png",
+    <Container maxWidth="sm">
+      <Card
+        elevation={24}
+        sx={{
+          width: "100%",
+          maxWidth: 400,
+          borderRadius: 4,
+          overflow: "visible",
+          position: "relative",
+          "&::before": {
+            content: '""',
+            position: "absolute",
+            top: -2,
+            left: -2,
+            right: -2,
+            bottom: -2,
+            background: "linear-gradient(45deg, #008996, #006069)",
+            borderRadius: "inherit",
+            zIndex: -1,
+            opacity: 0.1,
           },
         }}
-      />
-    </LoginContainer>
+      >
+        <CardContent sx={{ p: 4 }}>
+          <Box textAlign="center" mb={4}>
+            <Typography
+              variant="h4"
+              component="h1"
+              gutterBottom
+              sx={{
+                fontWeight: 700,
+                background: "linear-gradient(45deg, #008996, #006069)",
+                backgroundClip: "text",
+                WebkitBackgroundClip: "text",
+                WebkitTextFillColor: "transparent",
+                mb: 1,
+              }}
+            >
+              Welcome Back
+            </Typography>
+            <Typography variant="body1" color="text.secondary">
+              Sign in to your account
+            </Typography>
+          </Box>
+
+          {error && (
+            <Alert severity="error" sx={{ mb: 3, borderRadius: 2 }}>
+              {error}
+            </Alert>
+          )}
+
+          <Box component="form" onSubmit={handleSubmit} noValidate>
+            <TextField
+              fullWidth
+              id="Username"
+              label="Username"
+              variant="outlined"
+              value={formData.username}
+              onChange={handleInputChange("username")}
+              error={!!errors.username}
+              helperText={errors.username}
+              disabled={isLoading}
+              sx={{ mb: 3 }}
+              slotProps={{
+                input: {
+                  startAdornment: (
+                    <InputAdornment position="start">
+                      <Person color={errors.username ? "error" : "action"} />
+                    </InputAdornment>
+                  ),
+                  sx: {
+                    "& .MuiOutlinedInput-root": {
+                      "&:hover fieldset": {
+                        borderColor: "#008996",
+                      },
+                      "&.Mui-focused fieldset": {
+                        borderColor: "#008996",
+                      },
+                    },
+                  },
+                },
+                inputLabel: {
+                  sx: {
+                    "&.Mui-focused": {
+                      color: "#008996",
+                    },
+                  },
+                },
+              }}
+            />
+
+            <TextField
+              fullWidth
+              id="password"
+              label="Password"
+              type={showPassword ? "text" : "password"}
+              variant="outlined"
+              value={formData.password}
+              onChange={handleInputChange("password")}
+              error={!!errors.password}
+              helperText={errors.password}
+              disabled={isLoading}
+              sx={{ mb: 3, boxShadow: "none" }}
+              slotProps={{
+                input: {
+                  startAdornment: (
+                    <InputAdornment position="start">
+                      <Lock color={errors.password ? "error" : "action"} />
+                    </InputAdornment>
+                  ),
+                  endAdornment: (
+                    <InputAdornment position="end">
+                      <IconButton
+                        aria-label="toggle password visibility"
+                        onClick={handleClickShowPassword}
+                        onMouseDown={handleMouseDownPassword}
+                        disabled={isLoading}
+                        edge="end"
+                      >
+                        {showPassword ? <VisibilityOff /> : <Visibility />}
+                      </IconButton>
+                    </InputAdornment>
+                  ),
+                  sx: {
+                    borderRadius: 2,
+                    "& .MuiOutlinedInput-root": {
+                      "&:hover fieldset": {
+                        borderColor: "#008996",
+                      },
+                      "&.Mui-focused fieldset": {
+                        borderColor: "#008996",
+                      },
+                    },
+                  },
+                },
+                inputLabel: {
+                  sx: {
+                    "&.Mui-focused": {
+                      color: "#008996",
+                    },
+                  },
+                },
+              }}
+            />
+
+            <Box display="flex" justifyContent="center" alignItems="center" mb={3}>
+              <Link
+                href="/forgot-password"
+                variant="body2"
+                sx={{
+                  color: "#008996",
+                  textDecoration: "none",
+                  "&:hover": {
+                    textDecoration: "underline",
+                  },
+                }}
+              >
+                Forgot password?
+              </Link>
+            </Box>
+            <LoginButton label="Sign in" isLoading={isLoading} loadingText="Signing In..." />
+          </Box>
+        </CardContent>
+      </Card>
+    </Container>
   )
 }
 

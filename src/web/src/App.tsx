@@ -1,19 +1,17 @@
 import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom"
 import "./App.css"
-import { Authenticated, Roles, useRefreshSession } from "./authentication"
+import { Authenticated, Roles } from "./authentication"
 import Dashboard from "./components/Dashboard"
+import { ErrorWrapper, NoOrganization } from "./components/Error/Error.tsx"
 import { Layout } from "./components/Layout/Layout"
-import Login, { Authenticate, ResetPassword } from "./components/Login"
+import Login from "./components/Login"
 import MyFiles from "./components/MyFiles"
 import { Registration } from "./components/Registration/Registration.tsx"
 import { SurveyPage } from "./components/Survey/Survey.tsx"
-import { ErrorWrapper, NoOrganization } from "./components/Error/Error.tsx"
 
 const approvedRoles = [Roles.ORGANISATION, Roles.TREY_BOARD, Roles.ADMIN]
 
 const App = () => {
-  useRefreshSession()
-
   return (
     <BrowserRouter>
       <Routes>
@@ -50,8 +48,6 @@ const App = () => {
         />
 
         <Route path="/login" element={<Login />} />
-        <Route path="/authenticate" element={<Authenticate />} />
-        <Route path="/reset-password" element={<ResetPassword />} />
         <Route path="/" element={<Login />} />
 
         <Route
@@ -70,9 +66,7 @@ const App = () => {
 
         <Route
           path="*"
-          element={
-            <Navigate to="/" replace={true} state={{ error: "not_found" }} />
-          }
+          element={<Navigate to="/" replace={true} state={{ error: "not_found" }} />}
         />
       </Routes>
     </BrowserRouter>

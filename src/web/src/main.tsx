@@ -1,17 +1,14 @@
 import { StrictMode } from "react"
 import { createRoot } from "react-dom/client"
+import { Toaster } from "react-hot-toast"
 import { CssBaseline, ThemeProvider, createTheme } from "@mui/material"
 import * as Sentry from "@sentry/react"
-import { StytchProvider } from "@stytch/react"
-import { StytchUIClient } from "@stytch/vanilla-js"
 import { t } from "i18next"
 import App from "./App.tsx"
+import { AuthProvider } from "./authentication/AuthContext.tsx"
 import config from "./config/index.ts"
 import "./i18n"
 import "./index.css"
-import { Toaster } from "react-hot-toast"
-
-const stytch = new StytchUIClient(config.stytch.publicToken)
 
 Sentry.init({
   dsn: config.sentry.dsn,
@@ -54,7 +51,7 @@ const theme = createTheme({
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
     <CssBaseline />
-    <StytchProvider stytch={stytch}>
+    <AuthProvider>
       <ThemeProvider theme={theme}>
         <Toaster
           position="top-right"
@@ -74,6 +71,6 @@ createRoot(document.getElementById("root")!).render(
         />
         <App />
       </ThemeProvider>
-    </StytchProvider>
+    </AuthProvider>
   </StrictMode>,
 )

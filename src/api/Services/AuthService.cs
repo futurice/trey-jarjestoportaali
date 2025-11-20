@@ -1,7 +1,6 @@
-using Newtonsoft.Json.Linq;
-using Stytch.net.Clients;
-using Stytch.net.Models.Consumer;
+using Supabase.Gotrue;
 using Trey.Api.Models;
+using static Supabase.Gotrue.StatelessClient;
 
 namespace Trey.Api.Services;
 
@@ -10,43 +9,49 @@ public interface IAuthService
     Task<TreyUser> GetUserFromContext(HttpContext context);
 }
 
-internal sealed class AuthService(ConsumerClient client) : IAuthService
+internal sealed class AuthService : IAuthService
 {
+    private readonly StatelessClient statelessClient;
+    private readonly Supabase.Client supabaseClient;
+    private readonly StatelessClientOptions options;
+    public AuthService(Supabase.Client supabaseClient)
+    {
+        options = new StatelessClientOptions
+        {
+            Url = $"{Environment.GetEnvironmentVariable("SUPABASE_URL")}/auth/v1" ?? throw new ArgumentNullException("SUPABASE_URL"),
+            Headers =
+            {
+                { "apikey", Environment.GetEnvironmentVariable("SUPABASE_KEY") ?? throw new ArgumentNullException("SUPABASE_KEY") }
+            }
+        };
+        statelessClient = new StatelessClient();
+        this.supabaseClient = supabaseClient;
+    }
     public async Task<TreyUser> GetUserFromContext(HttpContext context)
     {
         var token = GetTokenFromHeader(context);
-        var session = await AuthenticateSession(token);
-        if (session.UserId == null)
+        var sessionUser = await AuthenticateSession(token);
+        if (sessionUser.Id == null)
         {
             throw new UnauthorizedAccessException("No valid session found");
         }
 
-        var user = await GetUserById(session.UserId);
-
+        var user = await GetUserById(sessionUser);
         return user;
     }
 
-    private async Task<TreyUser> GetUserById(string userId)
+    private async Task<TreyUser> GetUserById(User user)
     {
-        var user = await client.Users.Get(new UsersGetRequest(userId));
-
-        var metadata = MetadataToDictionary(user.TrustedMetadata);
+        var supabaseUser = await supabaseClient.From<TreyUserDbObject>().Where(u => u.Id == user.Id).Single() ?? throw new UnauthorizedAccessException("User not found in database");
         return new TreyUser
         {
-            Name = user.Name.FirstName + " " + user.Name.LastName,
-            OrganizationId = metadata["organizationId"] ?? "",
-            Role = metadata["role"].ToTreyRole()
+            Id = Guid.Parse(supabaseUser.Id),
+            Username = supabaseUser.Username,
+            OrganizationId = supabaseUser.OrganizationId,
+            Role = supabaseUser.Role,
+            CreatedAt = supabaseUser.CreatedAt,
+            UpdatedAt = supabaseUser.UpdatedAt
         };
-    }
-
-    private static Dictionary<string, string> MetadataToDictionary(object metadata)
-    {
-        if (metadata is JObject metadataObject)
-        {
-            return metadataObject.ToObject<Dictionary<string, string>>() ?? [];
-        }
-
-        return [];
     }
 
     private static string GetTokenFromHeader(HttpContext context)
@@ -60,18 +65,12 @@ internal sealed class AuthService(ConsumerClient client) : IAuthService
         return authHeader["Bearer ".Length..];
     }
 
-    private async Task<Session> AuthenticateSession(string sessionJwt)
+    private async Task<User> AuthenticateSession(string sessionJwt)
     {
         try
         {
-            var request = new SessionsAuthenticateRequest
-            {
-                SessionJwt = sessionJwt,
-                SessionDurationMinutes = 60
-            };
-
-            var response = await client.Sessions.Authenticate(request);
-            return response.Session;
+            var user = await statelessClient.GetUser(sessionJwt, options) ?? throw new UnauthorizedAccessException("No valid session found");
+            return user;
         }
         catch (Exception ex)
         {

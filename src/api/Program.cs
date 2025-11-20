@@ -7,6 +7,7 @@ using Trey.Api.Extensions;
 using Trey.Api.Middleware;
 using Trey.Api.Repositories;
 using Trey.Api.Services;
+using Supabase.Gotrue;
 
 var credentialOptions = new DefaultAzureCredentialOptions
 {
@@ -66,8 +67,17 @@ builder.Services.AddApplicationInsightsTelemetry(builder.Configuration);
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-builder.Services.AddStytchClient(builder.Configuration);
+var supabaseUrl = Environment.GetEnvironmentVariable("SUPABASE_URL") ?? throw new ArgumentNullException(nameof(args));
+var supabaseKey = Environment.GetEnvironmentVariable("SUPABASE_KEY") ?? throw new ArgumentNullException(nameof(args));
+var supabaseOptions = new Supabase.SupabaseOptions
+{
+    AutoRefreshToken = true,
+    AutoConnectRealtime = true
+};
+builder.Services.AddSingleton<Supabase.Client>(_ => new Supabase.Client(supabaseUrl, supabaseKey, supabaseOptions));
+
 builder.Services.AddTreyAuth();
+builder.Services.AddSupabaseClient(builder.Configuration);
 var app = builder.Build();
 
 app.UseCors(policy =>
@@ -106,6 +116,11 @@ app.MapGroup("/organizations")
 
 app.MapGroup("/surveys")
     .MapSurveyEndpoints()
+    .WithOpenApi()
+    .DisableAntiforgery(); // FIXME - remove this line when antiforgery is implemented
+
+app.MapGroup("/auth")
+    .MapAuthApi()
     .WithOpenApi()
     .DisableAntiforgery(); // FIXME - remove this line when antiforgery is implemented
 

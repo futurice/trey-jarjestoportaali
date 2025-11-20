@@ -1,4 +1,3 @@
-using Stytch.net.Clients;
 using Trey.Api.Services;
 
 namespace Trey.Api.Extensions;
@@ -11,20 +10,20 @@ public static class AuthServiceExtensions
         return services;
     }
 
-    public static IServiceCollection AddStytchClient(this IServiceCollection services,  IConfiguration configuration)
+    public static IServiceCollection AddSupabaseClient(this IServiceCollection services, IConfiguration configuration)
     {
-        services.AddScoped<ConsumerClient>(_ =>
+        services.AddScoped<Supabase.Gotrue.Client>(_ =>
         {
-            var projectId = configuration["STYTCH_PROJECT_ID"] ?? throw new ArgumentNullException("STYTCH_PROJECT_ID");
-            var projectSecret = configuration["STYTCH_PROJECT_SECRET"] ??
-                                throw new ArgumentNullException("STYTCH_PROJECT_SECRET");
-
-            return new ConsumerClient(new ClientConfig
+            var url = configuration["SUPABASE_URL"] ?? throw new ArgumentNullException("SUPABASE_URL");
+            var key = configuration["SUPABASE_KEY"] ?? throw new ArgumentNullException("SUPABASE_KEY");
+            var options = new Supabase.Gotrue.ClientOptions
             {
-                ProjectId = projectId,
-                ProjectSecret = projectSecret
-            });
+                Url = url,
+                AutoRefreshToken = true,
+            };
+            return new Supabase.Gotrue.Client(options);
         });
+
         return services;
     }
 }

@@ -1,4 +1,4 @@
-import { useCallback, useState } from "react"
+import { useState } from "react"
 import { useTranslation } from "react-i18next"
 import { Link as RouterLink, useLocation, useNavigate } from "react-router-dom"
 import { Language, Person } from "@mui/icons-material"
@@ -15,8 +15,8 @@ import {
   Toolbar,
   useTheme,
 } from "@mui/material"
-import { useStytch, useStytchUser } from "@stytch/react"
 import TreyLogo from "../../assets/TreyLogo"
+import { useAuth } from "../../authentication/AuthContext"
 import i18n from "../../i18n"
 
 interface NavigationRoute {
@@ -55,7 +55,7 @@ const NavigationItem = ({ item, isOpen }: { item: NavigationRoute; isOpen: boole
 
 const Navigation = () => {
   const location = useLocation()
-  const { user } = useStytchUser()
+  const { user, logout } = useAuth()
   const navigate = useNavigate()
   const { t } = useTranslation()
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null)
@@ -135,13 +135,6 @@ const Navigation = () => {
   }
 
   const ProfileMenu = () => {
-    const stytch = useStytch()
-    const logout = useCallback(() => {
-      stytch.session.revoke().then(() => {
-        navigate("/login")
-      })
-    }, [stytch.session])
-
     return user ? (
       <Menu
         anchorEl={anchorEl}
