@@ -16,9 +16,10 @@ internal sealed class AuthService : IAuthService
     private readonly StatelessClientOptions options;
     public AuthService(Supabase.Client supabaseClient)
     {
+        var baseUrl = Environment.GetEnvironmentVariable("SUPABASE_URL") ?? throw new ArgumentNullException("SUPABASE_URL");
         options = new StatelessClientOptions
         {
-            Url = $"{Environment.GetEnvironmentVariable("SUPABASE_URL")}/auth/v1" ?? throw new ArgumentNullException("SUPABASE_URL"),
+            Url = $"{baseUrl}/auth/v1",
             Headers =
             {
                 { "apikey", Environment.GetEnvironmentVariable("SUPABASE_KEY") ?? throw new ArgumentNullException("SUPABASE_KEY") }
