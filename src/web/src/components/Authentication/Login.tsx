@@ -1,6 +1,6 @@
 import { useState } from "react"
 import { useTranslation } from "react-i18next"
-import { Navigate, useNavigate } from "react-router-dom"
+import { Navigate, useNavigate, Link } from "react-router-dom"
 import { Person, VisibilityOff, Visibility, Lock } from "@mui/icons-material"
 import {
   Alert,
@@ -10,7 +10,6 @@ import {
   InputAdornment,
   TextField,
   Typography,
-  Link,
 } from "@mui/material"
 import JippoBW from "../../assets/JippoLogo"
 import { useAuth } from "../../authentication/AuthContext"
@@ -241,17 +240,25 @@ const LoginComponent = ({ onLogin, isLoading = false, error }: LoginFormProps) =
 
         <Box display="flex" justifyContent="center" alignItems="center" mb={3}>
           <Link
-            href="/forgot-password"
-            variant="body2"
-            sx={{
-              color: "#008996",
+            to={{ pathname: "/forgot-password" }}
+            style={{
               textDecoration: "none",
-              "&:hover": {
-                textDecoration: "underline",
-              },
             }}
           >
-            {t("login.forgot_password")}
+            <Typography
+              variant="body2"
+              color="text.secondary"
+              sx={{
+                fontSize: "1em",
+                color: "#008996",
+                textDecoration: "none",
+                "&:hover": {
+                  textDecoration: "underline",
+                },
+              }}
+            >
+              {t("login.forgot_password")}
+            </Typography>
           </Link>
         </Box>
         <LoginButton
