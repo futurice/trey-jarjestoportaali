@@ -68,7 +68,7 @@ const ResetPasswordComponent = ({
     if (validateForm()) {
       resetPassword(formData.newPassword).then((response) => {
         if (response.success) {
-          toast.success(t("reset_password.success_toast"))
+          toast.success(t("reset_password.success.message"))
           navigate("/dashboard")
         } else {
           setErrors({ newPassword: response.message })

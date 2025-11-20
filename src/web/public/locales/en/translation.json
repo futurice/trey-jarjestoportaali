@@ -76,6 +76,11 @@
     "sign_in": {
       "label": "Log in",
       "loading_text": "Logging in..."
+    },
+    "error": {
+      "username_required": "Username or email is a required field.",
+      "password_required": "Password is a required field.",
+      "password_too_short": "Password must be at least 8 characters long."
     }
   },
   "forgot_password": {
@@ -105,7 +110,7 @@
     "loading": "Changing password...",
     "success": {
       "title": "Password changed",
-      "message": "Your password has been changed successfully. You can now log in with your new password."
+      "message": "Your password has been changed successfully."
     },
     "error_message": {
       "title": "An error occurred",

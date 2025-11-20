@@ -72,13 +72,13 @@ const LoginComponent = ({ onLogin, isLoading = false, error }: LoginFormProps) =
     const newErrors: FormErrors = {}
 
     if (!formData.username.trim()) {
-      newErrors.username = "Username or email is required"
+      newErrors.username = t("login.error.username_required")
     }
 
     if (!formData.password) {
-      newErrors.password = "Password is required"
-    } else if (formData.password.length < 6) {
-      newErrors.password = "Password must be at least 6 characters"
+      newErrors.password = t("login.error.password_required")
+    } else if (formData.password.length < 8) {
+      newErrors.password = t("login.error.password_too_short")
     }
 
     setErrors(newErrors)

@@ -76,6 +76,11 @@
     "sign_in": {
       "label": "Kirjaudu sisään",
       "loading_text": "Kirjaudutaan sisään..."
+    },
+    "error": {
+      "username_required": "Käyttäjätunnus tai sähköposti on pakollinen tieto.",
+      "password_required": "Salasana on pakollinen tieto.",
+      "password_too_short": "Salasanan on oltava vähintään 8 merkkiä pitkä."
     }
   },
   "forgot_password": {
@@ -105,7 +110,7 @@
     "loading": "Vaihdetaan salasanaa...",
     "success": {
       "title": "Salasana vaihdettu",
-      "message": "Salasanasi on vaihdettu onnistuneesti. Voit nyt kirjautua sisään uudella salasanallasi."
+      "message": "Salasanasi on vaihdettu onnistuneesti."
     },
     "error_message": {
       "title": "Tapahtui virhe",
