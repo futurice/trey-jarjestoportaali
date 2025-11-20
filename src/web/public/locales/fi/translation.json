@@ -1,71 +1,119 @@
 {
-	"form": {
-		"info": "Hakemuksen perustiedot",
-		"name": {
-			"label": "Hakemuksen nimi",
-			"placeholder": "Kirjoita hakemuksen nimi"
-		},
-		"required": "Pakollinen tieto",
-		"description": {
-			"label": "Hakemuksen kuvaus",
-			"placeholder": "Kirjoita hakemuksen kuvaus"
-		},
-		"questions": "Kysymykset",
-		"question": {
-			"placeholder": "Kysymyksen otsikko",
-			"textField": "Tekstikenttä",
-			"add": "Lisää uusi kysymys"
-		},
-		"submit": "Tallenna hakemus",
-		"create": ""
-	},
-	"delete": "Poista",
-	"logout": "Kirjaudu ulos",
-	"navigation": {
-		"dashboard": "Dashboard",
-		"files": "Tiedostot"
-	},
-	"language": {
-		"fi": "Suomi",
-		"en": "Englanti"
-	},
-	"dashboard": {
-		"title": "Hallintapaneeli",
-		"availableSurveys": "Käytettävissä olevat kyselyt",
-		"noSurveys": "Ei käytettävissä olevia kyselyitä"
-	},
-	"common": {
-		"loading": "Ladataan..."
-	},
-	"feedback": {
-		"title": "Anna palautetta",
-		"label": "Palaute",
-		"trigger": "Anna palautetta",
-		"cancel": "Peruuta",
-		"confirm": "Lähetä",
-		"addScreenshot": "Lisää kuvakaappaus",
-		"removeScreenshot": "Poista kuvakaappaus",
-		"name": "Nimi",
-		"namePlaceholder": "Kirjoita nimesi",
-		"email": "Sähköposti",
-		"emailPlaceholder": "Kirjoita sähköpostiosoitteesi",
-		"isRequired": "Pakollinen tieto",
-		"message": "Palaute",
-		"messageLabel": "Palaute",
-		"messagePlaceholder": "Löysitkö bugin? Haluatko antaa palautetta? Kerro meille!",
-		"successMessage": "Kiitos palautteestasi!",
-		"submit": "Lähetä"
-	},
-	"responses_saved": "Vastaukset tallennettu",
-	"responses_saved_to_server": "Vastaukset tallennettu palvelimelle onnistuneesti!",
-	"responses_save_failed": "Vastausten tallentaminen palvelimelle epäonnistui. Vastaukset pysyvät kuitenkin tallennettuna paikallisesti laitteellasi.",
-	"error": {
-		"noToken": "Kirjautuminen epäonnistui. Ole hyvä, ja kirjaudu uudelleen.",
-		"loginLinkExpired": "Kirjautumislinkki on vanhentunut tai sitä on jo käytetty. Ole hyvä, ja pyydä uusi linkki kirjautumalla uudelleen."
-	},
-	"no_organization": {
-		"title": "Järjestöä ei löydetty",
-		"error": "Tunnuksellesi ei ole liitetty järjestöä. Jos olet järjestön edustaja, ota yhteyttä TREYn järjestösektoriin puuttuvien tietojen lisäämiseksi.",
-		"error2": "Varmistathan myös, että olet kirjautunut järjestösi sähköpostiosoitteella, johon tunnusten luonti-ilmoitus on lähetetty."
-	}
+  "form": {
+    "info": "Hakemuksen perustiedot",
+    "name": {
+      "label": "Hakemuksen nimi",
+      "placeholder": "Kirjoita hakemuksen nimi"
+    },
+    "required": "Pakollinen tieto",
+    "description": {
+      "label": "Hakemuksen kuvaus",
+      "placeholder": "Kirjoita hakemuksen kuvaus"
+    },
+    "questions": "Kysymykset",
+    "question": {
+      "placeholder": "Kysymyksen otsikko",
+      "textField": "Tekstikenttä",
+      "add": "Lisää uusi kysymys"
+    },
+    "submit": "Tallenna hakemus",
+    "create": ""
+  },
+  "delete": "Poista",
+  "logout": "Kirjaudu ulos",
+  "navigation": {
+    "dashboard": "Dashboard",
+    "files": "Tiedostot"
+  },
+  "language": {
+    "fi": "Suomi",
+    "en": "Englanti"
+  },
+  "dashboard": {
+    "title": "Hallintapaneeli",
+    "availableSurveys": "Käytettävissä olevat kyselyt",
+    "noSurveys": "Ei käytettävissä olevia kyselyitä"
+  },
+  "common": {
+    "loading": "Ladataan..."
+  },
+  "feedback": {
+    "title": "Anna palautetta",
+    "label": "Palaute",
+    "trigger": "Anna palautetta",
+    "cancel": "Peruuta",
+    "confirm": "Lähetä",
+    "addScreenshot": "Lisää kuvakaappaus",
+    "removeScreenshot": "Poista kuvakaappaus",
+    "name": "Nimi",
+    "namePlaceholder": "Kirjoita nimesi",
+    "email": "Sähköposti",
+    "emailPlaceholder": "Kirjoita sähköpostiosoitteesi",
+    "isRequired": "Pakollinen tieto",
+    "message": "Palaute",
+    "messageLabel": "Palaute",
+    "messagePlaceholder": "Löysitkö bugin? Haluatko antaa palautetta? Kerro meille!",
+    "successMessage": "Kiitos palautteestasi!",
+    "submit": "Lähetä"
+  },
+  "responses_saved": "Vastaukset tallennettu",
+  "responses_saved_to_server": "Vastaukset tallennettu palvelimelle onnistuneesti!",
+  "responses_save_failed": "Vastausten tallentaminen palvelimelle epäonnistui. Vastaukset pysyvät kuitenkin tallennettuna paikallisesti laitteellasi.",
+  "error": {
+    "noToken": "Kirjautuminen epäonnistui. Ole hyvä, ja kirjaudu uudelleen.",
+    "loginLinkExpired": "Kirjautumislinkki on vanhentunut tai sitä on jo käytetty. Ole hyvä, ja pyydä uusi linkki kirjautumalla uudelleen."
+  },
+  "no_organization": {
+    "title": "Järjestöä ei löydetty",
+    "error": "Tunnuksellesi ei ole liitetty järjestöä. Jos olet järjestön edustaja, ota yhteyttä TREYn järjestösektoriin puuttuvien tietojen lisäämiseksi.",
+    "error2": "Varmistathan myös, että olet kirjautunut järjestösi sähköpostiosoitteella, johon tunnusten luonti-ilmoitus on lähetetty."
+  },
+  "login": {
+    "title": "Kirjaudu sisään käyttäen järjestösi käyttäjätunnusta tai sähköpostiosoitetta",
+    "username": "Käyttäjätunnus",
+    "password": "Salasana",
+    "forgot_password": "Unohditko salasanasi?",
+    "sign_in": {
+      "label": "Kirjaudu sisään",
+      "loading_text": "Kirjaudutaan sisään..."
+    }
+  },
+  "forgot_password": {
+    "title": "Resetoi salasanasi",
+    "instructions": "Unohtuiko salasana? Kirjoita alla olevaan kenttään sähköpostiosoitteesi, niin lähetämme sinulle ohjeet salasanan vaihtamiseksi.",
+    "email_label": "Sähköposti",
+    "submit": "Resetoi salasana",
+    "success": {
+      "title": "Sähköposti lähetetty",
+      "message": "Jos sähköpostiosoite löytyy järjestelmästämme, lähetimme sinulle ohjeet salasanan vaihtamiseksi."
+    },
+    "loading": "Lähetetään pyyntöä...",
+    "error_message": {
+      "title": "Tapahtui virhe",
+      "generic": "Salasanan resetointi epäonnistui. Yritä myöhemmin uudelleen.",
+      "email_required": "Sähköpostiosoite on pakollinen tieto.",
+      "invalid_email": "Sähköpostiosoite ei ole kelvollinen."
+    },
+    "back_to_login": "Palaa kirjautumissivulle"
+  },
+  "reset_password": {
+    "title": "Vaihda salasanasi",
+    "instructions": "Kirjoita uusi salasanasi alla oleviin kenttiin.",
+    "new_password_label": "Uusi salasana",
+    "confirm_password_label": "Vahvista salasana",
+    "submit": "Vaihda salasana",
+    "loading": "Vaihdetaan salasanaa...",
+    "success": {
+      "title": "Salasana vaihdettu",
+      "message": "Salasanasi on vaihdettu onnistuneesti. Voit nyt kirjautua sisään uudella salasanallasi."
+    },
+    "error_message": {
+      "title": "Tapahtui virhe",
+      "generic": "Salasanan vaihtaminen epäonnistui. Yritä myöhemmin uudelleen.",
+      "repeat_password_required": "Salasanan vahvistus on pakollinen tieto.",
+      "password_required": "Uusi salasana on pakollinen tieto.",
+      "passwords_do_not_match": "Salasanat eivät täsmää.",
+      "password_too_short": "Salasanan on oltava vähintään 8 merkkiä pitkä."
+    }
+  }
 }

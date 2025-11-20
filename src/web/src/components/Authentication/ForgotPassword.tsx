@@ -1,6 +1,7 @@
 import { useState } from "react"
+import { useTranslation } from "react-i18next"
 import { Navigate, useNavigate } from "react-router-dom"
-import { Box, CircularProgress, TextField, Typography } from "@mui/material"
+import { Box, Button, CircularProgress, TextField, Typography } from "@mui/material"
 import { RequestResponse, useAuth } from "../../authentication/AuthContext"
 import { LoginButton } from "../Button/LoginButton"
 import { LoginCard } from "./LoginCard"
@@ -41,14 +42,15 @@ const ForgotPasswordComponent = ({
   const [errors, setErrors] = useState<FormErrors>({})
   const [resetResponse, setResetResponse] = useState<RequestResponse | null>(null)
   const navigate = useNavigate()
+  const { t } = useTranslation()
 
   const validateForm = (): boolean => {
     const newErrors: FormErrors = {}
 
     if (!formData.email.trim()) {
-      newErrors.email = "Email is required"
+      newErrors.email = t("forgot_password.errors.email_required")
     } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
-      newErrors.email = "Invalid email format"
+      newErrors.email = t("forgot_password.errors.invalid_email")
     }
     setErrors(newErrors)
     return Object.keys(newErrors).length === 0
@@ -105,16 +107,18 @@ const ForgotPasswordComponent = ({
               mb: 2,
             }}
           >
-            {resetResponse.success ? "Email Sent" : "Error"}
+            {resetResponse.success
+              ? t("forgot_password.success.title")
+              : t("forgot_password.error_message.title")}
           </Typography>
           <Typography variant="body1" color="text.secondary">
             {resetResponse.message ||
               (resetResponse.success
-                ? "Please check your email for the password reset link."
-                : "There was an issue processing your request. Please try again.")}
+                ? t("forgot_password.success.message")
+                : t("forgot_password.error_message.generic"))}
           </Typography>
           <LoginButton
-            label="Return to login"
+            label={t("forgot_password.back_to_login")}
             isLoading={false}
             loadingText=""
             onClick={() => navigate("/login")}
@@ -156,18 +160,17 @@ const ForgotPasswordComponent = ({
                     mb: 1,
                   }}
                 >
-                  Reset password
+                  {t("forgot_password.title")}
                 </Typography>
                 <Typography variant="body1" color="text.secondary">
-                  Forgot your account's password? Enter your email address and we'll send you a
-                  recovery link.
+                  {t("forgot_password.instructions")}
                 </Typography>
               </Box>
               <Box component="form" onSubmit={handleSubmit} noValidate>
                 <TextField
                   fullWidth
                   id="Email"
-                  label="Email"
+                  label={t("forgot_password.email_label")}
                   variant="outlined"
                   value={formData.email}
                   onChange={handleInputChange("email")}
@@ -199,10 +202,13 @@ const ForgotPasswordComponent = ({
                 />
 
                 <LoginButton
-                  label="Request new password"
+                  label={t("forgot_password.submit")}
                   isLoading={isLoading}
-                  loadingText="Requesting..."
+                  loadingText={t("forgot_password.loading")}
                 />
+                <Button onClick={() => navigate("/login")} sx={{ mt: 2 }} fullWidth>
+                  {t("forgot_password.back_to_login")}
+                </Button>
               </Box>
             </>
           )}

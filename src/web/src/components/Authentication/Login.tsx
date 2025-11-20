@@ -1,4 +1,5 @@
 import { useState } from "react"
+import { useTranslation } from "react-i18next"
 import { Navigate, useNavigate } from "react-router-dom"
 import { Person, VisibilityOff, Visibility, Lock } from "@mui/icons-material"
 import {
@@ -11,6 +12,7 @@ import {
   Typography,
   Link,
 } from "@mui/material"
+import JippoBW from "../../assets/JippoLogo"
 import { useAuth } from "../../authentication/AuthContext"
 import { LoginButton } from "../Button/LoginButton"
 import { LoginCard } from "./LoginCard"
@@ -62,6 +64,7 @@ const LoginComponent = ({ onLogin, isLoading = false, error }: LoginFormProps) =
     password: "",
   })
   const navigate = useNavigate()
+  const { t } = useTranslation()
 
   const [errors, setErrors] = useState<FormErrors>({})
   const [showPassword, setShowPassword] = useState(false)
@@ -125,23 +128,14 @@ const LoginComponent = ({ onLogin, isLoading = false, error }: LoginFormProps) =
   return (
     <LoginCard>
       <Box textAlign="center" mb={4}>
-        <Typography
-          variant="h4"
-          component="h1"
-          gutterBottom
-          sx={{
-            fontWeight: 700,
-            background: "linear-gradient(45deg, #008996, #006069)",
-            backgroundClip: "text",
-            WebkitBackgroundClip: "text",
-            WebkitTextFillColor: "transparent",
-            mb: 1,
+        <JippoBW
+          style={{
+            width: "auto",
+            height: 120,
           }}
-        >
-          Welcome Back
-        </Typography>
+        />
         <Typography variant="body1" color="text.secondary">
-          Sign in to your account
+          {t("login.title")}
         </Typography>
       </Box>
 
@@ -155,7 +149,7 @@ const LoginComponent = ({ onLogin, isLoading = false, error }: LoginFormProps) =
         <TextField
           fullWidth
           id="Username"
-          label="Username"
+          label={t("login.username")}
           variant="outlined"
           value={formData.username}
           onChange={handleInputChange("username")}
@@ -194,7 +188,7 @@ const LoginComponent = ({ onLogin, isLoading = false, error }: LoginFormProps) =
         <TextField
           fullWidth
           id="password"
-          label="Password"
+          label={t("login.password")}
           type={showPassword ? "text" : "password"}
           variant="outlined"
           value={formData.password}
@@ -257,10 +251,14 @@ const LoginComponent = ({ onLogin, isLoading = false, error }: LoginFormProps) =
               },
             }}
           >
-            Forgot password?
+            {t("login.forgot_password")}
           </Link>
         </Box>
-        <LoginButton label="Sign in" isLoading={isLoading} loadingText="Signing In..." />
+        <LoginButton
+          label={t("login.sign_in.label")}
+          isLoading={isLoading}
+          loadingText={t("login.sign_in.loading_text")}
+        />
       </Box>
     </LoginCard>
   )
