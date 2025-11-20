@@ -1,6 +1,6 @@
 import { Container, Card, CardContent } from "@mui/material"
 
-export const LoginCard = ({ children }: { children: React.ReactNode }) => {
+export const LoginCard = ({ children, style }: { children: React.ReactNode; style?: object }) => {
   return (
     <Container maxWidth="sm">
       <Card
@@ -23,6 +23,7 @@ export const LoginCard = ({ children }: { children: React.ReactNode }) => {
             zIndex: -1,
             opacity: 0.1,
           },
+          ...style,
         }}
       >
         <CardContent sx={{ p: 4 }}>{children}</CardContent>

@@ -1,10 +1,11 @@
 import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom"
 import "./App.css"
 import { Authenticated, Roles } from "./authentication"
+import ForgotPassword from "./components/Authentication/ForgotPassword.tsx"
+import Login from "./components/Authentication/Login.tsx"
 import Dashboard from "./components/Dashboard"
 import { ErrorWrapper, NoOrganization } from "./components/Error/Error.tsx"
 import { Layout } from "./components/Layout/Layout"
-import Login from "./components/Login"
 import MyFiles from "./components/MyFiles"
 import { Registration } from "./components/Registration/Registration.tsx"
 import { SurveyPage } from "./components/Survey/Survey.tsx"
@@ -48,6 +49,7 @@ const App = () => {
         />
 
         <Route path="/login" element={<Login />} />
+        <Route path="/forgot-password" element={<ForgotPassword />} />
         <Route path="/" element={<Login />} />
 
         <Route

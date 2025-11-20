@@ -1,14 +1,20 @@
-import { Box, Button, CircularProgress } from "@mui/material"
+import { Box, Button, ButtonBaseProps, CircularProgress } from "@mui/material"
+
+interface ButtonProps extends ButtonBaseProps {
+  label: string
+  isLoading: boolean
+  loadingText?: string
+  sx?: object
+  onClick?: () => void
+}
 
 export const LoginButton = ({
   label,
   isLoading,
   loadingText,
-}: {
-  label: string
-  isLoading: boolean
-  loadingText: string
-}) => {
+  sx,
+  onClick,
+}: ButtonProps): JSX.Element => {
   return (
     <Button
       type="submit"
@@ -36,7 +42,9 @@ export const LoginButton = ({
           color: "rgba(0, 0, 0, 0.26)",
         },
         transition: "all 0.2s ease-in-out",
+        ...sx,
       }}
+      onClick={onClick}
     >
       {isLoading ? (
         <Box display="flex" alignItems="center">

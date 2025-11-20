@@ -29,6 +29,12 @@ export interface AuthContextType {
     password: string
     callbackFunction: () => void
   }) => Promise<void>
+  forgotPasswordRequest: (email: string) => Promise<RequestResponse>
+}
+
+export interface RequestResponse {
+  success: boolean
+  message?: string
 }
 
 interface AuthProviderProps {
@@ -126,6 +132,27 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     [],
   )
 
+  const forgotPasswordRequest = useCallback(async (email: string): Promise<RequestResponse> => {
+    setIsLoading(true)
+    try {
+      const { error } = await supabase.auth.resetPasswordForEmail(email, {
+        redirectTo: `${window.location.origin}/reset-password`,
+      })
+      if (error) {
+        toast.error("Error sending reset password email: " + error.message)
+        return { success: false, message: error.message }
+      } else {
+        toast.success("Password reset email sent!")
+        return { success: true }
+      }
+    } catch (err: any) {
+      toast.error("Error during password reset request: " + err.message)
+      return { success: false, message: err.message }
+    } finally {
+      setIsLoading(false)
+    }
+  }, [])
+
   const treyUser = useMemo((): TreyUser | null => {
     if (!user) {
       return null
@@ -151,8 +178,9 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       user,
       treyUser,
       signIn,
+      forgotPasswordRequest,
     }),
-    [session, isLoading, logout, user, treyUser, signIn],
+    [session, isLoading, logout, user, treyUser, signIn, forgotPasswordRequest],
   )
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>
