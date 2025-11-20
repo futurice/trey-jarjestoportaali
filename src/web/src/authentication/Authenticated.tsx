@@ -25,7 +25,7 @@ export const Authenticated = ({
     return <Navigate to="/login" state={{ from: location }} />
   }
 
-  // The role is stored in the trusted_metadata field of the user object in Stytch.
+  // The role is stored in the trusted_metadata field of the user object in Supabase.
   const role = (user?.user_metadata?.trey_role as string) ?? Roles.NONE
   const organizationId = user?.user_metadata?.organization_id ?? null
 

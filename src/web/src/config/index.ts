@@ -8,10 +8,6 @@ export interface ObservabilityConfig {
   connectionString: string
 }
 
-export interface StytchConfig {
-  publicToken: string
-}
-
 export interface SupabaseConfig {
   url: string
   key: string
@@ -24,7 +20,6 @@ export interface SentryConfig {
 export interface AppConfig {
   api: ApiConfig
   observability: ObservabilityConfig
-  stytch: StytchConfig
   supabase: SupabaseConfig
   sentry: SentryConfig
 }
@@ -35,9 +30,6 @@ const config: AppConfig = {
   },
   observability: {
     connectionString: import.meta.env.VITE_APPLICATIONINSIGHTS_CONNECTION_STRING || "",
-  },
-  stytch: {
-    publicToken: import.meta.env.VITE_STYTCH_PUBLIC_TOKEN || "",
   },
   supabase: {
     url: import.meta.env.VITE_SUPABASE_URL || "",

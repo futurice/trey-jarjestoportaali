@@ -1,6 +1,6 @@
 import { useState } from "react"
 import { useTranslation } from "react-i18next"
-import { Link as RouterLink, useLocation, useNavigate } from "react-router-dom"
+import { Link as RouterLink, useLocation } from "react-router-dom"
 import { Language, Person } from "@mui/icons-material"
 import Logout from "@mui/icons-material/Logout"
 import {
@@ -56,7 +56,6 @@ const NavigationItem = ({ item, isOpen }: { item: NavigationRoute; isOpen: boole
 const Navigation = () => {
   const location = useLocation()
   const { user, logout } = useAuth()
-  const navigate = useNavigate()
   const { t } = useTranslation()
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null)
   const [lngAnchorEl, setLngAnchorEl] = useState<null | HTMLElement>(null)
