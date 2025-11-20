@@ -72,7 +72,7 @@ const ResetPasswordComponent = ({
           navigate("/dashboard")
         } else {
           setErrors({ newPassword: response.message })
-          toast.error(t("reset_password.error_message.generic: " + response.message))
+          toast.error(t("reset_password.error_message.generic") + ": " + response.message)
         }
       })
     }
