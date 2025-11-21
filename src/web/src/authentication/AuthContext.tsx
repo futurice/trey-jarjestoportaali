@@ -193,9 +193,11 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         toast.error("Error during logout: " + error.message)
         return
       }
-      setSession(null)
     } catch (err: AuthError | unknown) {
       toast.error("Unexpected error during logout: " + (err as AuthError).message)
+    } finally {
+      setSession(null)
+      setUser(null)
     }
   }, [])
 
