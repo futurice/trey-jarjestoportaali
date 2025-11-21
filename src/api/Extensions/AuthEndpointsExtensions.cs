@@ -29,7 +29,7 @@ public static class AuthEndpointsExtensions
     // This is necessary for the username-based login flow, as Supabase authentication requires an email address.
     // By mapping the provided username to its corresponding email, we enable users to log in using their username.
     string? userEmail = null;
-    Supabase.Gotrue.Responses.RpcResponse userEmailResponse = null;
+    Supabase.Postgrest.Responses.BaseResponse? userEmailResponse = null;
     try
     {
       userEmailResponse = await supabase.Rpc("email_for_username", new { p_username = loginData.Username });
