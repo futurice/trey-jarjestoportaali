@@ -8,7 +8,7 @@ import {
   useCallback,
 } from "react"
 import toast from "react-hot-toast"
-import { Session, User } from "@supabase/supabase-js"
+import { AuthError, Session, User } from "@supabase/supabase-js"
 import { authorizeUser } from "../services/authService"
 import { Roles } from "./Roles"
 import { supabase } from "./authClient"
@@ -145,9 +145,9 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         toast.success("Password reset email sent!")
         return { success: true }
       }
-    } catch (err: any) {
-      toast.error("Error during password reset request: " + err.message)
-      return { success: false, message: err.message }
+    } catch (err: AuthError | unknown) {
+      toast.error("Error during password reset request: " + (err as AuthError).message)
+      return { success: false, message: (err as AuthError).message }
     } finally {
       setIsLoading(false)
     }
@@ -166,9 +166,9 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         toast.success("Password has been reset successfully!")
         return { success: true }
       }
-    } catch (err: any) {
-      toast.error("Error during password reset: " + err.message)
-      return { success: false, message: err.message }
+    } catch (err: AuthError | unknown) {
+      toast.error("Error during password reset: " + (err as AuthError).message)
+      return { success: false, message: (err as AuthError).message }
     } finally {
       setIsLoading(false)
     }
@@ -188,14 +188,14 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
   const logout = useCallback(async (): Promise<void> => {
     try {
-      const { error } = await supabase.auth.signOut();
+      const { error } = await supabase.auth.signOut()
       if (error) {
-        toast.error("Error during logout: " + error.message);
-        return;
+        toast.error("Error during logout: " + error.message)
+        return
       }
-      setSession(null);
-    } catch (err: any) {
-      toast.error("Unexpected error during logout: " + (err?.message || err));
+      setSession(null)
+    } catch (err: AuthError | unknown) {
+      toast.error("Unexpected error during logout: " + (err as AuthError).message)
     }
   }, [])
 

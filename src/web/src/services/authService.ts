@@ -10,7 +10,13 @@ export const authorizeUser = async (username: string, password: string) => {
   })
 
   if (!response.ok) {
-    throw new Error("Failed to authorize user")
+    let errorDetails = ""
+    try {
+      errorDetails = await response.text()
+    } catch {
+      errorDetails = response.statusText
+    }
+    throw new Error(`Failed to authorize user: HTTP ${response.status} - ${errorDetails}`)
   }
 
   return await response.json()
