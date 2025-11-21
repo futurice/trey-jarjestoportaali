@@ -186,8 +186,17 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     }
   }, [user])
 
-  const logout = useCallback((): void => {
-    supabase.auth.signOut().then(() => setSession(null))
+  const logout = useCallback(async (): Promise<void> => {
+    try {
+      const { error } = await supabase.auth.signOut();
+      if (error) {
+        toast.error("Error during logout: " + error.message);
+        return;
+      }
+      setSession(null);
+    } catch (err: any) {
+      toast.error("Unexpected error during logout: " + (err?.message || err));
+    }
   }, [])
 
   const value: AuthContextType = useMemo(
