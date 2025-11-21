@@ -63,7 +63,7 @@ resource apimLogger 'Microsoft.ApiManagement/service/loggers@2021-12-01-preview'
   parent: apimService
   properties: {
     credentials: {
-      instrumentationKey: applicationInsights.properties.InstrumentationKey
+      instrumentationKey: applicationInsights!.properties.InstrumentationKey
     }
     description: 'Logger to Azure Application Insights'
     isBuffered: false

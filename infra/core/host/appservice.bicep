@@ -94,8 +94,8 @@ module configAppSettings 'appservice-appsettings.bicep' = {
         ENABLE_ORYX_BUILD: string(enableOryxBuild)
       },
       runtimeName == 'python' && appCommandLine == '' ? { PYTHON_ENABLE_GUNICORN_MULTIWORKERS: 'true'} : {},
-      !empty(applicationInsightsName) ? { APPLICATIONINSIGHTS_CONNECTION_STRING: applicationInsights.properties.ConnectionString } : {},
-      !empty(keyVaultName) ? { AZURE_KEY_VAULT_ENDPOINT: keyVault.properties.vaultUri } : {})
+      !empty(applicationInsightsName) ? { APPLICATIONINSIGHTS_CONNECTION_STRING: applicationInsights.?properties.ConnectionString } : {},
+      !empty(keyVaultName) ? { AZURE_KEY_VAULT_ENDPOINT: keyVault.?properties.vaultUri } : {})
   }
 }
 

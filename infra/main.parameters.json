@@ -26,6 +26,12 @@
 		"stytchPublicToken": {
 			"value": "${STYTCH_PUBLIC_TOKEN}"
 		},
+		"supabaseUrl": {
+			"value": "${SUPABASE_URL}"
+		},
+		"supabaseKey": {
+			"value": "${SUPABASE_KEY}"
+		},
 		"sentryDsn": {
 			"value": "${SENTRY_DSN}"
 		}

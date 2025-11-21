@@ -29,6 +29,8 @@ param storageContainerName string = 'trey'
 param storageSKU string = 'Standard_LRS'
 param stytchPublicToken string = ''
 param sentryDsn string = ''
+param supabaseUrl string = ''
+param supabaseKey string = ''
 
 
 @description('Flag to use Azure API Management to mediate the calls between the Web frontend and the backend API')
@@ -63,6 +65,8 @@ module web './app/web.bicep' = {
     appServicePlanId: appServicePlan.outputs.id
     stytchPublicToken: stytchPublicToken
     sentryDsn: sentryDsn
+    supabaseKey: supabaseKey
+    supabaseUrl: supabaseUrl
   }
 }
 
@@ -86,6 +90,8 @@ module api './app/api.bicep' = {
       API_ALLOW_ORIGINS: web.outputs.SERVICE_WEB_URI
       STYTCH_PROJECT_ID: '@Microsoft.KeyVault(VaultName=${keyVault.outputs.name};SecretName=STYTCH-PROJECT-ID)'
       STYTCH_PROJECT_SECRET: '@Microsoft.KeyVault(VaultName=${keyVault.outputs.name};SecretName=STYTCH-PROJECT-SECRET)'
+      SUPABASE_KEY: '@Microsoft.KeyVault(VaultName=${keyVault.outputs.name};SecretName=SUPABASE-KEY)'
+      SUPABASE_URL: '@Microsoft.KeyVault(VaultName=${keyVault.outputs.name};SecretName=SUPABASE-URL)'
     }
   }
 }
@@ -239,7 +245,7 @@ module apimApi './app/apim-api.bicep' = if (useAPIM) {
   name: 'apim-api-deployment'
   scope: rg
   params: {
-    name: useAPIM ? apim.outputs.apimServiceName : ''
+    name: useAPIM ? apim!.outputs.apimServiceName : ''
     apiName: 'todo-api'
     apiDisplayName: 'Simple Todo API'
     apiDescription: 'This is a simple Todo API'
@@ -264,7 +270,7 @@ output AZURE_KEY_VAULT_ENDPOINT string = keyVault.outputs.endpoint
 output AZURE_KEY_VAULT_NAME string = keyVault.outputs.name
 output AZURE_LOCATION string = location
 output AZURE_TENANT_ID string = tenant().tenantId
-output API_BASE_URL string = useAPIM ? apimApi.outputs.SERVICE_API_URI : api.outputs.SERVICE_API_URI
+output API_BASE_URL string = useAPIM ? apimApi!.outputs.SERVICE_API_URI : api.outputs.SERVICE_API_URI
 output REACT_APP_WEB_BASE_URL string = web.outputs.SERVICE_WEB_URI
 output USE_APIM bool = useAPIM
-output SERVICE_API_ENDPOINTS array = useAPIM ? [ apimApi.outputs.SERVICE_API_URI, api.outputs.SERVICE_API_URI ]: []
+output SERVICE_API_ENDPOINTS array = useAPIM ? [ apimApi!.outputs.SERVICE_API_URI, api.outputs.SERVICE_API_URI ]: []

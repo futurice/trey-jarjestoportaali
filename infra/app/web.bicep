@@ -7,6 +7,8 @@ param applicationInsightsName string = ''
 param appServicePlanId string
 param stytchPublicToken string
 param sentryDsn string
+param supabaseUrl string
+param supabaseKey string
 
 module web '../core/host/appservice.bicep' = {
   name: '${name}-deployment'
@@ -21,6 +23,8 @@ module web '../core/host/appservice.bicep' = {
     tags: union(tags, { 'azd-service-name': serviceName })
     appSettings: {
       STYTCH_PUBLIC_TOKEN: stytchPublicToken
+      SUPABASE_URL: supabaseUrl
+      SUPABASE_KEY: supabaseKey
       SENTRY_DSN: sentryDsn
     }
   }
