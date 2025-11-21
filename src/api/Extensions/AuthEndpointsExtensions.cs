@@ -28,7 +28,7 @@ public static class AuthEndpointsExtensions
     // The 'email_for_username' RPC function retrieves the email address associated with the given username from the database.
     // This is necessary for the username-based login flow, as Supabase authentication requires an email address.
     // By mapping the provided username to its corresponding email, we enable users to log in using their username.
-    string userEmail = null;
+    string? userEmail = null;
     Supabase.Gotrue.Responses.RpcResponse userEmailResponse = null;
     try
     {
