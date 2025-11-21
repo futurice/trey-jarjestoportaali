@@ -1,17 +1,17 @@
-import { Box, Container, IconButton, ListItemIcon, Menu, MenuItem } from "@mui/material"
-import styles from "./Logincontainer.module.css"
-import { t } from "i18next"
 import { useState } from "react"
-import i18n from "../../i18n"
-import { Language } from "@mui/icons-material"
 import { useNavigate } from "react-router-dom"
+import { Language } from "@mui/icons-material"
+import { Box, Container, IconButton, ListItemIcon, Menu, MenuItem } from "@mui/material"
+import { t } from "i18next"
+import i18n from "../../../i18n"
+import styles from "./Logincontainer.module.css"
 
 interface ILoginContainer {
   children: React.ReactNode
 }
 
 export const LoginContainer: React.FC<ILoginContainer> = ({ children }) => {
-  const navigate = useNavigate();
+  const navigate = useNavigate()
   const [lngAnchorEl, setLngAnchorEl] = useState<null | HTMLElement>(null)
 
   const lngOpen = Boolean(lngAnchorEl)
@@ -88,7 +88,12 @@ export const LoginContainer: React.FC<ILoginContainer> = ({ children }) => {
   return (
     <>
       <Box sx={{ top: 10, left: 10, position: "absolute", zIndex: 100 }} className="sentry-mask">
-        <IconButton className="languageMenuButton" aria-label="Change language" sx={{ p: 1 }} onClick={handleLngClick}>
+        <IconButton
+          className="languageMenuButton"
+          aria-label="Change language"
+          sx={{ p: 1 }}
+          onClick={handleLngClick}
+        >
           <Language sx={{ color: "white", fontSize: "2rem" }} />
         </IconButton>
       </Box>

@@ -38,7 +38,7 @@ public class RoleAuthorizationMiddleware(RequestDelegate next, IServiceScopeFact
                     context.Response.StatusCode = StatusCodes.Status403Forbidden;
                     return;
                 }
-                logger.LogDebug("User {user} has required role {role}", user.Name, user.Role);
+                logger.LogDebug("User {user} has required role {role}", user.Username, user.Role);
             }
 
             await next(context);

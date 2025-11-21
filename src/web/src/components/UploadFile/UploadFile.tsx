@@ -1,29 +1,29 @@
-import React, {useMemo, useState} from 'react';
-import styles from './UploadFile.module.css';
-import {useStytch} from "@stytch/react";
-import { useFileService } from '../../hooks/useFileService';
-import { useFileUpload } from '../../hooks/useFileUpload';
+import React, { useMemo, useState } from "react"
+import { useAuth } from "../../authentication/AuthContext"
+import { useFileService } from "../../hooks/useFileService"
+import { useFileUpload } from "../../hooks/useFileUpload"
+import styles from "./UploadFile.module.css"
 
 const UploadFile = () => {
-  const [file, setFile] = useState<File | null>(null);
+  const [file, setFile] = useState<File | null>(null)
 
-  const { session } = useStytch()
-  const sessionJwt = useMemo(() => session?.getTokens()?.session_jwt, [session]);
+  const { session } = useAuth()
+  const sessionJwt = useMemo(() => session?.access_token, [session])
 
-  const fileService = useFileService(sessionJwt);
-  const { isUploading, uploadError, uploadFile } = useFileUpload(fileService);
+  const fileService = useFileService(sessionJwt)
+  const { isUploading, uploadError, uploadFile } = useFileUpload(fileService)
 
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     if (event.target.files && event.target.files.length > 0) {
-      setFile(event.target.files[0]);
+      setFile(event.target.files[0])
     }
-  };
+  }
 
   const handleUpload = () => {
     if (file) {
-      uploadFile(file);
+      uploadFile(file)
     }
-  };
+  }
 
   return (
     <div className={styles.uploadFileContainer}>
@@ -44,18 +44,18 @@ const UploadFile = () => {
         className={styles.uploadButton}
         aria-busy={isUploading}
       >
-        {isUploading ? 'Uploading...' : 'Upload'}
+        {isUploading ? "Uploading..." : "Upload"}
       </button>
       {uploadError && (
         <p id="file-upload-error" className={styles.uploadError} role="alert">
           {uploadError}
         </p>
       )}
-      <p id="file-upload-description" style={{ display: 'none' }}>
+      <p id="file-upload-description" style={{ display: "none" }}>
         Please select a file to upload and then click the upload button.
       </p>
     </div>
-  );
-};
+  )
+}
 
-export default UploadFile;
+export default UploadFile

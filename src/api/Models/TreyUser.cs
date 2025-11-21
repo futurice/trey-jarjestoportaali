@@ -1,3 +1,6 @@
+using Supabase.Postgrest.Attributes;
+using Supabase.Postgrest.Models;
+
 namespace Trey.Api.Models;
 
 public enum TreyRole
@@ -34,7 +37,27 @@ public static class TreyRoleExtensions
 
 public class TreyUser
 {
-    public required string Name { get; set; }
-    public required string OrganizationId { get; set; }
+    public required Guid Id { get; set; }
+    public string? Username { get; set; }
+    public string? OrganizationId { get; set; }
     public TreyRole Role { get; set; }
+    public DateTime CreatedAt { get; set; }
+    public DateTime UpdatedAt { get; set; }
+}
+
+[Table("profiles")]
+public class TreyUserDbObject : BaseModel
+{
+    [PrimaryKey("id")]
+    public string Id { get; set; }
+    [Column("username")]
+    public string? Username { get; set; }
+    [Column("organization_id")]
+    public string? OrganizationId { get; set; }
+    [Column("trey_role")]
+    public TreyRole Role { get; set; }
+    [Column("created_at")]
+    public DateTime CreatedAt { get; set; }
+    [Column("updated_at")]
+    public DateTime UpdatedAt { get; set; }
 }

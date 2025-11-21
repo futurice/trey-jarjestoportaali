@@ -10,20 +10,17 @@ import {
   Paper,
   ListItemButton,
 } from "@mui/material"
-import { useStytch } from "@stytch/react"
-import { useAuth } from "../hooks/useAuth"
+import { useAuth } from "../authentication/AuthContext"
 import { useSurveyService } from "../hooks/useSurveyService"
 import { useSurveys } from "../hooks/useSurveys"
 import { SurveyLanguage } from "../models/survey"
 
 const Dashboard = () => {
   const { t, i18n } = useTranslation()
-  const { user } = useAuth()
-  const { session } = useStytch()
+  const { session, treyUser } = useAuth()
 
-  const sessionJwt = useMemo(() => session?.getTokens()?.session_jwt, [session])
-
-  const surveyService = useSurveyService(user?.role, sessionJwt)
+  const sessionJwt = useMemo(() => session?.access_token, [session])
+  const surveyService = useSurveyService(treyUser?.role, sessionJwt)
   const { surveys, loading } = useSurveys(surveyService)
 
   // Get the current language code and map it to SurveyLanguage
@@ -48,14 +45,22 @@ const Dashboard = () => {
         ) : (
           <List>
             {surveys?.map((survey) => {
-              const responsePeriodStart = survey.responsePeriod?.start && new Date(survey.responsePeriod?.start).toLocaleDateString("fi-FI");
-              const responsePeriodEnd = survey.responsePeriod?.end && new Date(survey.responsePeriod?.end).toLocaleDateString("fi-FI");
+              const responsePeriodStart =
+                survey.responsePeriod?.start &&
+                new Date(survey.responsePeriod?.start).toLocaleDateString("fi-FI")
+              const responsePeriodEnd =
+                survey.responsePeriod?.end &&
+                new Date(survey.responsePeriod?.end).toLocaleDateString("fi-FI")
               return (
                 <ListItemButton component={Link} to={`/survey/${survey.id}`} key={survey.id}>
                   <ListItem key={survey.id} divider>
                     <ListItemText
                       primary={survey.name[currentLanguage]}
-                      secondary={responsePeriodStart && responsePeriodEnd ? `${responsePeriodStart} - ${responsePeriodEnd}` : ""}
+                      secondary={
+                        responsePeriodStart && responsePeriodEnd
+                          ? `${responsePeriodStart} - ${responsePeriodEnd}`
+                          : ""
+                      }
                     />
                   </ListItem>
                 </ListItemButton>

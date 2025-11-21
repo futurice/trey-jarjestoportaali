@@ -1,71 +1,124 @@
 {
-	"form": {
-		"info": "Basic information of the form",
-		"name": {
-			"label": "Form name",
-			"placeholder": "Write the name of the form"
-		},
-		"required": "Required information",
-		"description": {
-			"label": "Form description",
-			"placeholder": "Write the description of the form"
-		},
-		"questions": "Questions",
-		"question": {
-			"placeholder": "Question title",
-			"textField": "Text field",
-			"add": "Add new question"
-		},
-		"submit": "Save form",
-		"create": ""
-	},
-	"delete": "Delete",
-	"logout": "Log out",
-	"navigation": {
-		"dashboard": "Dashboard",
-		"files": "Files"
-	},
-	"language": {
-		"fi": "Finnish",
-		"en": "English"
-	},
-	"dashboard": {
-		"title": "Dashboard",
-		"availableSurveys": "Available Surveys",
-		"noSurveys": "No surveys available"
-	},
-	"common": {
-		"loading": "Loading..."
-	},
-	"feedback": {
-		"title": "Give feedback",
-		"label": "Feedback",
-		"trigger": "Give feedback",
-		"cancel": "Cancel",
-		"confirm": "Send",
-		"addScreenshot": "Add screenshot",
-		"removeScreenshot": "Remove screenshot",
-		"name": "Name",
-		"namePlaceholder": "Write your name",
-		"email": "Email",
-		"emailPlaceholder": "Write your email address",
-		"isRequired": "Required information",
-		"message": "Feedback",
-		"messageLabel": "Feedback",
-		"messagePlaceholder": "Did you find a bug? Do you want to give feedback? Tell us!",
-		"successMessage": "Thank you for your feedback!",
-		"submit": "Send"
-	},
-	"responses_saved": "Responses saved",
-	"responses_saved_to_server": "Responses saved to the server successfully!",
-	"responses_save_failed": "Failed to save responses to the server. The responses are still saved locally.",
-	"error": {
-		"noToken": "No login token provided. Please log in again.",
-		"loginLinkExpired": "The login link has expired or already used. Please request a new link by logging in again."
-	},
-	"no_organization": {
-		"title": "No association found",
-		"error": "Your account is not linked to any association. If you are a representative of an association, please contact TREY's association sector to add the missing information.",
-		"error2": "Please also ensure that you are logged in with the email address of your association to which the account creation notification was sent."
-	}
+  "form": {
+    "info": "Basic information of the form",
+    "name": {
+      "label": "Form name",
+      "placeholder": "Write the name of the form"
+    },
+    "required": "Required information",
+    "description": {
+      "label": "Form description",
+      "placeholder": "Write the description of the form"
+    },
+    "questions": "Questions",
+    "question": {
+      "placeholder": "Question title",
+      "textField": "Text field",
+      "add": "Add new question"
+    },
+    "submit": "Save form",
+    "create": ""
+  },
+  "delete": "Delete",
+  "logout": "Log out",
+  "navigation": {
+    "dashboard": "Dashboard",
+    "files": "Files"
+  },
+  "language": {
+    "fi": "Finnish",
+    "en": "English"
+  },
+  "dashboard": {
+    "title": "Dashboard",
+    "availableSurveys": "Available Surveys",
+    "noSurveys": "No surveys available"
+  },
+  "common": {
+    "loading": "Loading..."
+  },
+  "feedback": {
+    "title": "Give feedback",
+    "label": "Feedback",
+    "trigger": "Give feedback",
+    "cancel": "Cancel",
+    "confirm": "Send",
+    "addScreenshot": "Add screenshot",
+    "removeScreenshot": "Remove screenshot",
+    "name": "Name",
+    "namePlaceholder": "Write your name",
+    "email": "Email",
+    "emailPlaceholder": "Write your email address",
+    "isRequired": "Required information",
+    "message": "Feedback",
+    "messageLabel": "Feedback",
+    "messagePlaceholder": "Did you find a bug? Do you want to give feedback? Tell us!",
+    "successMessage": "Thank you for your feedback!",
+    "submit": "Send"
+  },
+  "responses_saved": "Responses saved",
+  "responses_saved_to_server": "Responses saved to the server successfully!",
+  "responses_save_failed": "Failed to save responses to the server. The responses are still saved locally.",
+  "error": {
+    "noToken": "No login token provided. Please log in again.",
+    "loginLinkExpired": "The login link has expired or already used. Please request a new link by logging in again."
+  },
+  "no_organization": {
+    "title": "No association found",
+    "error": "Your account is not linked to any association. If you are a representative of an association, please contact TREY's association sector to add the missing information.",
+    "error2": "Please also ensure that you are logged in with the email address of your association to which the account creation notification was sent."
+  },
+  "login": {
+    "title": "Log in using your organization's username or email address",
+    "username": "Username",
+    "password": "Password",
+    "forgot_password": "Forgot your password?",
+    "sign_in": {
+      "label": "Log in",
+      "loading_text": "Logging in..."
+    },
+    "error": {
+      "username_required": "Username or email is a required field.",
+      "password_required": "Password is a required field.",
+      "password_too_short": "Password must be at least 8 characters long."
+    }
+  },
+  "forgot_password": {
+    "title": "Reset your password",
+    "instructions": "Forgot your password? Enter your email address in the field below, and we will send you instructions on how to change your password.",
+    "email_label": "Email",
+    "submit": "Reset password",
+    "success": {
+      "title": "Email sent",
+      "message": "If your email address is found in our system, we have sent you instructions on how to change your password."
+    },
+    "loading": "Sending request...",
+    "error_message": {
+      "title": "An error occurred",
+      "generic": "Password reset failed. Please try again later.",
+      "email_required": "Email is a required field.",
+      "invalid_email": "Email is not valid."
+    },
+    "back_to_login": "Back to login page"
+  },
+  "reset_password": {
+    "title": "Reset your password",
+    "instructions": "Enter your new password in the fields below.",
+    "new_password_label": "New password",
+    "confirm_password_label": "Confirm password",
+    "submit": "Change password",
+    "loading": "Changing password...",
+    "success": {
+      "title": "Password changed",
+      "message": "Your password has been changed successfully."
+    },
+    "error_message": {
+      "title": "An error occurred",
+      "generic": "Password change failed. Please try again later.",
+      "repeat_password_required": "Confirm password is a required field.",
+      "password_required": "New password is a required field.",
+      "passwords_do_not_match": "Passwords do not match.",
+      "password_too_short": "Password must be at least 8 characters long."
+    }
+  }
 }
