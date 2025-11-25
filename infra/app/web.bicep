@@ -19,7 +19,7 @@ module web '../core/host/appservice.bicep' = {
     applicationInsightsName: applicationInsightsName
     appServicePlanId: appServicePlanId
     runtimeName: 'node'
-    runtimeVersion: '20-lts'
+    runtimeVersion: '24-lts'
     tags: union(tags, { 'azd-service-name': serviceName })
     appSettings: {
       STYTCH_PUBLIC_TOKEN: stytchPublicToken
