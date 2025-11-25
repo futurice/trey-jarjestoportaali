@@ -8,7 +8,7 @@ param appServicePlanId string
 param stytchPublicToken string
 param sentryDsn string
 param supabaseUrl string
-param supabaseKey string
+param supabasePublicKey string
 
 module web '../core/host/appservice.bicep' = {
   name: '${name}-deployment'
@@ -24,7 +24,7 @@ module web '../core/host/appservice.bicep' = {
     appSettings: {
       STYTCH_PUBLIC_TOKEN: stytchPublicToken
       SUPABASE_URL: supabaseUrl
-      SUPABASE_KEY: supabaseKey
+      SUPABASE_PUBLIC_KEY: supabasePublicKey
       SENTRY_DSN: sentryDsn
     }
   }

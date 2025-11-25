@@ -10,7 +10,7 @@ export interface ObservabilityConfig {
 
 export interface SupabaseConfig {
   url: string
-  key: string
+  publicKey: string
 }
 
 export interface SentryConfig {
@@ -33,7 +33,7 @@ const config: AppConfig = {
   },
   supabase: {
     url: import.meta.env.VITE_SUPABASE_URL || "",
-    key: import.meta.env.VITE_SUPABASE_KEY || "",
+    publicKey: import.meta.env.VITE_SUPABASE_PUBLIC_KEY || "",
   },
   sentry: {
     dsn: import.meta.env.VITE_SENTRY_DSN || "",

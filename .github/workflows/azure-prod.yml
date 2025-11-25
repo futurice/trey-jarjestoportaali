@@ -30,6 +30,7 @@ jobs:
       AZURE_LOCATION: ${{ vars.AZURE_LOCATION }}
       STYTCH_PUBLIC_TOKEN: ${{ secrets.STYTCH_PUBLIC_TOKEN }}
       SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+      SUPABASE_PUBLIC_KEY: ${{ secrets.SUPABASE_PUBLIC_KEY }}
       SUPABASE_KEY: ${{ secrets.SUPABASE_KEY }}
       SENTRY_DSN: ${{ secrets.SENTRY_DSN }}
     steps:

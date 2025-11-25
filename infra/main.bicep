@@ -30,7 +30,7 @@ param storageSKU string = 'Standard_LRS'
 param stytchPublicToken string = ''
 param sentryDsn string = ''
 param supabaseUrl string = ''
-param supabaseKey string = ''
+param supabasePublicKey string = ''
 
 
 @description('Flag to use Azure API Management to mediate the calls between the Web frontend and the backend API')
@@ -65,7 +65,7 @@ module web './app/web.bicep' = {
     appServicePlanId: appServicePlan.outputs.id
     stytchPublicToken: stytchPublicToken
     sentryDsn: sentryDsn
-    supabaseKey: supabaseKey
+    supabasePublicKey: supabasePublicKey
     supabaseUrl: supabaseUrl
   }
 }

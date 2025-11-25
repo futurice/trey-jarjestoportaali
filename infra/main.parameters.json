@@ -32,6 +32,9 @@
 		"supabaseKey": {
 			"value": "${SUPABASE_KEY}"
 		},
+		"supabasePublicKey": {
+			"value": "${SUPABASE_PUBLIC_KEY}"
+		},
 		"sentryDsn": {
 			"value": "${SENTRY_DSN}"
 		}

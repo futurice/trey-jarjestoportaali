@@ -23,10 +23,10 @@ services:
       prepackage:
         windows:
           shell: pwsh
-          run: 'echo "VITE_API_BASE_URL=""$env:API_BASE_URL""" > .env.local ; echo "VITE_APPLICATIONINSIGHTS_CONNECTION_STRING=""$env:APPLICATIONINSIGHTS_CONNECTION_STRING""" >> .env.local ; echo "VITE_SENTRY_DSN=""$env:SENTRY_DSN""" >> .env.local ; echo "VITE_STYTCH_PUBLIC_TOKEN=""$env:STYTCH_PUBLIC_TOKEN""" >> .env.local ; echo "VITE_SUPABASE_URL=""$env:SUPABASE_URL""" >> .env.local ; echo "VITE_SUPABASE_KEY=""$env:SUPABASE_KEY""" >> .env.local'
+          run: 'echo "VITE_API_BASE_URL=""$env:API_BASE_URL""" > .env.local ; echo "VITE_APPLICATIONINSIGHTS_CONNECTION_STRING=""$env:APPLICATIONINSIGHTS_CONNECTION_STRING""" >> .env.local ; echo "VITE_SENTRY_DSN=""$env:SENTRY_DSN""" >> .env.local ; echo "VITE_STYTCH_PUBLIC_TOKEN=""$env:STYTCH_PUBLIC_TOKEN""" >> .env.local ; echo "VITE_SUPABASE_URL=""$env:SUPABASE_URL""" >> .env.local ; echo "VITE_SUPABASE_PUBLIC_KEY=""$env:SUPABASE_PUBLIC_KEY""" >> .env.local'
         posix:
           shell: sh
-          run: 'echo VITE_API_BASE_URL=\"$API_BASE_URL\" > .env.local && echo VITE_APPLICATIONINSIGHTS_CONNECTION_STRING=\"$APPLICATIONINSIGHTS_CONNECTION_STRING\" >> .env.local && echo VITE_SENTRY_DSN=\"$SENTRY_DSN\" >> .env.local && echo VITE_STYTCH_PUBLIC_TOKEN=\"$STYTCH_PUBLIC_TOKEN\" >> .env.local ; echo VITE_SUPABASE_URL=\"$SUPABASE_URL\" >> .env.local ; echo VITE_SUPABASE_KEY=\"$SUPABASE_KEY\" >> .env.local'
+          run: 'echo VITE_API_BASE_URL=\"$API_BASE_URL\" > .env.local && echo VITE_APPLICATIONINSIGHTS_CONNECTION_STRING=\"$APPLICATIONINSIGHTS_CONNECTION_STRING\" >> .env.local && echo VITE_SENTRY_DSN=\"$SENTRY_DSN\" >> .env.local && echo VITE_STYTCH_PUBLIC_TOKEN=\"$STYTCH_PUBLIC_TOKEN\" >> .env.local ; echo VITE_SUPABASE_URL=\"$SUPABASE_URL\" >> .env.local ; echo VITE_SUPABASE_PUBLIC_KEY=\"$SUPABASE_PUBLIC_KEY\" >> .env.local'
       postdeploy:
         windows:
           shell: pwsh
