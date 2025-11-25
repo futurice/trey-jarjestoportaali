@@ -7,7 +7,8 @@ using Trey.Api.Extensions;
 using Trey.Api.Middleware;
 using Trey.Api.Repositories;
 using Trey.Api.Services;
-using Supabase.Gotrue;
+using Microsoft.AspNetCore.Diagnostics.HealthChecks;
+using Microsoft.Extensions.Diagnostics.HealthChecks;
 
 var credentialOptions = new DefaultAzureCredentialOptions
 {
@@ -57,6 +58,10 @@ builder.Services.AddSingleton<BlobContainerClient>(serviceProvider =>
 
     return containerClient;
 });
+
+builder.Services.AddHealthChecks()
+    .AddAzureCosmosDB()
+    .AddAzureBlobStorage();
 
 builder.Services.AddSingleton<FileService>();
 builder.Services.AddSingleton<OrganizationsRepository>();
@@ -123,5 +128,37 @@ app.MapGroup("/auth")
     .MapAuthApi()
     .WithOpenApi()
     .DisableAntiforgery(); // FIXME - remove this line when antiforgery is implemented
+
+app.UseHealthChecks("/health",
+    new HealthCheckOptions
+    {
+        ResponseWriter = async (context, report) =>
+        {
+            var result = JsonSerializer.Serialize(
+              new
+              {
+                  status = report.Status.ToString(),
+                  duration = $"{report.TotalDuration.TotalMilliseconds} ms",
+                  errors = report.Entries.Where(e => e.Value.Status != HealthStatus.Healthy).Select(e => new
+                  {
+                      service = e.Key,
+                      status = Enum.GetName(typeof(HealthStatus), e.Value.Status),
+                      duration = $"{e.Value.Duration.TotalMilliseconds} ms",
+                      description = e.Value.Exception?.Message ?? e.Value.Description
+                  }),
+                  services = report.Entries.Select(e => new
+                  {
+                      service = e.Key,
+                      status = Enum.GetName(typeof(HealthStatus), e.Value.Status),
+                      duration = $"{e.Value.Duration.TotalMilliseconds} ms"
+                  })
+              }
+            );
+            context.Response.ContentType = "application/json";
+            await context.Response.WriteAsync(result);
+        }
+    }
+);
+
 
 app.Run();
