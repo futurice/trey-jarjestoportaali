@@ -81,6 +81,11 @@
       "username_required": "Käyttäjätunnus tai sähköposti on pakollinen tieto.",
       "password_required": "Salasana on pakollinen tieto.",
       "password_too_short": "Salasanan on oltava vähintään 8 merkkiä pitkä."
+    },
+    "toast": {
+      "success": "Kirjautuminen onnistui!",
+      "invalid_credentials": "Kirjautuminen epäonnistui. Tarkista käyttäjätunnus ja salasana.",
+      "error": "Tapahtui virhe kirjautumisen aikana. Yritä myöhemmin uudelleen."
     }
   },
   "forgot_password": {

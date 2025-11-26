@@ -2,15 +2,7 @@ import { useState } from "react"
 import { useTranslation } from "react-i18next"
 import { Navigate, useNavigate, Link } from "react-router-dom"
 import { Person, VisibilityOff, Visibility, Lock } from "@mui/icons-material"
-import {
-  Alert,
-  Box,
-  CircularProgress,
-  IconButton,
-  InputAdornment,
-  TextField,
-  Typography,
-} from "@mui/material"
+import { Alert, Box, IconButton, InputAdornment, TextField, Typography } from "@mui/material"
 import JippoBW from "../../assets/JippoLogo"
 import { useAuth } from "../../authentication/AuthContext"
 import { LoginButton } from "../Button/LoginButton"
@@ -20,9 +12,7 @@ import { LoginContainer } from "./LoginContainer/LoginContainer"
 const Login = () => {
   const { isLoading, signIn, session } = useAuth()
 
-  if (isLoading) {
-    return <CircularProgress />
-  } else if (session?.user) {
+  if (session?.user) {
     return <Navigate to="/dashboard" />
   }
 

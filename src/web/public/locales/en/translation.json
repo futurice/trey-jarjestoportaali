@@ -81,6 +81,11 @@
       "username_required": "Username or email is a required field.",
       "password_required": "Password is a required field.",
       "password_too_short": "Password must be at least 8 characters long."
+    },
+    "toast": {
+      "success": "Login successful!",
+      "invalid_credentials": "Login failed. Please check your username and password.",
+      "error": "An error occurred during login. Please try again later."
     }
   },
   "forgot_password": {

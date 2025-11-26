@@ -8,8 +8,9 @@ import {
   useCallback,
 } from "react"
 import toast from "react-hot-toast"
+import { useTranslation } from "react-i18next"
 import { AuthError, Session, User } from "@supabase/supabase-js"
-import { authorizeUser } from "../services/authService"
+import { authorizeUser, AuthResponseError } from "../services/authService"
 import { Roles } from "./Roles"
 import { supabase } from "./authClient"
 
@@ -65,6 +66,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const [session, setSession] = useState<Session | null>(null)
   const [isLoading, setIsLoading] = useState(true)
   const [user, setUser] = useState<User | null>(null)
+  const { t } = useTranslation()
 
   // Check for existing session on mount
   useEffect(() => {
@@ -102,34 +104,35 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       callbackFunction: () => void
     }) => {
       setIsLoading(true)
-      authorizeUser(username, password)
-        .then(async (res) => {
-          supabase.auth
-            .setSession({
-              access_token: res.accessToken,
-              refresh_token: res.refreshToken,
-            })
-            .then(({ data, error }) => {
-              if (error) {
-                toast.error("Error setting session: " + error.message)
-              } else if (data.session) {
-                toast.success("Successfully signed in!")
-                setSession(data.session)
-                setUser(data.user)
-                // Execute the callback function after successful sign-in
-                callbackFunction()
-              }
-            })
-            .catch((err) => {
-              toast.error("Error during sign-in: " + err.message)
-            })
+      try {
+        const res = await authorizeUser(username, password)
+        if (!res || (res as AuthResponseError).status) {
+          throw res
+        }
+        const supabaseRes = await supabase.auth.setSession({
+          access_token: res.accessToken,
+          refresh_token: res.refreshToken,
         })
-        .catch((err) => {
-          toast.error("Error authorizing user: " + err.message)
-        })
-        .finally(() => setIsLoading(false))
+        if (supabaseRes.error) {
+          toast.error("Error setting session: " + supabaseRes.error.message)
+        } else if (supabaseRes.data.session) {
+          toast.success("Successfully signed in!")
+          setSession(supabaseRes.data.session)
+          setUser(supabaseRes.data.user)
+          // Execute the callback function after successful sign-in
+          callbackFunction()
+        }
+      } catch (err: AuthResponseError | unknown) {
+        if ((err as AuthResponseError).status === 401) {
+          toast.error(t("login.toast.invalid_credentials"))
+        } else {
+          toast.error(t("login.toast.error"))
+        }
+      } finally {
+        setIsLoading(false)
+      }
     },
-    [],
+    [t],
   )
 
   const forgotPasswordRequest = useCallback(async (email: string): Promise<RequestResponse> => {

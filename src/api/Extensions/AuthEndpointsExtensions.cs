@@ -2,6 +2,7 @@ using System.ComponentModel.DataAnnotations;
 using System.Net;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
+using Supabase.Gotrue.Exceptions;
 
 namespace Trey.Api.Extensions;
 
@@ -18,12 +19,25 @@ public static class AuthEndpointsExtensions
     var email = new EmailAddressAttribute();
     if (email.IsValid(loginData.Username))
     {
-      var emailResponse = await supabase.Auth.SignInWithPassword(loginData.Username, loginData.Password);
-      if (emailResponse?.User == null)
+      try
       {
-        return TypedResults.Unauthorized();
+        var emailResponse = await supabase.Auth.SignInWithPassword(loginData.Username, loginData.Password);
+        if (emailResponse?.User == null)
+        {
+          return TypedResults.Unauthorized();
+        }
+        return TypedResults.Ok(emailResponse);
       }
-      return TypedResults.Ok(emailResponse);
+      catch (GotrueException ex)
+      {
+        // Log the exception if logging is available
+        if (ex.StatusCode == 400 || ex.StatusCode == 401)
+        {
+          return TypedResults.Unauthorized();
+        }
+        return TypedResults.Problem("An error occurred while attempting to sign in with email.", statusCode: (int)HttpStatusCode.InternalServerError);
+      }
+
     }
     // The 'email_for_username' RPC function retrieves the email address associated with the given username from the database.
     // This is necessary for the username-based login flow, as Supabase authentication requires an email address.
@@ -44,7 +58,7 @@ public static class AuthEndpointsExtensions
     {
       return TypedResults.Unauthorized();
     }
-    else if (!email.IsValid(userEmail))
+    else if (userEmail == null || !email.IsValid(userEmail))
     {
       return TypedResults.Unauthorized();
     }
