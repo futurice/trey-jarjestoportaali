@@ -125,5 +125,39 @@
       "passwords_do_not_match": "Passwords do not match.",
       "password_too_short": "Password must be at least 8 characters long."
     }
+  },
+  "organization": {
+    "category": {
+      "FacultyAndUmbrella": "Faculty & Umbrella",
+      "Hobby": "Hobby",
+      "StudentAssociation": "Student Association",
+      "Other": "Other",
+      "Unknown": "Unknown"
+    },
+    "founding_year": "Founding Year",
+    "email": "Email",
+    "website": "Website",
+    "member_count": "Members",
+    "trey_members": "TREY Members",
+    "bank_account": "Bank Account",
+    "operating_period": {
+      "label": "Operating Period",
+      "start": "Starts",
+      "end": "Ends"
+    },
+    "tabs": {
+      "board": "Board",
+      "facilities": "Facilities",
+      "permissions": "Permissions",
+      "communications": "Communications"
+    },
+    "board": {
+      "no_board_members": "No board members found.",
+      "board_members": "Board Members",
+      "chairperson": "Chairperson",
+      "intra_rights_owner": "Intra Rights Owner",
+      "signature_rights_owners": "Signature Rights Owners",
+      "name": "Name"
+    }
   }
 }
