@@ -83,3 +83,13 @@ export const useGetOrganizationById = (
     enabled: (!!organizationId || !!organizationsService) && enabled,
   })
 }
+
+export const useGetOrganizationsList = (organizationsService: OrganizationService | null) => {
+  return useQuery<Organization[], AxiosError>({
+    queryKey: ["organizations"],
+    queryFn: async () => {
+      return await organizationsService!.getList()
+    },
+    enabled: !!organizationsService,
+  })
+}
