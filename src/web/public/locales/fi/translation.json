@@ -23,7 +23,8 @@
   "logout": "Kirjaudu ulos",
   "navigation": {
     "dashboard": "Dashboard",
-    "files": "Tiedostot"
+    "files": "Tiedostot",
+    "organizations": "Yhdistykset"
   },
   "language": {
     "fi": "Suomi",

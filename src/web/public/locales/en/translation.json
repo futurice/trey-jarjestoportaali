@@ -23,7 +23,8 @@
   "logout": "Log out",
   "navigation": {
     "dashboard": "Dashboard",
-    "files": "Files"
+    "files": "Files",
+    "organizations": "Organizations"
   },
   "language": {
     "fi": "Finnish",

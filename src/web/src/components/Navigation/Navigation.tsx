@@ -16,16 +16,27 @@ import {
   useTheme,
 } from "@mui/material"
 import TreyLogo from "../../assets/TreyLogo"
+import { Roles } from "../../authentication"
 import { useAuth } from "../../authentication/AuthContext"
 import i18n from "../../i18n"
 
 interface NavigationRoute {
   name: string
   href: string
+  roles?: Roles[]
 }
 
 const navigationRoutes = [
-  { name: "navigation.dashboard", href: "/dashboard" },
+  {
+    name: "navigation.dashboard",
+    href: "/dashboard",
+    roles: [Roles.ORGANISATION, Roles.TREY_BOARD, Roles.ADMIN],
+  },
+  {
+    name: "navigation.organizations",
+    href: "/organizations",
+    roles: [Roles.ADMIN, Roles.TREY_BOARD],
+  },
   // { name: "navigation.files", href: "/my-files" },
 ] as NavigationRoute[]
 
@@ -55,7 +66,7 @@ const NavigationItem = ({ item, isOpen }: { item: NavigationRoute; isOpen: boole
 
 const Navigation = () => {
   const location = useLocation()
-  const { user, logout } = useAuth()
+  const { user, logout, treyUser } = useAuth()
   const { t } = useTranslation()
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null)
   const [lngAnchorEl, setLngAnchorEl] = useState<null | HTMLElement>(null)
@@ -182,6 +193,16 @@ const Navigation = () => {
     ) : null
   }
 
+  const allowedRoutes = navigationRoutes.filter((route) => {
+    if (!route.roles || route.roles.length === 0) {
+      return true
+    }
+    if (!treyUser) {
+      return false
+    }
+    return route.roles.includes(treyUser.role)
+  })
+
   return (
     <>
       <Toolbar disableGutters sx={{ ml: 1, mr: 1 }}>
@@ -189,7 +210,7 @@ const Navigation = () => {
           <TreyLogo sx={{ fontSize: 120, mr: 4, height: "auto" }} />
         </Link>
         <Box sx={{ flexGrow: 1, display: { xs: "none", md: "flex" } }}>
-          {navigationRoutes.map((route) => (
+          {allowedRoutes.map((route) => (
             <NavigationItem
               key={route.name}
               item={route}
