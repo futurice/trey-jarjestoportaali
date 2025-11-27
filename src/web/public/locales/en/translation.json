@@ -137,8 +137,8 @@
       "Unknown": "Unknown"
     },
     "founding_year": "Founding Year",
-    "name": "Nimi",
-    "short_name": "Käyttäjätunnus",
+    "name": "Name",
+    "short_name": "Short Name",
     "email": "Email",
     "website": "Website",
     "member_count": "Members",
@@ -164,20 +164,20 @@
       "name": "Name"
     },
     "facilities": {
-      "label": "Järjestön tilat",
-      "campus": "Kampus",
-      "building": "Rakennus",
-      "room": "Tila",
-      "contact_person": "Yhteyshenkilö",
-      "other_info": "Muut tiedot"
+      "label": "Organization Facilities",
+      "campus": "Campus",
+      "building": "Building",
+      "room": "Room",
+      "contact_person": "Contact Person",
+      "other_info": "Other Information"
     }
   },
   "pages": {
     "organizations": {
-      "title": "Yhdistykset",
-      "loading": "Ladataan yhdistyksiä...",
-      "error": "Yhdistysten lataaminen epäonnistui.",
-      "no_organizations": "Yhdistyksiä ei löytynyt."
+      "title": "Organizations",
+      "loading": "Loading organizations...",
+      "error": "Failed to load organizations.",
+      "no_organizations": "No organizations found."
     }
   }
 }

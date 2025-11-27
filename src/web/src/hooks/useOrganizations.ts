@@ -80,7 +80,7 @@ export const useGetOrganizationById = (
     queryFn: async () => {
       return await organizationsService!.get(organizationId!)
     },
-    enabled: (!!organizationId || !!organizationsService) && enabled,
+    enabled: (!!organizationId && !!organizationsService) && enabled,
   })
 }
 
