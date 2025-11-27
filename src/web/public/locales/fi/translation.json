@@ -24,7 +24,8 @@
   "navigation": {
     "dashboard": "Dashboard",
     "files": "Tiedostot",
-    "organizations": "Yhdistykset"
+    "organizations": "Yhdistykset",
+    "organization_profile": "Järjestön tiedot"
   },
   "language": {
     "fi": "Suomi",

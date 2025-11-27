@@ -24,7 +24,8 @@
   "navigation": {
     "dashboard": "Dashboard",
     "files": "Files",
-    "organizations": "Organizations"
+    "organizations": "Organizations",
+    "organization_profile": "Organization profile"
   },
   "language": {
     "fi": "Finnish",
