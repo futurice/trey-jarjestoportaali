@@ -333,7 +333,10 @@ export const OrganizationPage = () => {
                   <AccordionDetails>
                     <Grid container spacing={2}>
                       {organization.boardmembers.map((member, index) => (
-                        <Grid size={{ xs: 12, md: 6 }} key={index}>
+                        <Grid
+                          size={{ xs: 12, md: 6 }}
+                          key={`board-member-${member.email}-${index}`}
+                        >
                           <PersonCard person={member} />
                         </Grid>
                       ))}
@@ -353,7 +356,10 @@ export const OrganizationPage = () => {
                     <AccordionDetails>
                       <Grid container spacing={2}>
                         {organization.signatureRightsOwners.map((owner, index) => (
-                          <Grid size={{ xs: 12, md: 6 }} key={index}>
+                          <Grid
+                            size={{ xs: 12, md: 6 }}
+                            key={`signature-rights-owner-${owner.email}-${index}`}
+                          >
                             <PersonCard person={owner} />
                           </Grid>
                         ))}
@@ -392,7 +398,7 @@ export const OrganizationPage = () => {
                     <Box sx={{ display: "flex", flexDirection: "column", gap: 1 }}>
                       {organization.reservationRightsEmails.map((email, index) => (
                         <Box
-                          key={index}
+                          key={`email-${email}-${index}`}
                           sx={{
                             display: "flex",
                             alignItems: "center",
@@ -429,12 +435,15 @@ export const OrganizationPage = () => {
                   <CardHeader title={<Typography variant="h6">Email Lists</Typography>} />
                   <CardContent sx={{ display: "flex", flexDirection: "column", gap: 3 }}>
                     {Object.entries(organization.emailLists).map(([listName, emails], index) => (
-                      <Box key={index} sx={{ display: "flex", flexDirection: "column", gap: 1 }}>
+                      <Box
+                        key={`email-list-${listName}-${index}`}
+                        sx={{ display: "flex", flexDirection: "column", gap: 1 }}
+                      >
                         <Typography variant="subtitle1">{listName}</Typography>
                         <Box sx={{ ml: 2, display: "flex", flexDirection: "column", gap: 1 }}>
                           {emails.map((email, emailIndex) => (
                             <Box
-                              key={emailIndex}
+                              key={`email-${email}-${emailIndex}`}
                               sx={{
                                 display: "flex",
                                 alignItems: "center",

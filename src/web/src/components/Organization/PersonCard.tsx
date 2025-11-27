@@ -6,10 +6,9 @@ import { Person } from "../../models/organization"
 interface PersonCardProps {
   person: Person
   title?: string
-  outlined?: boolean
 }
 
-export function PersonCard({ person, title, outlined = true }: PersonCardProps) {
+export function PersonCard({ person, title }: Readonly<PersonCardProps>) {
   const { t } = useTranslation()
   return (
     <Card
