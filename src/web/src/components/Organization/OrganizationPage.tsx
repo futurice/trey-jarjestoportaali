@@ -1,6 +1,6 @@
-import { useMemo, useState } from "react"
+import { useEffect, useMemo, useState } from "react"
 import { useTranslation } from "react-i18next"
-import { Link, useParams } from "react-router-dom"
+import { Link, useNavigate, useParams } from "react-router-dom"
 import {
   CalendarToday,
   Email,
@@ -12,6 +12,7 @@ import {
   Shield,
   MailOutline,
   ArrowDropDownSharp,
+  ArrowBack,
 } from "@mui/icons-material"
 import {
   Container,
@@ -29,12 +30,14 @@ import {
   AccordionSummary,
   AccordionDetails,
   styled,
+  IconButton,
 } from "@mui/material"
 import MuiAccordion, { AccordionProps } from "@mui/material/Accordion"
+import { Roles } from "../../authentication"
 import { useAuth } from "../../authentication/AuthContext"
 import { useGetOrganizationById } from "../../hooks/useOrganizations"
 import { useOrganizationsService } from "../../hooks/useOrganizationsService"
-import { Category } from "../../models/organization"
+import { getCategoryLabel } from "../../utils/organizationUtils"
 import { FacilityCard } from "./FacilityCard"
 import { PersonCard } from "./PersonCard"
 
@@ -47,9 +50,9 @@ interface TabPanelProps {
 function TabPanel(props: Readonly<TabPanelProps>) {
   const { children, value, index, ...other } = props
   return (
-    <div role="tabpanel" hidden={value !== index} {...other}>
-      {value === index && <Box sx={{ py: 3 }}>{children}</Box>}
-    </div>
+    <Box role="tabpanel" hidden={value !== index} {...other} sx={{ width: "100%" }}>
+      {value === index && <Box sx={{ py: 3, width: "100%" }}>{children}</Box>}
+    </Box>
   )
 }
 
@@ -76,35 +79,33 @@ export const OrganizationPage = () => {
   const { orgId } = useParams()
   const { t } = useTranslation()
   const { session, treyUser } = useAuth()
+  const navigate = useNavigate()
 
   const sessionJwt = useMemo(() => session?.access_token, [session])
   const organizationsService = useOrganizationsService(treyUser?.role, sessionJwt)
-  const { data: organization, isFetching } = useGetOrganizationById(organizationsService, orgId)
+  const { data: organization, isFetching } = useGetOrganizationById(
+    organizationsService,
+    orgId,
+    (treyUser?.role === Roles.ORGANISATION && treyUser?.organizationId === orgId) ||
+      treyUser?.role === Roles.TREY_BOARD ||
+      treyUser?.role === Roles.ADMIN,
+  )
 
   const [tabValue, setTabValue] = useState(0)
+
+  useEffect(() => {
+    if (treyUser?.role === Roles.ORGANISATION && treyUser?.organizationId !== orgId) {
+      navigate("/dashboard")
+    }
+  }, [orgId, navigate, treyUser?.organizationId, treyUser?.role])
 
   const handleTabChange = (_event: React.SyntheticEvent, newValue: number) => {
     setTabValue(newValue)
   }
 
-  function getCategoryLabel(category?: Category): string {
-    switch (category) {
-      case Category.FacultyAndUmbrella:
-        return t("organization.category.FacultyAndUmbrella")
-      case Category.Hobby:
-        return t("organization.category.Hobby")
-      case Category.StudentAssociation:
-        return t("organization.category.StudentAssociation")
-      case Category.Other:
-        return t("organization.category.Other")
-      default:
-        return t("organization.category.Unknown")
-    }
-  }
-
   if (isFetching) {
     return (
-      <Container maxWidth="xl" sx={{ py: 4 }}>
+      <Container>
         <Typography variant="h6" color="text.secondary">
           {t("loading")}
         </Typography>
@@ -114,7 +115,7 @@ export const OrganizationPage = () => {
   }
   if (!organization) {
     return (
-      <Container maxWidth="xl" sx={{ py: 4 }}>
+      <Container>
         <Typography variant="h6" color="text.secondary">
           {t("organization.error.not_found")}
         </Typography>
@@ -124,6 +125,11 @@ export const OrganizationPage = () => {
 
   return (
     <Container>
+      <Box sx={{ position: "absolute", top: 100, right: 20 }}>
+        <IconButton onClick={() => navigate(-1)} sx={{ mb: 2 }}>
+          <ArrowBack />
+        </IconButton>
+      </Box>
       <Box sx={{ display: "flex", flexDirection: "column", gap: 3 }}>
         <Card>
           <CardHeader
@@ -147,7 +153,7 @@ export const OrganizationPage = () => {
                 </Box>
                 {organization.category !== undefined && (
                   <Chip
-                    label={getCategoryLabel(organization.category)}
+                    label={getCategoryLabel(organization.category, t)}
                     color="primary"
                     variant="outlined"
                   />
@@ -257,7 +263,12 @@ export const OrganizationPage = () => {
                 </Typography>
               </Box>
               <Box
-                sx={{ display: "flex", flexDirection: "column", alignItems: "flex-start", ml: 3.5 }}
+                sx={{
+                  display: "flex",
+                  flexDirection: "column",
+                  alignItems: "flex-start",
+                  ml: 3.5,
+                }}
               >
                 <Typography>
                   {t("organization.operating_period.start")}:{" "}
@@ -274,12 +285,7 @@ export const OrganizationPage = () => {
 
         {/* Tabs Section */}
         <Card>
-          <Tabs
-            value={tabValue}
-            onChange={handleTabChange}
-            variant="scrollable"
-            scrollButtons="auto"
-          >
+          <Tabs value={tabValue} onChange={handleTabChange} variant="fullWidth">
             <Tab icon={<People />} iconPosition="start" label={t("organization.tabs.board")} />
             <Tab
               icon={<Business />}
@@ -320,7 +326,7 @@ export const OrganizationPage = () => {
               </Grid>
 
               {organization.boardmembers && organization.boardmembers.length > 0 && (
-                <Accordion>
+                <Accordion sx={{ width: "100%" }}>
                   <AccordionSummary expandIcon={<ArrowDropDownSharp sx={{ fontSize: 30 }} />}>
                     <Typography variant="h6">{t("organization.board.board_members")}</Typography>
                   </AccordionSummary>
@@ -338,7 +344,7 @@ export const OrganizationPage = () => {
 
               {organization.signatureRightsOwners &&
                 organization.signatureRightsOwners.length > 0 && (
-                  <Accordion>
+                  <Accordion sx={{ width: "100%" }}>
                     <AccordionSummary expandIcon={<ArrowDropDownSharp sx={{ fontSize: 30 }} />}>
                       <Typography variant="h6">
                         {t("organization.board.signature_rights_owners")}

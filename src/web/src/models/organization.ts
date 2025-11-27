@@ -3,6 +3,7 @@ export enum Category {
   Hobby = 1,
   StudentAssociation = 2,
   Other = 3,
+  Unknown = 999,
 }
 
 export interface Person {

@@ -135,6 +135,8 @@
       "Unknown": "Unknown"
     },
     "founding_year": "Founding Year",
+    "name": "Nimi",
+    "short_name": "Käyttäjätunnus",
     "email": "Email",
     "website": "Website",
     "member_count": "Members",
@@ -158,6 +160,22 @@
       "intra_rights_owner": "Intra Rights Owner",
       "signature_rights_owners": "Signature Rights Owners",
       "name": "Name"
+    },
+    "facilities": {
+      "label": "Järjestön tilat",
+      "campus": "Kampus",
+      "building": "Rakennus",
+      "room": "Tila",
+      "contact_person": "Yhteyshenkilö",
+      "other_info": "Muut tiedot"
+    }
+  },
+  "pages": {
+    "organizations": {
+      "title": "Yhdistykset",
+      "loading": "Ladataan yhdistyksiä...",
+      "error": "Yhdistysten lataaminen epäonnistui.",
+      "no_organizations": "Yhdistyksiä ei löytynyt."
     }
   }
 }

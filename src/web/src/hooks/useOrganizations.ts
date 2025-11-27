@@ -49,11 +49,11 @@ export const useGetOrganizationByUser = (
 
     try {
       const userOrganizationId = user.user_metadata?.organization_id
-      if (!userOrganizationId) {
-        setOrganization(null)
-      } else {
+      if (userOrganizationId) {
         const org = await organizationsService.get(userOrganizationId)
         setOrganization(org)
+      } else {
+        setOrganization(null)
       }
     } catch {
       setOrganization(null)
@@ -73,12 +73,13 @@ export const useGetOrganizationByUser = (
 export const useGetOrganizationById = (
   organizationsService: OrganizationService | null,
   organizationId: string | undefined,
+  enabled = true,
 ) => {
   return useQuery<Organization, AxiosError>({
     queryKey: ["organization", organizationId],
     queryFn: async () => {
       return await organizationsService!.get(organizationId!)
     },
-    enabled: !!organizationId || !!organizationsService,
+    enabled: (!!organizationId || !!organizationsService) && enabled,
   })
 }

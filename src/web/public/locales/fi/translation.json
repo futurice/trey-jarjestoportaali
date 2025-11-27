@@ -128,6 +128,7 @@
   },
   "organization": {
     "category": {
+      "label": "Kategoria",
       "FacultyAndUmbrella": "Tiedekunta & kattojärjestö",
       "Hobby": "Harrastejärjestö",
       "StudentAssociation": "Ainejärjestö",
@@ -135,6 +136,8 @@
       "Unknown": "Tuntematon"
     },
     "founding_year": "Perustamisvuosi",
+    "name": "Nimi",
+    "short_name": "Käyttäjätunnus",
     "website": "Nettisivut",
     "email": "Sähköposti",
     "member_count": "Jäsenmäärä",
@@ -166,6 +169,14 @@
       "room": "Tila",
       "contact_person": "Yhteyshenkilö",
       "other_info": "Muut tiedot"
+    }
+  },
+  "pages": {
+    "organizations": {
+      "title": "Yhdistykset",
+      "loading": "Ladataan yhdistyksiä...",
+      "error": "Yhdistysten lataaminen epäonnistui.",
+      "no_organizations": "Yhdistyksiä ei löytynyt."
     }
   }
 }
