@@ -340,10 +340,10 @@ export const OrganizationPage = () => {
                   </AccordionSummary>
                   <AccordionDetails>
                     <Grid container spacing={2}>
-                      {organization.boardmembers.map((member, index) => (
+                      {organization.boardmembers.map((member) => (
                         <Grid
                           size={{ xs: 12, md: 6 }}
-                          key={`board-member-${member.email}-${index}`}
+                          key={`board-member-${member.name.replace(" ", "-")}`}
                         >
                           <PersonCard person={member} />
                         </Grid>
@@ -363,10 +363,10 @@ export const OrganizationPage = () => {
                     </AccordionSummary>
                     <AccordionDetails>
                       <Grid container spacing={2}>
-                        {organization.signatureRightsOwners.map((owner, index) => (
+                        {organization.signatureRightsOwners.map((owner) => (
                           <Grid
                             size={{ xs: 12, md: 6 }}
-                            key={`signature-rights-owner-${owner.email}-${index}`}
+                            key={`signature-rights-owner-${owner.name.replace(" ", "-")}`}
                           >
                             <PersonCard person={owner} />
                           </Grid>
@@ -404,9 +404,9 @@ export const OrganizationPage = () => {
                   <CardHeader title={<Typography variant="h6">Reservation Rights</Typography>} />
                   <CardContent>
                     <Box sx={{ display: "flex", flexDirection: "column", gap: 1 }}>
-                      {organization.reservationRightsEmails.map((email, index) => (
+                      {organization.reservationRightsEmails.map((email) => (
                         <Box
-                          key={`email-${email}-${index}`}
+                          key={`reservation-rights-${email}`}
                           sx={{
                             display: "flex",
                             alignItems: "center",
@@ -444,16 +444,16 @@ export const OrganizationPage = () => {
                 <Card variant="outlined">
                   <CardHeader title={<Typography variant="h6">Email Lists</Typography>} />
                   <CardContent sx={{ display: "flex", flexDirection: "column", gap: 3 }}>
-                    {Object.entries(organization.emailLists).map(([listName, emails], index) => (
+                    {Object.entries(organization.emailLists).map(([listName, emails]) => (
                       <Box
-                        key={`email-list-${listName}-${index}`}
+                        key={`email-list-${listName}`}
                         sx={{ display: "flex", flexDirection: "column", gap: 1 }}
                       >
                         <Typography variant="subtitle1">{listName}</Typography>
                         <Box sx={{ ml: 2, display: "flex", flexDirection: "column", gap: 1 }}>
-                          {emails.map((email, emailIndex) => (
+                          {emails.map((email) => (
                             <Box
-                              key={`email-${email}-${emailIndex}`}
+                              key={`email-list-${listName}-${email}`}
                               sx={{
                                 display: "flex",
                                 alignItems: "center",
