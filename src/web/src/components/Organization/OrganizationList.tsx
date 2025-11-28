@@ -20,7 +20,7 @@ import {
   CircularProgress,
 } from "@mui/material"
 import { useAuth } from "../../authentication/AuthContext"
-import { useGetOrganizationsList } from "../../hooks/useOrganizations"
+import { useOrganizations } from "../../hooks/useOrganizations"
 import { useOrganizationsService } from "../../hooks/useOrganizationsService"
 import { Organization } from "../../models/organization"
 import { getCategoryColor, getCategoryLabel } from "../../utils/organizationUtils"
@@ -140,7 +140,11 @@ export const OrganizationsList = () => {
 
   const sessionJwt = useMemo(() => session?.access_token, [session])
   const organizationsService = useOrganizationsService(treyUser?.role, sessionJwt)
-  const { data: organizations, isFetching, isError } = useGetOrganizationsList(organizationsService)
+  const {
+    data: organizations,
+    isFetching,
+    isError,
+  } = useOrganizations(organizationsService, treyUser)
 
   const [order, setOrder] = useState<Order>("asc")
   const [orderBy, setOrderBy] = useState<keyof Organization>("name")
