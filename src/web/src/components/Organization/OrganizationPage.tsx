@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from "react"
 import { useTranslation } from "react-i18next"
-import { Link, useNavigate, useParams } from "react-router-dom"
+import { useNavigate, useParams } from "react-router-dom"
 import {
   CalendarToday,
   Email,
@@ -31,6 +31,7 @@ import {
   AccordionDetails,
   styled,
   IconButton,
+  Link,
 } from "@mui/material"
 import MuiAccordion, { AccordionProps } from "@mui/material/Accordion"
 import { Roles } from "../../authentication"
@@ -185,7 +186,9 @@ export const OrganizationPage = () => {
                     <Typography variant="body2" color="text.secondary">
                       {t("organization.email")}
                     </Typography>
-                    <Link to={`mailto:${organization.email}`}>{organization.email}</Link>
+                    <Link href={`mailto:${organization.email}`} underline="hover">
+                      {organization.email}
+                    </Link>
                   </Box>
                 </Box>
               </Grid>
@@ -200,7 +203,12 @@ export const OrganizationPage = () => {
                       <Typography variant="body2" color="text.secondary">
                         {t("organization.website")}
                       </Typography>
-                      <Link to={organization.website} target="_blank" rel="noopener noreferrer">
+                      <Link
+                        href={organization.website}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        underline="hover"
+                      >
                         {organization.website}
                       </Link>
                     </Box>
@@ -409,7 +417,9 @@ export const OrganizationPage = () => {
                           }}
                         >
                           <Email sx={{ fontSize: 20, color: "text.secondary" }} />
-                          <Link to={`mailto:${email}`}>{email}</Link>
+                          <Link href={`mailto:${email}`} underline="hover">
+                            {email}
+                          </Link>
                         </Box>
                       ))}
                     </Box>
@@ -454,7 +464,9 @@ export const OrganizationPage = () => {
                               }}
                             >
                               <Email sx={{ fontSize: 20, color: "text.secondary" }} />
-                              <Link to={`mailto:${email}`}>{email}</Link>
+                              <Link href={`mailto:${email}`} underline="hover">
+                                {email}
+                              </Link>
                             </Box>
                           ))}
                         </Box>
