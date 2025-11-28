@@ -8,6 +8,8 @@ import Dashboard from "./components/Dashboard"
 import { ErrorWrapper, NoOrganization } from "./components/Error/Error.tsx"
 import { Layout } from "./components/Layout/Layout"
 import MyFiles from "./components/MyFiles"
+import { OrganizationsList } from "./components/Organization/OrganizationList.tsx"
+import { OrganizationPage } from "./components/Organization/OrganizationPage.tsx"
 import { Registration } from "./components/Registration/Registration.tsx"
 import { SurveyPage } from "./components/Survey/Survey.tsx"
 
@@ -44,6 +46,30 @@ const App = () => {
             <Authenticated requiredRoles={approvedRoles} redirectUrl={"/registration"}>
               <Layout>
                 <SurveyPage />
+              </Layout>
+            </Authenticated>
+          }
+        />
+
+        <Route
+          path="/organizations"
+          element={
+            <Authenticated
+              requiredRoles={[Roles.TREY_BOARD, Roles.ADMIN]}
+              redirectUrl={"/dashboard"}
+            >
+              <Layout>
+                <OrganizationsList />
+              </Layout>
+            </Authenticated>
+          }
+        />
+        <Route
+          path="/organizations/:orgId"
+          element={
+            <Authenticated requiredRoles={approvedRoles} redirectUrl={"/registration"}>
+              <Layout>
+                <OrganizationPage />
               </Layout>
             </Authenticated>
           }

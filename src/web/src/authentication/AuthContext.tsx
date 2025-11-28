@@ -9,6 +9,7 @@ import {
 } from "react"
 import toast from "react-hot-toast"
 import { useTranslation } from "react-i18next"
+import { useLocation } from "react-router-dom"
 import { AuthError, Session, User } from "@supabase/supabase-js"
 import { authorizeUser, AuthResponseError } from "../services/authService"
 import { Roles } from "./Roles"
@@ -122,7 +123,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
           // Execute the callback function after successful sign-in
           callbackFunction()
         }
-      } catch (err: AuthResponseError | unknown) {
+      } catch (err: unknown) {
         if ((err as AuthResponseError).status === 401) {
           toast.error(t("login.toast.invalid_credentials"))
         } else {
@@ -139,7 +140,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     setIsLoading(true)
     try {
       const { error } = await supabase.auth.resetPasswordForEmail(email, {
-        redirectTo: `${window.location.origin}/reset-password`,
+        redirectTo: `${globalThis.location.origin}/reset-password`,
       })
       if (error) {
         toast.error("Error sending reset password email: " + error.message)
@@ -148,7 +149,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         toast.success("Password reset email sent!")
         return { success: true }
       }
-    } catch (err: AuthError | unknown) {
+    } catch (err: unknown) {
       toast.error("Error during password reset request: " + (err as AuthError).message)
       return { success: false, message: (err as AuthError).message }
     } finally {
@@ -169,7 +170,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         toast.success("Password has been reset successfully!")
         return { success: true }
       }
-    } catch (err: AuthError | unknown) {
+    } catch (err: unknown) {
       toast.error("Error during password reset: " + (err as AuthError).message)
       return { success: false, message: (err as AuthError).message }
     } finally {
@@ -196,7 +197,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         toast.error("Error during logout: " + error.message)
         return
       }
-    } catch (err: AuthError | unknown) {
+    } catch (err: unknown) {
       toast.error("Unexpected error during logout: " + (err as AuthError).message)
     } finally {
       setSession(null)

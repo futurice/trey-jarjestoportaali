@@ -23,7 +23,9 @@
   "logout": "Kirjaudu ulos",
   "navigation": {
     "dashboard": "Dashboard",
-    "files": "Tiedostot"
+    "files": "Tiedostot",
+    "organizations": "Yhdistykset",
+    "organization_profile": "Järjestön tiedot"
   },
   "language": {
     "fi": "Suomi",
@@ -124,6 +126,59 @@
       "password_required": "Uusi salasana on pakollinen tieto.",
       "passwords_do_not_match": "Salasanat eivät täsmää.",
       "password_too_short": "Salasanan on oltava vähintään 8 merkkiä pitkä."
+    }
+  },
+  "organization": {
+    "category": {
+      "label": "Kategoria",
+      "FacultyAndUmbrella": "Tiedekunta & kattojärjestö",
+      "Hobby": "Harrastejärjestö",
+      "StudentAssociation": "Ainejärjestö",
+      "Other": "Muu",
+      "Unknown": "Tuntematon"
+    },
+    "founding_year": "Perustamisvuosi",
+    "name": "Nimi",
+    "short_name": "Käyttäjätunnus",
+    "website": "Nettisivut",
+    "email": "Sähköposti",
+    "member_count": "Jäsenmäärä",
+    "trey_members": "TREYn jäsenet",
+    "bank_account": "Pankkitili",
+    "operating_period": {
+      "label": "Toimintakausi",
+      "start": "Alkaa",
+      "end": "Päättyy"
+    },
+    "tabs": {
+      "board": "Hallitus",
+      "facilities": "Tilat",
+      "permissions": "Oikeudet",
+      "communications": "Viestintä"
+    },
+    "board": {
+      "no_board_members": "Hallituksen jäseniä ei löydetty.",
+      "board_members": "Hallituksen jäsenet",
+      "chairperson": "Puheenjohtaja",
+      "intra_rights_owner": "Intra-oikeuksien haltija",
+      "signature_rights_owners": "Nimenkirjoitusoikeudet",
+      "name": "Nimi"
+    },
+    "facilities": {
+      "label": "Järjestön tilat",
+      "campus": "Kampus",
+      "building": "Rakennus",
+      "room": "Tila",
+      "contact_person": "Yhteyshenkilö",
+      "other_info": "Muut tiedot"
+    }
+  },
+  "pages": {
+    "organizations": {
+      "title": "Yhdistykset",
+      "loading": "Ladataan yhdistyksiä...",
+      "error": "Yhdistysten lataaminen epäonnistui.",
+      "no_organizations": "Yhdistyksiä ei löytynyt."
     }
   }
 }

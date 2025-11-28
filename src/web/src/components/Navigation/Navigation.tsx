@@ -1,7 +1,7 @@
 import { useState } from "react"
 import { useTranslation } from "react-i18next"
-import { Link as RouterLink, useLocation } from "react-router-dom"
-import { Language, Person } from "@mui/icons-material"
+import { Link as RouterLink, useLocation, useNavigate } from "react-router-dom"
+import { Business, Language, Person } from "@mui/icons-material"
 import Logout from "@mui/icons-material/Logout"
 import {
   Avatar,
@@ -16,16 +16,27 @@ import {
   useTheme,
 } from "@mui/material"
 import TreyLogo from "../../assets/TreyLogo"
+import { Roles } from "../../authentication"
 import { useAuth } from "../../authentication/AuthContext"
 import i18n from "../../i18n"
 
 interface NavigationRoute {
   name: string
   href: string
+  roles?: Roles[]
 }
 
 const navigationRoutes = [
-  { name: "navigation.dashboard", href: "/dashboard" },
+  {
+    name: "navigation.dashboard",
+    href: "/dashboard",
+    roles: [Roles.ORGANISATION, Roles.TREY_BOARD, Roles.ADMIN],
+  },
+  {
+    name: "navigation.organizations",
+    href: "/organizations",
+    roles: [Roles.ADMIN, Roles.TREY_BOARD],
+  },
   // { name: "navigation.files", href: "/my-files" },
 ] as NavigationRoute[]
 
@@ -55,7 +66,8 @@ const NavigationItem = ({ item, isOpen }: { item: NavigationRoute; isOpen: boole
 
 const Navigation = () => {
   const location = useLocation()
-  const { user, logout } = useAuth()
+  const navigate = useNavigate()
+  const { user, logout, treyUser } = useAuth()
   const { t } = useTranslation()
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null)
   const [lngAnchorEl, setLngAnchorEl] = useState<null | HTMLElement>(null)
@@ -74,6 +86,10 @@ const Navigation = () => {
   }
   const handleClose = () => {
     setAnchorEl(null)
+  }
+
+  const toProfile = () => {
+    navigate(`/organizations/${treyUser?.organizationId}`)
   }
 
   const LngMenu = () => {
@@ -172,6 +188,12 @@ const Navigation = () => {
         transformOrigin={{ horizontal: "right", vertical: "top" }}
         anchorOrigin={{ horizontal: "right", vertical: "bottom" }}
       >
+        <MenuItem onClick={toProfile}>
+          <ListItemIcon>
+            <Business fontSize="small" />
+          </ListItemIcon>
+          {t("navigation.organization_profile")}
+        </MenuItem>
         <MenuItem onClick={logout}>
           <ListItemIcon>
             <Logout fontSize="small" />
@@ -182,6 +204,16 @@ const Navigation = () => {
     ) : null
   }
 
+  const allowedRoutes = navigationRoutes.filter((route) => {
+    if (!route.roles || route.roles.length === 0) {
+      return true
+    }
+    if (!treyUser) {
+      return false
+    }
+    return route.roles.includes(treyUser.role)
+  })
+
   return (
     <>
       <Toolbar disableGutters sx={{ ml: 1, mr: 1 }}>
@@ -189,7 +221,7 @@ const Navigation = () => {
           <TreyLogo sx={{ fontSize: 120, mr: 4, height: "auto" }} />
         </Link>
         <Box sx={{ flexGrow: 1, display: { xs: "none", md: "flex" } }}>
-          {navigationRoutes.map((route) => (
+          {allowedRoutes.map((route) => (
             <NavigationItem
               key={route.name}
               item={route}

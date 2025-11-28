@@ -15,6 +15,7 @@ body {
   background-repeat: repeat;
   margin: 0;
   padding: 0;
+  overflow-x: hidden;
 }
 
 input:-webkit-autofill,
