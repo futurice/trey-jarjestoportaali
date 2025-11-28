@@ -68,7 +68,6 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const [isLoading, setIsLoading] = useState(true)
   const [user, setUser] = useState<User | null>(null)
   const { t } = useTranslation()
-  const location = useLocation()
 
   // Check for existing session on mount
   useEffect(() => {
@@ -137,29 +136,26 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     [t],
   )
 
-  const forgotPasswordRequest = useCallback(
-    async (email: string): Promise<RequestResponse> => {
-      setIsLoading(true)
-      try {
-        const { error } = await supabase.auth.resetPasswordForEmail(email, {
-          redirectTo: `${location.pathname}/reset-password`,
-        })
-        if (error) {
-          toast.error("Error sending reset password email: " + error.message)
-          return { success: false, message: error.message }
-        } else {
-          toast.success("Password reset email sent!")
-          return { success: true }
-        }
-      } catch (err: unknown) {
-        toast.error("Error during password reset request: " + (err as AuthError).message)
-        return { success: false, message: (err as AuthError).message }
-      } finally {
-        setIsLoading(false)
+  const forgotPasswordRequest = useCallback(async (email: string): Promise<RequestResponse> => {
+    setIsLoading(true)
+    try {
+      const { error } = await supabase.auth.resetPasswordForEmail(email, {
+        redirectTo: `${globalThis.location.origin}/reset-password`,
+      })
+      if (error) {
+        toast.error("Error sending reset password email: " + error.message)
+        return { success: false, message: error.message }
+      } else {
+        toast.success("Password reset email sent!")
+        return { success: true }
       }
-    },
-    [location.pathname],
-  )
+    } catch (err: unknown) {
+      toast.error("Error during password reset request: " + (err as AuthError).message)
+      return { success: false, message: (err as AuthError).message }
+    } finally {
+      setIsLoading(false)
+    }
+  }, [])
 
   const resetPassword = useCallback(async (newPassword: string): Promise<RequestResponse> => {
     setIsLoading(true)
