@@ -1,7 +1,7 @@
 import { TFunction } from "i18next"
 import { Category } from "../models/organization"
 
-export function getCategoryLabel(category?: Category, t: TFunction): string {
+export function getCategoryLabel(category: Category | undefined, t: TFunction): string {
   switch (category) {
     case Category.FacultyAndUmbrella:
       return t("organization.category.FacultyAndUmbrella")

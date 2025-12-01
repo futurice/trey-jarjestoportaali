@@ -9,7 +9,6 @@ import {
 } from "react"
 import toast from "react-hot-toast"
 import { useTranslation } from "react-i18next"
-import { useLocation } from "react-router-dom"
 import { AuthError, Session, User } from "@supabase/supabase-js"
 import { authorizeUser, AuthResponseError } from "../services/authService"
 import { Roles } from "./Roles"
