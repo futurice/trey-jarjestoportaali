@@ -1,5 +1,5 @@
-import { useState } from 'react';
-import { FileService } from "../services/fileService.ts";
+import { useState } from "react"
+import { FileService } from "../services/fileService.ts"
 
 /**
  * Custom hook to handle file upload logic.
@@ -10,24 +10,42 @@ import { FileService } from "../services/fileService.ts";
  * @param fileService
  */
 export const useFileUpload = (fileService: FileService) => {
-  const [isUploading, setIsUploading] = useState(false);
-  const [uploadError, setUploadError] = useState<string | null>(null);
+  const [isUploading, setIsUploading] = useState(false)
+  const [uploadError, setUploadError] = useState<string | null>(null)
 
-  const uploadFile = async (file: File) => {
-    const formData = new FormData();
-    formData.append('file', file);
+  const uploadFile = async (file: File, fileName?: string) => {
+    const formData = new FormData()
+    formData.append(fileName ?? file.name, file)
 
-    setIsUploading(true);
-    setUploadError(null);
+    setIsUploading(true)
+    setUploadError(null)
 
     try {
-      await fileService.upload(formData);
+      const response = await fileService.upload(formData)
+      return response
     } catch (error) {
-      setUploadError('Failed to upload file. Please try again');
+      setUploadError("Failed to upload file. Please try again")
     } finally {
-      setIsUploading(false);
+      setIsUploading(false)
     }
-  };
+  }
 
-  return { isUploading, uploadError, uploadFile };
-}; 
+  const uploadFiles = async (files: File[]) => {
+    const formData = new FormData()
+    for (const file of files) {
+      formData.append(file.name, file)
+    }
+    setIsUploading(true)
+    setUploadError(null)
+
+    try {
+      return await fileService.uploadMany(formData)
+    } catch (error) {
+      setUploadError("Failed to upload file. Please try again")
+    } finally {
+      setIsUploading(false)
+    }
+  }
+
+  return { isUploading, uploadError, uploadFile, uploadFiles }
+}
