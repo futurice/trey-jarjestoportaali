@@ -3,16 +3,20 @@ import toast from "react-hot-toast"
 import { useTranslation } from "react-i18next"
 import { useParams } from "react-router-dom"
 import { Box, CircularProgress, Container, Typography } from "@mui/material"
-import { CompleteEvent, getLocaleStrings } from "survey-core"
+import { CompleteEvent, getLocaleStrings, UploadFilesEvent } from "survey-core"
 import "survey-core/i18n/finnish"
 import "survey-core/survey-core.css"
 import { Model, Survey, SurveyModel } from "survey-react-ui"
 import { useAuth } from "../../authentication/AuthContext"
+import { useFileService } from "../../hooks/useFileService"
+import { useFileUpload } from "../../hooks/useFileUpload"
+import { useGetOrganizationById } from "../../hooks/useOrganizations"
+import { useOrganizationsService } from "../../hooks/useOrganizationsService"
 import { useSurveyAnswerService } from "../../hooks/useSurveyAnswerService"
 import { useGetSurveyResults } from "../../hooks/useSurveyAnswers"
 import { useSurveyService } from "../../hooks/useSurveyService"
 import { useGetSurveyById } from "../../hooks/useSurveys"
-import { SurveyAnswer } from "../../models/survey"
+import { SurveyAnswer, SurveyType } from "../../models/survey"
 import "./Survey.css"
 import surveyTheme from "./SurveyTheme"
 
@@ -35,12 +39,19 @@ export const SurveyPage = () => {
 
   const surveyAnswerService = useSurveyAnswerService(treyUser?.role, sessionJwt, surveyId)
   const { surveyResults } = useGetSurveyResults(surveyAnswerService)
+  const organizationsService = useOrganizationsService(treyUser?.role, sessionJwt)
+  const { data: organization, isFetching: isFetchingOrganization } = useGetOrganizationById(
+    organizationsService,
+    treyUser?.organizationId || "",
+    !!treyUser?.organizationId && survey?.surveyType === SurveyType.AssociationAnnouncement,
+  )
+  const fileService = useFileService(sessionJwt)
 
   useEffect(() => {
-    const prevData = window.localStorage.getItem(storageItemKey) || null
+    const prevData = globalThis.localStorage.getItem(storageItemKey) || null
     const currentAnswers = surveyResults?.find((surveyAnswer) => surveyAnswer.surveyId === surveyId)
-    setSurveyAnswerData(currentAnswers)
     if (currentAnswers?.answerJson) {
+      setSurveyAnswerData(currentAnswers)
       setSurveyAnswers(JSON.parse(currentAnswers.answerJson))
     } else if (prevData) {
       const data = JSON.parse(prevData)
@@ -64,7 +75,7 @@ export const SurveyPage = () => {
     (survey: SurveyModel) => {
       const data = survey.data
       data.pageNo = survey.currentPageNo
-      window.localStorage.setItem(storageItemKey, JSON.stringify(data))
+      globalThis.localStorage.setItem(storageItemKey, JSON.stringify(data))
     },
     [storageItemKey],
   )
@@ -101,7 +112,7 @@ export const SurveyPage = () => {
         return
       }
       setSurveyAnswers(data)
-      window.localStorage.setItem(storageItemKey, JSON.stringify(data))
+      globalThis.localStorage.setItem(storageItemKey, JSON.stringify(data))
       if (surveyAnswerService) {
         surveyAnswerService
           .save({
@@ -133,6 +144,112 @@ export const SurveyPage = () => {
     ],
   )
 
+  const uploadFilesEvent = useCallback(
+    (_survey: Model, options: UploadFilesEvent) => {
+      const formData = new FormData()
+      for (const file of options.files) {
+        formData.append(file.name, file)
+      }
+      fileService
+        .uploadMany(formData)
+        .then((fileResponses) => {
+          if (fileResponses?.data) {
+            options.callback(
+              options.files.map((file, index) => {
+                const uploadedFile = fileResponses.data[index]
+                console.log(uploadedFile)
+                return {
+                  file: file,
+                  content: uploadedFile.uri || "",
+                }
+              }),
+              [],
+            )
+          } else {
+            console.error("File upload error: No data in response")
+            options.callback([], ["error"])
+          }
+        })
+        .then(() => {
+          saveSurveyData(_survey)
+        })
+        .catch((error) => {
+          console.error("File upload error:", error)
+          options.callback([], ["error"])
+        })
+    },
+    [fileService, saveSurveyData],
+  )
+
+  const surveyModel = useMemo(() => {
+    const model = new Model(survey?.surveyJson)
+    model.locale = i18n.language ?? "fi"
+    model.applyTheme(surveyTheme)
+    model.data = surveyAnswers ?? {}
+    if (surveyAnswers?.pageNo) {
+      model.currentPageNo = surveyAnswers?.pageNo
+    }
+    model.onUploadFiles.add(uploadFilesEvent)
+    model.onCurrentPageChanged.add(saveSurveyData)
+    model.onComplete.add(completeSurvey)
+    model.onValueChanged.add(saveToLocalStorage)
+
+    model.addNavigationItem({
+      id: "sv-nav-save",
+      // To set the button text, use the `title` property  if you don't use localization:
+      // title: "Clear Page",
+      // ... or the `locTitleName` property if you do use localization:
+      locTitleName: "saveData",
+      action: () => {
+        if (surveyModel) {
+          saveSurveyData(surveyModel)
+        }
+      },
+      css: "nav-button",
+      innerCss: "sd-btn nav-input",
+    })
+    return model
+  }, [
+    survey?.surveyJson,
+    i18n.language,
+    surveyAnswers,
+    saveSurveyData,
+    completeSurvey,
+    saveToLocalStorage,
+    uploadFilesEvent,
+  ])
+
+  useEffect(() => {
+    if (
+      !surveyAnswerData &&
+      survey?.surveyType === SurveyType.AssociationAnnouncement &&
+      organization &&
+      !isFetchingOrganization
+    ) {
+      surveyModel.data = {
+        ...surveyModel.data,
+        organizationName: organization?.name || undefined,
+        boardEmail: organization?.email || undefined,
+        memberCount: organization?.memberCount || undefined,
+        treyMemberCount: organization?.treyMemberCount || undefined,
+        hasAssociationFacility: !!organization.associationFacility,
+        campus: organization.associationFacility?.campus || undefined,
+        building: organization.associationFacility?.building || undefined,
+        roomCode: organization.associationFacility?.roomCode || undefined,
+      }
+    }
+  }, [
+    organization,
+    survey,
+    surveyId,
+    surveyResults,
+    storageItemKey,
+    surveyModel.data,
+    surveyModel,
+    isFetchingOrganization,
+    surveyAnswerData,
+  ])
+
   if (loading) {
     return (
       <Container>
@@ -140,33 +257,6 @@ export const SurveyPage = () => {
       </Container>
     )
   }
-
-  const surveyModel = new Model(survey?.surveyJson)
-  surveyModel.locale = i18n.language ?? "fi"
-  surveyModel.applyTheme(surveyTheme)
-  surveyModel.data = surveyAnswers ?? {}
-  if (surveyAnswers?.pageNo) {
-    surveyModel.currentPageNo = surveyAnswers?.pageNo
-  }
-
-  surveyModel.onCurrentPageChanged.add(saveSurveyData)
-  surveyModel.onComplete.add(completeSurvey)
-  surveyModel.onValueChanged.add(saveToLocalStorage)
-
-  surveyModel.addNavigationItem({
-    id: "sv-nav-save",
-    // To set the button text, use the `title` property  if you don't use localization:
-    // title: "Clear Page",
-    // ... or the `locTitleName` property if you do use localization:
-    locTitleName: "saveData",
-    action: () => {
-      if (surveyModel) {
-        saveSurveyData(surveyModel)
-      }
-    },
-    css: "nav-button",
-    innerCss: "sd-btn nav-input",
-  })
 
   return (
     <Box sx={{ width: "100vw", overflow: "hidden", textAlign: "left" }}>
