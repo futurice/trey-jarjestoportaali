@@ -27,4 +27,12 @@ export interface SurveyAnswer {
   surveyId: string
   organizationId?: string
   answerJson?: string
+  updatedAt?: Date
+}
+
+export interface CachedSurveyState {
+  surveyId: string
+  organizationId?: string
+  answerJson: string // JSON string
+  updatedAt: string // ISO timestamp
 }

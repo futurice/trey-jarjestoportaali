@@ -31,4 +31,5 @@ public class SurveyAnswer
     public Guid SurveyId { get; set; }
     public string? OrganizationId { get; set; }
     public string? AnswerJson { get; set; }
+    public DateTime? UpdatedAt { get; set; }
 }

@@ -15,7 +15,7 @@ import { useSurveyAnswerService } from "../../hooks/useSurveyAnswerService"
 import { useGetSurveyResults } from "../../hooks/useSurveyAnswers"
 import { useSurveyService } from "../../hooks/useSurveyService"
 import { useGetSurveyById } from "../../hooks/useSurveys"
-import { SurveyAnswer, SurveyType } from "../../models/survey"
+import { CachedSurveyState, SurveyAnswer, SurveyType } from "../../models/survey"
 import "./Survey.css"
 import surveyTheme from "./SurveyTheme"
 
@@ -48,16 +48,42 @@ export const SurveyPage = () => {
   const fileService = useFileService(sessionJwt)
 
   useEffect(() => {
-    const prevData = globalThis.localStorage.getItem(storageItemKey) || null
-    const currentAnswers = surveyResults?.find((surveyAnswer) => surveyAnswer.surveyId === surveyId)
-    if (!isLoadingSurveyResults && !loading) {
-      if (currentAnswers?.answerJson) {
-        setSurveyAnswerData(currentAnswers)
-        setSurveyAnswers(JSON.parse(currentAnswers.answerJson))
-      } else if (prevData) {
-        const data = JSON.parse(prevData)
-        setSurveyAnswers(data)
+    if (loading || isLoadingSurveyResults) return
+    const rawCache = globalThis.localStorage.getItem(storageItemKey) || null
+    let cached: CachedSurveyState | null = null
+    if (rawCache) {
+      try {
+        cached = JSON.parse(rawCache)
+        // basic sanity checks
+        if (cached?.surveyId !== surveyId) {
+          cached = null
+        }
+      } catch (e) {
+        console.warn("Failed to parse cached survey data", e)
+        cached = null
       }
+    }
+    const currentAnswers = surveyResults?.find((surveyAnswer) => surveyAnswer.surveyId === surveyId)
+    const cachedAnswerJson = cached ? JSON.parse(cached.answerJson) : null
+    if (currentAnswers?.answerJson) {
+      const serverData = JSON.parse(currentAnswers.answerJson)
+      const serverUpdatedAt = currentAnswers.updatedAt
+        ? new Date(currentAnswers.updatedAt).getTime()
+        : 0
+
+      const cacheUpdatedAt = cached?.updatedAt ? new Date(cached.updatedAt).getTime() : 0
+
+      // pick whichever is newer
+      if (cached && cacheUpdatedAt > serverUpdatedAt) {
+        setSurveyAnswerData(currentAnswers)
+        setSurveyAnswers({ ...cachedAnswerJson, pageNo: cachedAnswerJson.pageNo })
+      } else {
+        setSurveyAnswerData(currentAnswers)
+        setSurveyAnswers(serverData)
+      }
+    } else if (cached) {
+      // no server data yet, but we have a local cache
+      setSurveyAnswers({ ...cachedAnswerJson, pageNo: cachedAnswerJson.pageNo })
     }
   }, [isLoadingSurveyResults, loading, storageItemKey, surveyId, surveyResults])
 
@@ -75,11 +101,15 @@ export const SurveyPage = () => {
 
   const saveToLocalStorage = useCallback(
     (survey: SurveyModel) => {
-      const data = survey.data
-      data.pageNo = survey.currentPageNo
-      globalThis.localStorage.setItem(storageItemKey, JSON.stringify(data))
+      const cache: CachedSurveyState = {
+        surveyId,
+        organizationId: treyUser?.organizationId ?? treyUser?.id,
+        answerJson: JSON.stringify(survey.data),
+        updatedAt: new Date().toISOString(),
+      }
+      globalThis.localStorage.setItem(storageItemKey, JSON.stringify(cache))
     },
-    [storageItemKey],
+    [storageItemKey, surveyId, treyUser?.id, treyUser?.organizationId],
   )
 
   const completeSurvey = useCallback(
@@ -90,6 +120,7 @@ export const SurveyPage = () => {
         surveyId: surveyId,
         organizationId: treyUser?.organizationId ?? "",
         answerJson: JSON.stringify(survey.data),
+        updatedAt: new Date(),
       }
 
       if (surveyAnswerService) {
@@ -109,12 +140,12 @@ export const SurveyPage = () => {
   const saveSurveyData = useCallback(
     (survey: SurveyModel) => {
       const data = survey.data
-      data.pageNo = survey.currentPageNo ?? 0
       if (!data) {
         return
       }
+      data.pageNo = survey.currentPageNo ?? 0
+      saveToLocalStorage(survey)
       setSurveyAnswers(data)
-      globalThis.localStorage.setItem(storageItemKey, JSON.stringify(data))
       if (surveyAnswerService) {
         surveyAnswerService
           .save({
@@ -122,6 +153,7 @@ export const SurveyPage = () => {
             surveyId: surveyId,
             organizationId: surveyAnswerData?.organizationId ?? treyUser?.organizationId ?? "",
             answerJson: JSON.stringify(data),
+            updatedAt: new Date(),
           })
           .then((response) => {
             setSurveyAnswerData(response)
@@ -136,7 +168,7 @@ export const SurveyPage = () => {
       }
     },
     [
-      storageItemKey,
+      saveToLocalStorage,
       surveyAnswerData?.id,
       surveyAnswerData?.organizationId,
       surveyAnswerService,
