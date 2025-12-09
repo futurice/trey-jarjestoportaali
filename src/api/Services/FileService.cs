@@ -178,6 +178,13 @@ internal sealed class FileService(BlobContainerClient containerClient, BlobServi
         return download.Value;
     }
 
+    public async Task<bool> DeleteFileByIdAsync(string fileId, CancellationToken cancellationToken)
+    {
+        var blobClient = containerClient.GetBlobClient(fileId);
+        var response = await blobClient.DeleteIfExistsAsync(cancellationToken: cancellationToken);
+        return response.Value;
+    }
+
     private async Task<Uri> CreateSasUri(string filename)
     {
         var userDelegationKey =

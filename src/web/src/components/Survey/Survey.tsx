@@ -9,7 +9,6 @@ import "survey-core/survey-core.css"
 import { Model, Survey, SurveyModel } from "survey-react-ui"
 import { useAuth } from "../../authentication/AuthContext"
 import { useFileService } from "../../hooks/useFileService"
-import { useFileUpload } from "../../hooks/useFileUpload"
 import { useGetOrganizationById } from "../../hooks/useOrganizations"
 import { useOrganizationsService } from "../../hooks/useOrganizationsService"
 import { useSurveyAnswerService } from "../../hooks/useSurveyAnswerService"
@@ -38,7 +37,8 @@ export const SurveyPage = () => {
   const { survey, loading } = useGetSurveyById(surveyService, surveyId)
 
   const surveyAnswerService = useSurveyAnswerService(treyUser?.role, sessionJwt, surveyId)
-  const { surveyResults } = useGetSurveyResults(surveyAnswerService)
+  const { surveyResults, loading: isLoadingSurveyResults } =
+    useGetSurveyResults(surveyAnswerService)
   const organizationsService = useOrganizationsService(treyUser?.role, sessionJwt)
   const { data: organization, isFetching: isFetchingOrganization } = useGetOrganizationById(
     organizationsService,
@@ -50,14 +50,16 @@ export const SurveyPage = () => {
   useEffect(() => {
     const prevData = globalThis.localStorage.getItem(storageItemKey) || null
     const currentAnswers = surveyResults?.find((surveyAnswer) => surveyAnswer.surveyId === surveyId)
-    if (currentAnswers?.answerJson) {
-      setSurveyAnswerData(currentAnswers)
-      setSurveyAnswers(JSON.parse(currentAnswers.answerJson))
-    } else if (prevData) {
-      const data = JSON.parse(prevData)
-      setSurveyAnswers(data)
+    if (!isLoadingSurveyResults && !loading) {
+      if (currentAnswers?.answerJson) {
+        setSurveyAnswerData(currentAnswers)
+        setSurveyAnswers(JSON.parse(currentAnswers.answerJson))
+      } else if (prevData) {
+        const data = JSON.parse(prevData)
+        setSurveyAnswers(data)
+      }
     }
-  }, [storageItemKey, surveyId, surveyResults])
+  }, [isLoadingSurveyResults, loading, storageItemKey, surveyId, surveyResults])
 
   // Hack to change the loading and completing survey messages
   useEffect(() => {
@@ -145,7 +147,7 @@ export const SurveyPage = () => {
   )
 
   const uploadFilesEvent = useCallback(
-    (_survey: Model, options: UploadFilesEvent) => {
+    (survey: Model, options: UploadFilesEvent) => {
       const formData = new FormData()
       for (const file of options.files) {
         formData.append(file.name, file)
@@ -157,7 +159,6 @@ export const SurveyPage = () => {
             options.callback(
               options.files.map((file, index) => {
                 const uploadedFile = fileResponses.data[index]
-                console.log(uploadedFile)
                 return {
                   file: file,
                   content: uploadedFile.uri || "",
@@ -171,7 +172,7 @@ export const SurveyPage = () => {
           }
         })
         .then(() => {
-          saveSurveyData(_survey)
+          saveSurveyData(survey)
         })
         .catch((error) => {
           console.error("File upload error:", error)
@@ -179,6 +180,26 @@ export const SurveyPage = () => {
         })
     },
     [fileService, saveSurveyData],
+  )
+
+  const deleteFileEvent = useCallback(
+    async (fileId: string) => {
+      try {
+        const fullFileName = `${treyUser?.organizationId}/${fileId}`
+        const response = await fileService.deleteFileById(fullFileName)
+
+        if (response.status === 204) {
+          return "success"
+        } else {
+          console.error(`Failed to delete file: ${fileId}`)
+          return "error"
+        }
+      } catch (error) {
+        console.error("Error while deleting file: ", error)
+        return "error"
+      }
+    },
+    [fileService, treyUser?.organizationId],
   )
 
   const surveyModel = useMemo(() => {
@@ -193,6 +214,29 @@ export const SurveyPage = () => {
     model.onCurrentPageChanged.add(saveSurveyData)
     model.onComplete.add(completeSurvey)
     model.onValueChanged.add(saveToLocalStorage)
+
+    model.onClearFiles.add(async (survey, options) => {
+      if (!options.value || options.value.length === 0) {
+        return options.callback("success")
+      }
+
+      const filesToDelete = options.fileName
+        ? options.value.filter((item) => item.name === options.fileName)
+        : options.value
+
+      if (filesToDelete.length === 0) {
+        return options.callback("error")
+      }
+      const fileNames = filesToDelete.map((file) => file.content.split("/").pop() || "")
+      const results = await Promise.all(fileNames.map((file) => deleteFileEvent(file)))
+
+      if (results.every((res) => res === "success")) {
+        options.callback("success")
+      } else {
+        options.callback("error")
+      }
+      saveSurveyData(survey)
+    })
 
     model.addNavigationItem({
       id: "sv-nav-save",
@@ -213,10 +257,11 @@ export const SurveyPage = () => {
     survey?.surveyJson,
     i18n.language,
     surveyAnswers,
+    uploadFilesEvent,
     saveSurveyData,
     completeSurvey,
     saveToLocalStorage,
-    uploadFilesEvent,
+    deleteFileEvent,
   ])
 
   useEffect(() => {
@@ -224,7 +269,8 @@ export const SurveyPage = () => {
       !surveyAnswerData &&
       survey?.surveyType === SurveyType.AssociationAnnouncement &&
       organization &&
-      !isFetchingOrganization
+      !isFetchingOrganization &&
+      !isLoadingSurveyResults
     ) {
       surveyModel.data = {
         ...surveyModel.data,
@@ -248,9 +294,10 @@ export const SurveyPage = () => {
     surveyModel,
     isFetchingOrganization,
     surveyAnswerData,
+    isLoadingSurveyResults,
   ])
 
-  if (loading) {
+  if (loading || isLoadingSurveyResults) {
     return (
       <Container>
         <CircularProgress />

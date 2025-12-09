@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Mvc;
+using Trey.Api.Models;
 using Trey.Api.Services;
 
 namespace Trey.Api.Extensions;
@@ -11,6 +12,7 @@ public static class FileEndpointsExtensions
         group.MapGet("/", GetFiles);
         group.MapGet("/organization", GetFilesByOrganization);
         group.MapGet("/file/{fileName}", GetFileByName);
+        group.MapDelete("/file", DeleteFile);
         return group;
     }
 
@@ -80,5 +82,32 @@ public static class FileEndpointsExtensions
         var bytes = response.Content.ToArray();
         var contentType = response.Details.ContentType ?? "application/octet-stream";
         return Results.File(bytes, contentType, fileName);
+    }
+
+    private static async Task<IResult> DeleteFile([FromQuery] string fileId,
+        [FromServices] FileService service,
+        [FromServices] ILogger<FileService> logger,
+        [FromServices] IAuthService auth,
+        HttpContext context,
+        CancellationToken cancellationToken)
+    {
+        logger.LogInformation("Deleting file {fileId} from {container}", fileId, service);
+        var user = await auth.GetUserFromContext(context);
+        var organizationId = Path.GetDirectoryName(fileId);
+        if (user.Role != TreyRole.Admin && user.OrganizationId != organizationId)
+        {
+            logger.LogWarning("User {userId} is not authorized to delete file {fileId} from {container}", user.Id, fileId, service);
+            return TypedResults.Forbid();
+        }
+
+        var deleted = await service.DeleteFileByIdAsync(fileId, cancellationToken);
+        if (!deleted)
+        {
+            logger.LogWarning("File {fileId} not found in {container}", fileId, service);
+            return TypedResults.NotFound();
+        }
+
+        logger.LogInformation("Deleted file {fileId} from {container}", fileId, service);
+        return TypedResults.NoContent();
     }
 }

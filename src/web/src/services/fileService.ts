@@ -43,4 +43,11 @@ export class FileService extends RestService<BlobFile> {
 
     return response.data
   }
+
+  deleteFileById = async (fileId: string) => {
+    return await this.client.request<void>({
+      method: "DELETE",
+      url: `file?fileId=${fileId}`,
+    })
+  }
 }
