@@ -154,7 +154,8 @@
       "board": "Hallitus",
       "facilities": "Tilat",
       "permissions": "Oikeudet",
-      "communications": "Viestintä"
+      "communications": "Viestintä",
+      "files": "Tiedostot"
     },
     "board": {
       "no_board_members": "Hallituksen jäseniä ei löydetty.",
@@ -180,5 +181,17 @@
       "error": "Yhdistysten lataaminen epäonnistui.",
       "no_organizations": "Yhdistyksiä ei löytynyt."
     }
+  },
+  "files": {
+    "name": "Nimi",
+    "size": "Koko",
+    "type": "Tyyppi",
+    "organization": "Yhdistys",
+    "uploaded_at": "Latausaika",
+    "uploaded_by": "Lataaja",
+    "actions": "Toiminnot",
+    "error": "Tiedostojen lataaminen epäonnistui.",
+    "no_files": "Tiedostoja ei löytynyt.",
+    "unknown": "Tuntematon"
   }
 }

@@ -153,7 +153,8 @@
       "board": "Board",
       "facilities": "Facilities",
       "permissions": "Permissions",
-      "communications": "Communications"
+      "communications": "Communications",
+      "files": "Files"
     },
     "board": {
       "no_board_members": "No board members found.",
@@ -179,5 +180,17 @@
       "error": "Failed to load organizations.",
       "no_organizations": "No organizations found."
     }
+  },
+  "files": {
+    "name": "Name",
+    "size": "Size",
+    "type": "Type",
+    "organization": "Organization",
+    "uploaded_at": "Uploaded at",
+    "uploaded_by": "Uploaded by",
+    "actions": "Actions",
+    "error": "Failed to load files.",
+    "no_files": "No files found.",
+    "unknown": "Unknown"
   }
 }

@@ -1,4 +1,5 @@
 import { useMemo } from "react"
+import { useTranslation } from "react-i18next"
 import { Link as RouterLink } from "react-router-dom"
 import { Download, Visibility } from "@mui/icons-material"
 import {
@@ -16,6 +17,7 @@ import {
   Paper,
   IconButton,
   Tooltip,
+  CircularProgress,
 } from "@mui/material"
 import { useAuth } from "../../authentication/AuthContext"
 import { useFilesForOrganization } from "../../hooks/useFileList"
@@ -42,6 +44,8 @@ function formatDate(date?: Date): string {
     year: "numeric",
     month: "2-digit",
     day: "2-digit",
+    hour: "2-digit",
+    minute: "2-digit",
   })
 }
 
@@ -52,22 +56,24 @@ export const OrganizationFileList = ({
 }) => {
   const { session } = useAuth()
   const sessionJwt = useMemo(() => session?.access_token, [session])
+  const { t } = useTranslation()
 
   const fileService = useFileService(sessionJwt)
   const { data: files, isLoading, error } = useFilesForOrganization(fileService, organizationId!)
   if (isLoading) {
-    return <p>Loading files...</p>
+    return <CircularProgress />
   }
   if (error) {
-    return <h1>Error</h1>
+    return <h1>{t("files.error")}</h1>
   }
   if (!files || files.length === 0) {
-    return <p>No files found for this organization.</p>
+    return <p>{t("files.no_files")}</p>
   }
   return <FilesList files={files} />
 }
 
 export function FilesList({ files }: FilesListProps) {
+  const { t } = useTranslation()
   return (
     <Box>
       <Card>
@@ -76,12 +82,13 @@ export function FilesList({ files }: FilesListProps) {
             <Table>
               <TableHead>
                 <TableRow>
-                  <TableCell>File Name</TableCell>
-                  <TableCell>Category</TableCell>
-                  <TableCell>Size</TableCell>
-                  <TableCell>Organization</TableCell>
-                  <TableCell>Uploaded</TableCell>
-                  <TableCell align="center">Actions</TableCell>
+                  <TableCell>{t("files.name")}</TableCell>
+                  <TableCell>{t("files.type")}</TableCell>
+                  <TableCell>{t("files.size")}</TableCell>
+                  <TableCell>{t("files.organization")}</TableCell>
+                  <TableCell>{t("files.uploaded_at")}</TableCell>
+                  <TableCell>{t("files.uploaded_by")}</TableCell>
+                  <TableCell align="center">{t("files.actions")}</TableCell>
                 </TableRow>
               </TableHead>
               <TableBody>
@@ -95,12 +102,10 @@ export function FilesList({ files }: FilesListProps) {
                       },
                     }}
                   >
-                    <TableCell>
-                      <Box sx={{ display: "flex", alignItems: "center", gap: 1.5 }}>
-                        <Box>
-                          <Typography>{file.originalFileName ?? file.fileName}</Typography>
-                        </Box>
-                      </Box>
+                    <TableCell sx={{ maxWidth: 400, overflow: "hidden", textOverflow: "ellipsis" }}>
+                      <Typography noWrap title={file.originalFileName ?? file.fileName}>
+                        {file.originalFileName ?? file.fileName}
+                      </Typography>
                     </TableCell>
                     <TableCell>
                       <Chip label={file.contentType || "Unknown"} size="small" variant="outlined" />
@@ -116,22 +121,22 @@ export function FilesList({ files }: FilesListProps) {
                     </TableCell>
                     <TableCell>
                       <Typography color="text.secondary">
-                        {file.organizationName || file.organizationId || "-"}
+                        {file.organizationName || file.organizationId || t("files.unknown")}
                       </Typography>
                     </TableCell>
                     <TableCell>
-                      <Box>
-                        <Typography variant="body2" color="text.secondary">
-                          {formatDate(file.createdDate)}
-                        </Typography>
-                        <Typography
-                          variant="caption"
-                          color="text.secondary"
-                          sx={{ display: "block", mt: 0.5 }}
-                        >
-                          by {file.uploadedByUsername || file.uploadedBy || "Unknown"}
-                        </Typography>
-                      </Box>
+                      <Typography variant="body2" color="text.secondary">
+                        {formatDate(file.createdDate)}
+                      </Typography>
+                    </TableCell>
+                    <TableCell>
+                      <Typography
+                        variant="caption"
+                        color="text.secondary"
+                        sx={{ display: "block", mt: 0.5 }}
+                      >
+                        {file.uploadedByUsername || file.uploadedBy || t("files.unknown")}
+                      </Typography>
                     </TableCell>
                     <TableCell align="center">
                       <Box sx={{ display: "flex", gap: 0.5, justifyContent: "center" }}>
@@ -170,7 +175,7 @@ export function FilesList({ files }: FilesListProps) {
 
       {files.length === 0 && (
         <Box sx={{ textAlign: "center", py: 8 }}>
-          <Typography color="text.secondary">No files found</Typography>
+          <Typography color="text.secondary">{t("files.no_files")}</Typography>
         </Box>
       )}
     </Box>
