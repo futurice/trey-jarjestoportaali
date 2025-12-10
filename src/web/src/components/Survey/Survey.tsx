@@ -217,7 +217,7 @@ export const SurveyPage = () => {
   const deleteFileEvent = useCallback(
     async (fileId: string) => {
       try {
-        const fullFileName = `${treyUser?.organizationId}/${fileId}`
+        const fullFileName = `${treyUser?.organizationId ?? treyUser?.id ?? "unknown"}/${fileId}`
         const response = await fileService.deleteFileById(fullFileName)
 
         if (response.status === 204) {
@@ -231,7 +231,7 @@ export const SurveyPage = () => {
         return "error"
       }
     },
-    [fileService, treyUser?.organizationId],
+    [fileService, treyUser?.id, treyUser?.organizationId],
   )
 
   const surveyModel = useMemo(() => {
