@@ -12,4 +12,5 @@ export interface BlobFile {
   organizationName?: string
   originalFileName?: string
   fileSize?: number
+  tags?: string[]
 }

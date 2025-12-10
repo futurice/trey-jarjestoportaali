@@ -191,6 +191,7 @@
     "actions": "Actions",
     "error": "Failed to load files.",
     "no_files": "No files found.",
-    "unknown": "Unknown"
+    "unknown": "Unknown",
+    "tags": "Tags"
   }
 }

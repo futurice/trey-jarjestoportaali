@@ -128,6 +128,9 @@ internal sealed class FileService(BlobContainerClient containerClient, BlobServi
                             : null,
                         OrganizationName = await organizationsRepository.GetOrganizationAsync(organizationId.ToString()) is Organization org
                             ? org.Name
+                            : null,
+                        Tags = blob.Metadata.TryGetValue("tags", out var tagsString)
+                            ? tagsString.Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries)
                             : null
                     });
                 }
@@ -175,7 +178,10 @@ internal sealed class FileService(BlobContainerClient containerClient, BlobServi
                     OrganizationName: blobProperties.Value.Metadata.TryGetValue("organizationId", out var organizationIdString)
                         && Guid.TryParse(organizationIdString, out var organizationId)
                             ? (await organizationsRepository.GetOrganizationAsync(organizationId.ToString()))?.Name
-                            : null
+                            : null,
+                    Tags: blobProperties.Value.Metadata.TryGetValue("tags", out var tagsString)
+                        ? tagsString.Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries)
+                        : null
             );
 
             return blobFile;

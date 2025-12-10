@@ -16,7 +16,8 @@ public record BlobFile(
     Guid? OrganizationId = null,
     string? OrganizationName = null,
     string? OriginalFileName = null,
-    long? FileSize = null)
+    long? FileSize = null,
+    string[]? Tags = null)
 {
     public static BlobFile FromBlobItem(BlobItem blob)
     {

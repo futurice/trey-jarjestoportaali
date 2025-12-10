@@ -192,6 +192,7 @@
     "actions": "Toiminnot",
     "error": "Tiedostojen lataaminen epäonnistui.",
     "no_files": "Tiedostoja ei löytynyt.",
-    "unknown": "Tuntematon"
+    "unknown": "Tuntematon",
+    "tags": "Tunnisteet"
   }
 }
