@@ -141,26 +141,24 @@ internal sealed class FileService(BlobContainerClient containerClient, BlobServi
         }
     }
 
-    public async Task<BlobFile> GetFileByNameAsync(string name, TreyUser user, CancellationToken cancellationToken)
+    public async Task<BlobFile> GetFileByNameAsync(string id, CancellationToken cancellationToken)
     {
         try
         {
-            string? folderName = user?.OrganizationId?.ToString() ?? "unknown";
-            var blobPath = $"{folderName}/{name}";
-            var blobClient = containerClient.GetBlobClient(blobPath);
+            var blobClient = containerClient.GetBlobClient(id);
 
             var download = await blobClient.DownloadContentAsync(cancellationToken);
             var bytes = download.Value.Content.ToArray();
             var props = await blobClient.GetPropertiesAsync(cancellationToken: cancellationToken);
 
             var blobFile = new BlobFile(
-                Id: blobPath,
-                FileName: name,
+                Id: id,
+                FileName: blobClient.Name,
                 ContentType: props.Value.ContentType,
                 Size: props.Value.ContentLength,
                 CreatedDate: props.Value.CreatedOn.UtcDateTime,
                 UpdatedDate: props.Value.LastModified.UtcDateTime,
-                Uri: (await CreateSasUri(blobPath)).ToString(),
+                Uri: (await CreateSasUri(blobClient.Name)).ToString(),
                 Content: Convert.ToBase64String(bytes),
                 UploadedBy: props.Value.Metadata.TryGetValue("uploadedBy", out var uploadedBy)
                     ? uploadedBy

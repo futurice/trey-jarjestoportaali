@@ -11,8 +11,9 @@ public static class FileEndpointsExtensions
         group.MapPost("/", CreateFile);
         group.MapGet("/", GetFiles);
         group.MapGet("/organization", GetFilesByOrganization);
-        group.MapGet("/file/{fileName}", GetFileByName);
+        group.MapGet("/file", GetFileByName);
         group.MapDelete("/file", DeleteFile);
+        group.MapGet("/file/details", GetFileDetailsByName);
         return group;
     }
 
@@ -67,28 +68,56 @@ public static class FileEndpointsExtensions
         return await Task.FromResult<IResult>(TypedResults.Ok(response));
     }
 
-    private static async Task<IResult> GetFileByName([FromRoute] string fileName,
+    private static async Task<IResult> GetFileDetailsByName([FromQuery] string id,
         [FromServices] FileService service,
         [FromServices] ILogger<FileService> logger,
         [FromServices] IAuthService auth,
         HttpContext context,
         CancellationToken cancellationToken)
     {
-        logger.LogDebug("Getting file {fileName} from {container}", fileName, service);
+        logger.LogDebug("Getting file {id} from {container}", id, service);
         var user = await auth.GetUserFromContext(context);
-        var folderName = user?.OrganizationId?.ToString() ?? "unknown";
-        var blobPath = $"{folderName}/{fileName}";
-        var response = await service.GetFileContentByNameAsync(blobPath, cancellationToken);
+        if (user.Role != TreyRole.Admin && user.Role != TreyRole.TreyBoard && user.OrganizationId != id.Split('/').FirstOrDefault())
+        {
+            logger.LogWarning("User {userId} is not authorized to access file {id} from {container}", user.Id, id, service);
+            return TypedResults.Forbid();
+        }
+
+        var response = await service.GetFileByNameAsync(id, cancellationToken);
         if (response is null)
         {
             return TypedResults.NotFound();
         }
 
         logger.LogDebug("Found file: {x}", response);
+        return Results.Ok(response);
+    }
+
+    private static async Task<IResult> GetFileByName([FromQuery] string fileId,
+        [FromServices] FileService service,
+        [FromServices] ILogger<FileService> logger,
+        [FromServices] IAuthService auth,
+        HttpContext context,
+        CancellationToken cancellationToken)
+    {
+        logger.LogDebug("Getting file {fileId} from {container}", fileId, service);
+        var user = await auth.GetUserFromContext(context);
+        var response = await service.GetFileContentByNameAsync(fileId, cancellationToken);
+        if (response is null)
+        {
+            return TypedResults.NotFound();
+        }
+        else if (user.Role != TreyRole.Admin && user.Role != TreyRole.TreyBoard && user.OrganizationId != Path.GetDirectoryName(fileId))
+        {
+            logger.LogWarning("User {userId} is not authorized to access file {fileId} from {container}", user.Id, fileId, service);
+            return TypedResults.Forbid();
+        }
+
+        logger.LogDebug("Found file: {x}", response);
 
         var bytes = response.Content.ToArray();
         var contentType = response.Details.ContentType ?? "application/octet-stream";
-        return Results.File(bytes, contentType, fileName);
+        return Results.File(bytes, contentType, fileId);
     }
 
     private static async Task<IResult> DeleteFile([FromQuery] string fileId,

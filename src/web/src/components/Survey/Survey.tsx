@@ -2,7 +2,7 @@ import { useCallback, useEffect, useMemo, useState } from "react"
 import toast from "react-hot-toast"
 import { useTranslation } from "react-i18next"
 import { useParams } from "react-router-dom"
-import { Box, CircularProgress, Container, Typography } from "@mui/material"
+import { CircularProgress, Container, Typography } from "@mui/material"
 import { CompleteEvent, getLocaleStrings, UploadFilesEvent } from "survey-core"
 import "survey-core/i18n/finnish"
 import "survey-core/survey-core.css"
@@ -338,13 +338,19 @@ export const SurveyPage = () => {
   }
 
   return (
-    <Box sx={{ width: "100vw", overflow: "hidden", textAlign: "left" }}>
+    <Container
+      maxWidth="xl"
+      sx={{
+        overflow: "hidden",
+        textAlign: "left",
+      }}
+    >
       <Survey model={surveyModel} />
       {responseSaved && (
         <Typography>
           {t("responses_saved")}: {responseSaved.toLocaleString()}
         </Typography>
       )}
-    </Box>
+    </Container>
   )
 }

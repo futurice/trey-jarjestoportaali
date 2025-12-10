@@ -6,6 +6,7 @@ import Login from "./components/Authentication/Login.tsx"
 import { ResetPassword } from "./components/Authentication/ResetPassword.tsx"
 import Dashboard from "./components/Dashboard"
 import { ErrorWrapper, NoOrganization } from "./components/Error/Error.tsx"
+import FileDetails from "./components/Files/FileDetails.tsx"
 import { Layout } from "./components/Layout/Layout"
 import MyFiles from "./components/MyFiles"
 import { OrganizationsList } from "./components/Organization/OrganizationList.tsx"
@@ -60,6 +61,16 @@ const App = () => {
             >
               <Layout>
                 <OrganizationsList />
+              </Layout>
+            </Authenticated>
+          }
+        />
+        <Route
+          path="/file"
+          element={
+            <Authenticated requiredRoles={approvedRoles} redirectUrl={"/registration"}>
+              <Layout>
+                <FileDetails />
               </Layout>
             </Authenticated>
           }

@@ -23,30 +23,10 @@ import { useAuth } from "../../authentication/AuthContext"
 import { useFilesForOrganization } from "../../hooks/useFileList"
 import { useFileService } from "../../hooks/useFileService"
 import { BlobFile } from "../../models/file"
+import { formatDate, formatFileSize } from "../../utils/formatUtils"
 
 interface FilesListProps {
   readonly files: readonly BlobFile[]
-}
-
-function formatFileSize(bytes: number): string {
-  if (bytes === 0) return "0 Bytes"
-
-  const k = 1024
-  const sizes = ["Bytes", "KB", "MB", "GB", "TB"]
-  const i = Math.floor(Math.log(bytes) / Math.log(k))
-
-  return `${Number.parseFloat((bytes / Math.pow(k, i)).toFixed(2))} ${sizes[i]}`
-}
-
-function formatDate(date?: Date): string {
-  if (!date) return "-"
-  return new Date(date).toLocaleDateString("fi-FI", {
-    year: "numeric",
-    month: "2-digit",
-    day: "2-digit",
-    hour: "2-digit",
-    minute: "2-digit",
-  })
 }
 
 export const OrganizationFileList = ({
@@ -143,7 +123,7 @@ export function FilesList({ files }: FilesListProps) {
                         <Tooltip title="View Details">
                           <IconButton
                             component={RouterLink}
-                            to={`/file/${file.id}`}
+                            to={`/file?id=${file.id}`}
                             size="small"
                             color="primary"
                           >

@@ -38,7 +38,7 @@ export class FileService extends RestService<BlobFile> {
   getFileByName = async (fileName: string): Promise<Blob> => {
     const response = await this.client.request<Blob>({
       method: "GET",
-      url: `file/${fileName}`,
+      url: `file?fileId=${fileName}`,
     })
 
     return response.data
@@ -49,5 +49,14 @@ export class FileService extends RestService<BlobFile> {
       method: "DELETE",
       url: `file?fileId=${fileId}`,
     })
+  }
+
+  getFileDetailsByName = async (fileId: string): Promise<BlobFile> => {
+    const response = await this.client.request<BlobFile>({
+      method: "GET",
+      url: `file/details?id=${fileId}`,
+    })
+
+    return response.data
   }
 }

@@ -57,3 +57,24 @@ export const getFileByName = async (
     return null
   }
 }
+
+export const useGetBlobByName = (fileService: FileService, fileName: string) => {
+  return useQuery<Blob | null, AxiosError>({
+    queryKey: ["blobFile", fileName],
+    queryFn: async () => {
+      const file = await fileService.getFileByName(fileName)
+      return file
+    },
+    enabled: !!fileName,
+  })
+}
+
+export const useGetFileByName = (fileService: FileService, fileId: string) => {
+  return useQuery<BlobFile | null, AxiosError>({
+    queryKey: ["file", fileId],
+    queryFn: async () => {
+      const file = await fileService.getFileDetailsByName(fileId)
+      return file
+    },
+  })
+}
