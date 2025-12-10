@@ -3,75 +3,233 @@ using Azure.Storage.Blobs;
 using Azure.Storage.Blobs.Models;
 using Azure.Storage.Blobs.Specialized;
 using Azure.Storage.Sas;
+using Microsoft.AspNetCore.Mvc;
 using Trey.Api.Models;
+using Trey.Api.Repositories;
 
 namespace Trey.Api.Services;
 
-internal sealed class FileService(BlobContainerClient containerClient, BlobServiceClient serviceClient, ILogger<FileService> logger)
+internal sealed class FileService(BlobContainerClient containerClient, BlobServiceClient serviceClient, ILogger<FileService> logger, OrganizationsRepository organizationsRepository)
 {
     internal static DefaultAzureCredential DefaultCredential { get; } = new();
 
-    public async Task<FileResponse> UploadFilesAsync(IFormFileCollection files,
+    public async Task<List<BlobFile>> UploadFilesAsync(IFormFileCollection files,
+        TreyUser user,
         CancellationToken cancellationToken)
     {
         try
         {
             logger.LogDebug("Uploading files to {container}.", containerClient.Uri);
 
-            List<string> uploadedFiles = [];
+            List<BlobFile> uploadedFiles = [];
             foreach (var file in files)
             {
-                var fileName = file.FileName;
+                var folderName = user?.OrganizationId?.ToString() ?? "unknown";
+                var fileName = string.IsNullOrWhiteSpace(file.FileName)
+                    ? Guid.NewGuid().ToString("N")
+                    : file.FileName;
 
-                await using var stream = file.OpenReadStream();
-
-                var blobClient = containerClient.GetBlobClient(fileName);
-                if (await blobClient.ExistsAsync(cancellationToken)) continue;
+                var blobClient = containerClient.GetBlobClient($"{folderName}/{fileName}");
+                if (await blobClient.ExistsAsync(cancellationToken))
+                {
+                    var fileNameParts = fileName.Split('.');
+                    string newFileName;
+                    if (fileNameParts.Length == 1)
+                    {
+                        // No extension
+                        newFileName = $"{fileNameParts[0]}-{Guid.NewGuid():D}";
+                    }
+                    else
+                    {
+                        // Has extension
+                        var nameWithoutExtension = string.Join('.', fileNameParts.Take(fileNameParts.Length - 1));
+                        var extension = fileNameParts[^1];
+                        newFileName = $"{nameWithoutExtension}-{Guid.NewGuid():D}.{extension}";
+                    }
+                    blobClient = containerClient.GetBlobClient($"{folderName}/{newFileName}");
+                }
 
                 await using var fileStream = file.OpenReadStream();
                 await blobClient.UploadAsync(fileStream, new BlobHttpHeaders
                 {
-                    ContentType = "text/plain"
+                    ContentType = file.ContentType ?? "application/octet-stream"
                 }, cancellationToken: cancellationToken);
-                uploadedFiles.Add(fileName);
+                await blobClient.SetMetadataAsync(new Dictionary<string, string>
+                {
+                    { "uploadedOn", DateTime.UtcNow.ToString("o") },
+                    { "organizationId", user?.OrganizationId?.ToString() ?? "unknown" },
+                    { "uploadedBy", user?.Id.ToString() ?? "anonymous" },
+                    { "originalFileName", file.FileName }
+                }, cancellationToken: cancellationToken);
+                var blobProperties = await blobClient.GetPropertiesAsync(cancellationToken: cancellationToken);
+                uploadedFiles.Add(new BlobFile(
+                    Id: blobClient.Name,
+                    FileName: fileName,
+                    Uri: blobClient.Uri.ToString(),
+                    ContentType: blobProperties.Value.ContentType,
+                    CreatedDate: blobProperties.Value.CreatedOn.UtcDateTime,
+                    UpdatedDate: blobProperties.Value.LastModified.UtcDateTime,
+                    UploadedBy: blobProperties.Value.Metadata.TryGetValue("uploadedBy", out var uploadedBy)
+                        ? uploadedBy
+                        : null,
+                    OrganizationId: blobProperties.Value.Metadata.TryGetValue("organizationId", out var orgIdString)
+                                    && Guid.TryParse(orgIdString, out var orgId)
+                        ? orgId
+                        : null,
+                    OriginalFileName: blobProperties.Value.Metadata.TryGetValue("originalFileName", out var originalFileName)
+                        ? originalFileName
+                        : null
+                ));
             }
 
             return uploadedFiles.Count is 0
-                ? FileResponse.FromError("No files uploaded.")
-                : new FileResponse([.. uploadedFiles]);
+                ? []
+                : uploadedFiles;
         }
         catch (Exception ex)
         {
-            return FileResponse.FromError(ex.ToString());
+            return await Task.FromException<List<BlobFile>>(ex);
         }
     }
 
-    public Task<BlobFile[]> FindFilesAsync(CancellationToken cancellationToken)
+    public async Task<List<BlobFile>> FindFilesAsync(CancellationToken cancellationToken)
     {
         try
         {
             logger.LogDebug("Listing files from {container}.", containerClient.Uri);
-            // TODO: change to async
-            var blobs = containerClient.GetBlobsAsync(cancellationToken: cancellationToken)
-                .ToBlockingEnumerable();
-            var blobItems = blobs.Select(blob => BlobFile.FromBlobItem(blob) with
+            var results = new List<BlobFile>();
+            await foreach (var blob in containerClient.GetBlobsAsync(
+                   traits: BlobTraits.Metadata,
+                   cancellationToken: cancellationToken))
             {
-                Uri = CreateSasUri(blob.Name).Result.ToString()
-            }).ToArray();
-            return Task.FromResult(blobItems.ToArray());
+                var sasUri = await CreateSasUri(blob.Name);
+                results.Add(BlobFile.FromBlobItem(blob) with
+                {
+                    Uri = sasUri.ToString()
+                });
+            }
+            return results;
         }
         catch (Exception ex)
         {
-            return Task.FromException<BlobFile[]>(ex);
+            return await Task.FromException<List<BlobFile>>(ex);
         }
     }
+
+    public async Task<List<BlobFile>> GetFilesByOrganizationAsync(IAuthService auth, Guid organizationId, CancellationToken cancellationToken)
+    {
+        try
+        {
+            var results = new List<BlobFile>();
+
+            // Ensure metadata is included
+            await foreach (var blob in containerClient.GetBlobsAsync(
+                            traits: BlobTraits.Metadata,
+                            cancellationToken: cancellationToken))
+            {
+                if (blob.Metadata.TryGetValue("organizationId", out var orgIdString)
+                    && Guid.TryParse(orgIdString, out var orgId)
+                    && orgId == organizationId)
+                {
+                    var sasUri = await CreateSasUri(blob.Name);
+                    results.Add(BlobFile.FromBlobItem(blob) with
+                    {
+                        Uri = sasUri.ToString(),
+                        UploadedByUsername = blob.Metadata.TryGetValue("uploadedBy", out var uploadedByUserString)
+                            ? (await auth.FindUserById(uploadedByUserString))?.Username
+                            : null,
+                        OrganizationName = await organizationsRepository.GetOrganizationAsync(organizationId.ToString()) is Organization org
+                            ? org.Name
+                            : null,
+                        Tags = blob.Metadata.TryGetValue("tags", out var tagsString)
+                            ? tagsString.Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries)
+                            : null
+                    });
+                }
+            }
+
+            return results;
+        }
+        catch (Exception ex)
+        {
+            return await Task.FromException<List<BlobFile>>(ex);
+        }
+    }
+
+    public async Task<BlobFile> GetFileByNameAsync(string id, IAuthService auth, CancellationToken cancellationToken)
+    {
+        try
+        {
+            var blobClient = containerClient.GetBlobClient(id);
+            if (!await blobClient.ExistsAsync(cancellationToken))
+            {
+                throw new FileNotFoundException($"File '{id}' not found in container '{containerClient.Name}'.");
+            }
+            var blobProperties = await blobClient.GetPropertiesAsync(cancellationToken: cancellationToken);
+
+            var blobFile = new BlobFile(
+                    Id: id,
+                    FileName: blobClient.Name,
+                    Uri: blobClient.Uri.ToString(),
+                    ContentType: blobProperties.Value.ContentType,
+                    CreatedDate: blobProperties.Value.CreatedOn.UtcDateTime,
+                    UpdatedDate: blobProperties.Value.LastModified.UtcDateTime,
+                    UploadedBy: blobProperties.Value.Metadata.TryGetValue("uploadedBy", out var uploadedBy)
+                        ? uploadedBy
+                        : null,
+                    OrganizationId: blobProperties.Value.Metadata.TryGetValue("organizationId", out var orgIdString)
+                                    && Guid.TryParse(orgIdString, out var orgId)
+                        ? orgId
+                        : null,
+                    OriginalFileName: blobProperties.Value.Metadata.TryGetValue("originalFileName", out var originalFileName)
+                        ? originalFileName
+                        : null,
+                    UploadedByUsername: blobProperties.Value.Metadata.TryGetValue("uploadedBy", out var uploadedByUserString)
+                            ? (await auth.FindUserById(uploadedByUserString))?.Username
+                            : null,
+                    OrganizationName: blobProperties.Value.Metadata.TryGetValue("organizationId", out var organizationIdString)
+                        && Guid.TryParse(organizationIdString, out var organizationId)
+                            ? (await organizationsRepository.GetOrganizationAsync(organizationId.ToString()))?.Name
+                            : null,
+                    Tags: blobProperties.Value.Metadata.TryGetValue("tags", out var tagsString)
+                        ? tagsString.Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries)
+                        : null
+            );
+
+            return blobFile;
+        }
+        catch (Exception ex)
+        {
+            return await Task.FromException<BlobFile>(ex);
+        }
+    }
+
+    public async Task<BlobDownloadResult> GetFileContentByNameAsync(string blobPath, CancellationToken cancellationToken)
+    {
+        var blobClient = containerClient.GetBlobClient(blobPath);
+        if (!await blobClient.ExistsAsync(cancellationToken))
+        {
+            throw new FileNotFoundException($"File '{blobPath}' not found in container '{containerClient.Name}'.");
+        }
+
+        var download = await blobClient.DownloadContentAsync(cancellationToken);
+        return download.Value;
+    }
+
+    public async Task<bool> DeleteFileByIdAsync(string fileId, CancellationToken cancellationToken)
+    {
+        var blobClient = containerClient.GetBlobClient(fileId);
+        var response = await blobClient.DeleteIfExistsAsync(cancellationToken: cancellationToken);
+        return response.Value;
+    }
+
     private async Task<Uri> CreateSasUri(string filename)
     {
         var userDelegationKey =
             await serviceClient.GetUserDelegationKeyAsync(
                 DateTimeOffset.UtcNow,
                 DateTimeOffset.UtcNow.AddDays(1));
-        
+
         var blobClient = serviceClient
             .GetBlobContainerClient(containerClient.Name)
             .GetBlobClient(filename);
@@ -86,7 +244,7 @@ internal sealed class FileService(BlobContainerClient containerClient, BlobServi
         };
 
         sasBuilder.SetPermissions(BlobSasPermissions.Read);
-        
+
         var uriBuilder = new BlobUriBuilder(blobClient.Uri)
         {
             Sas = sasBuilder.ToSasQueryParameters(

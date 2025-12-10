@@ -13,6 +13,7 @@ import {
   MailOutline,
   ArrowDropDownSharp,
   ArrowBack,
+  AttachFile,
 } from "@mui/icons-material"
 import {
   Container,
@@ -39,6 +40,7 @@ import { useAuth } from "../../authentication/AuthContext"
 import { useGetOrganizationById } from "../../hooks/useOrganizations"
 import { useOrganizationsService } from "../../hooks/useOrganizationsService"
 import { getCategoryLabel } from "../../utils/organizationUtils"
+import { OrganizationFileList } from "../Files/FileList"
 import { FacilityCard } from "./FacilityCard"
 import { PersonCard } from "./PersonCard"
 
@@ -310,6 +312,7 @@ export const OrganizationPage = () => {
               iconPosition="start"
               label={t("organization.tabs.communications")}
             />
+            <Tab icon={<AttachFile />} iconPosition="start" label={t("organization.tabs.files")} />
           </Tabs>
 
           {/* People Tab */}
@@ -481,6 +484,12 @@ export const OrganizationPage = () => {
                   </CardContent>
                 </Card>
               )}
+            </Box>
+          </TabPanel>
+          {/* Attachments Tab */}
+          <TabPanel value={tabValue} index={4}>
+            <Box sx={{ px: 2 }}>
+              <OrganizationFileList organizationId={orgId} />
             </Box>
           </TabPanel>
         </Card>

@@ -7,6 +7,8 @@ namespace Trey.Api.Services;
 public interface IAuthService
 {
     Task<TreyUser> GetUserFromContext(HttpContext context);
+    Task<TreyUser?> FindUserById(string userId);
+    Task<bool> IsUserAuthorized(TreyUser user, string? organizationId);
 }
 
 internal sealed class AuthService : IAuthService
@@ -55,6 +57,24 @@ internal sealed class AuthService : IAuthService
         };
     }
 
+    public async Task<TreyUser?> FindUserById(string userId)
+    {
+        var supabaseUser = await supabaseClient.From<TreyUserDbObject>().Where(u => u.Id == userId).Single();
+        if (supabaseUser == null)
+        {
+            return null;
+        }
+        return new TreyUser
+        {
+            Id = Guid.Parse(supabaseUser.Id),
+            Username = supabaseUser.Username,
+            OrganizationId = supabaseUser.OrganizationId,
+            Role = supabaseUser.Role,
+            CreatedAt = supabaseUser.CreatedAt,
+            UpdatedAt = supabaseUser.UpdatedAt
+        };
+    }
+
     private static string GetTokenFromHeader(HttpContext context)
     {
         var authHeader = context.Request.Headers.Authorization.FirstOrDefault();
@@ -77,5 +97,18 @@ internal sealed class AuthService : IAuthService
         {
             throw new UnauthorizedAccessException($"Session validation failed: {ex.Message}");
         }
+    }
+
+    public async Task<bool> IsUserAuthorized(TreyUser user, string? organizationId)
+    {
+        if (user == null)
+        {
+            return false;
+        }
+        if (user.Role == TreyRole.Admin || user.Role == TreyRole.TreyBoard)
+        {
+            return true;
+        }
+        return organizationId != null && user.OrganizationId == organizationId;
     }
 }

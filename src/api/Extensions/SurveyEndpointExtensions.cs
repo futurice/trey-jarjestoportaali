@@ -38,6 +38,19 @@ public static class SurveyEndpointExtensions
     private static async Task<IResult> GetAllSurveysForOrg(SurveyRepository repo, IAuthService auth, HttpContext context)
     {
         var user = await auth.GetUserFromContext(context);
+        if (user.OrganizationId is null && user.Role == TreyRole.Organization)
+        {
+            return Results.BadRequest("User does not have an organization ID");
+        }
+        else if (user.Role == TreyRole.Admin || user.Role == TreyRole.TreyBoard)
+        {
+            var allSurveys = await repo.GetAllSurveysAsync();
+            return Results.Ok(allSurveys);
+        }
+        else if (user.Role != TreyRole.Organization)
+        {
+            return Results.Forbid();
+        }
         var surveys = await repo.GetAllSurveysForOrgAsync(user.OrganizationId);
         return Results.Ok(surveys);
     }
