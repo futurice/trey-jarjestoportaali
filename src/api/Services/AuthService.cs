@@ -8,6 +8,7 @@ public interface IAuthService
 {
     Task<TreyUser> GetUserFromContext(HttpContext context);
     Task<TreyUser?> FindUserById(string userId);
+    Task<bool> IsUserAuthorized(TreyUser user, string? organizationId);
 }
 
 internal sealed class AuthService : IAuthService
@@ -96,5 +97,18 @@ internal sealed class AuthService : IAuthService
         {
             throw new UnauthorizedAccessException($"Session validation failed: {ex.Message}");
         }
+    }
+
+    public async Task<bool> IsUserAuthorized(TreyUser user, string? organizationId)
+    {
+        if (user == null)
+        {
+            return false;
+        }
+        if (user.Role == TreyRole.Admin || user.Role == TreyRole.TreyBoard)
+        {
+            return true;
+        }
+        return organizationId != null && user.OrganizationId == organizationId;
     }
 }

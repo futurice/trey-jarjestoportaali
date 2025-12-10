@@ -34,17 +34,26 @@ public static class FileEndpointsExtensions
         return TypedResults.Ok(response);
     }
 
-    private static Task<IResult> GetFiles([FromServices] FileService service,
+    private static async Task<IResult> GetFiles([FromServices] FileService service,
         [FromServices] ILogger<FileService> logger,
+        [FromServices] IAuthService auth,
+        HttpContext context,
         CancellationToken cancellationToken)
     {
         logger.LogDebug("Finding files from {container}", service);
+        var user = await auth.GetUserFromContext(context);
+        if (!await auth.IsUserAuthorized(user, null))
+        {
+            logger.LogWarning("User {userId} is not authorized to access files from {container}", user.Id, service);
+            return TypedResults.Forbid();
+        }
 
-        var response = service.FindFilesAsync(cancellationToken);
-
+        var response = await service.FindFilesAsync(cancellationToken);
         logger.LogDebug("Found files: {x}", response);
 
-        return Task.FromResult<IResult>(TypedResults.Ok(response));
+        return response.Count == 0
+            ? TypedResults.NoContent()
+            : TypedResults.Ok(response);
     }
 
     private static async Task<IResult> GetFilesByOrganization([FromQuery] Guid organizationId,
@@ -56,7 +65,7 @@ public static class FileEndpointsExtensions
     {
         logger.LogDebug("Finding files for organization {organizationId} from {container}", organizationId, service);
         var user = await auth.GetUserFromContext(context);
-        if (user.Role != TreyRole.Admin && user.Role != TreyRole.TreyBoard && user.OrganizationId != organizationId.ToString())
+        if (!await auth.IsUserAuthorized(user, organizationId.ToString()))
         {
             logger.LogWarning("User {userId} is not authorized to access files for organization {organizationId} from {container}", user.Id, organizationId, service);
             return TypedResults.Forbid();
@@ -65,7 +74,7 @@ public static class FileEndpointsExtensions
 
         logger.LogDebug("Found files: {x}", response);
 
-        return await Task.FromResult<IResult>(TypedResults.Ok(response));
+        return TypedResults.Ok(response);
     }
 
     private static async Task<IResult> GetFileDetailsByName([FromQuery] string id,
@@ -77,7 +86,7 @@ public static class FileEndpointsExtensions
     {
         logger.LogDebug("Getting file {id} from {container}", id, service);
         var user = await auth.GetUserFromContext(context);
-        if (user.Role != TreyRole.Admin && user.Role != TreyRole.TreyBoard && user.OrganizationId != id.Split('/').FirstOrDefault())
+        if (!await auth.IsUserAuthorized(user, Path.GetDirectoryName(id)))
         {
             logger.LogWarning("User {userId} is not authorized to access file {id} from {container}", user.Id, id, service);
             return TypedResults.Forbid();
@@ -102,19 +111,19 @@ public static class FileEndpointsExtensions
     {
         logger.LogDebug("Getting file {fileId} from {container}", fileId, service);
         var user = await auth.GetUserFromContext(context);
+        if (!await auth.IsUserAuthorized(user, Path.GetDirectoryName(fileId)))
+        {
+            logger.LogWarning("User {userId} is not authorized to access file {id} from {container}", user.Id, fileId, service);
+            return TypedResults.Forbid();
+        }
+
         var response = await service.GetFileContentByNameAsync(fileId, cancellationToken);
         if (response is null)
         {
             return TypedResults.NotFound();
         }
-        else if (user.Role != TreyRole.Admin && user.Role != TreyRole.TreyBoard && user.OrganizationId != Path.GetDirectoryName(fileId))
-        {
-            logger.LogWarning("User {userId} is not authorized to access file {fileId} from {container}", user.Id, fileId, service);
-            return TypedResults.Forbid();
-        }
 
         logger.LogDebug("Found file: {x}", response);
-
         var bytes = response.Content.ToArray();
         var contentType = response.Details.ContentType ?? "application/octet-stream";
         return Results.File(bytes, contentType, fileId);
@@ -130,9 +139,9 @@ public static class FileEndpointsExtensions
         logger.LogInformation("Deleting file {fileId} from {container}", fileId, service);
         var user = await auth.GetUserFromContext(context);
         var organizationId = Path.GetDirectoryName(fileId);
-        if (user.Role != TreyRole.Admin && user.OrganizationId != organizationId)
+        if (!await auth.IsUserAuthorized(user, organizationId))
         {
-            logger.LogWarning("User {userId} is not authorized to delete file {fileId} from {container}", user.Id, fileId, service);
+            logger.LogWarning("User {userId} is not authorized to access files for organization {organizationId} from {container}", user.Id, organizationId, service);
             return TypedResults.Forbid();
         }
 
