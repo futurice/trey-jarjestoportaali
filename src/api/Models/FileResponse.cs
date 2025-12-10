@@ -12,7 +12,11 @@ public record BlobFile(
     DateTime? CreatedDate = null,
     DateTime? UpdatedDate = null,
     string? UploadedBy = null,
-    Guid? OrganizationId = null)
+    string? UploadedByUsername = null,
+    Guid? OrganizationId = null,
+    string? OrganizationName = null,
+    string? OriginalFileName = null,
+    long? FileSize = null)
 {
     public static BlobFile FromBlobItem(BlobItem blob)
     {
@@ -29,7 +33,11 @@ public record BlobFile(
             OrganizationId: blob.Metadata.TryGetValue("organizationId", out var orgIdString)
                              && Guid.TryParse(orgIdString, out var orgId)
                 ? orgId
-                : null
+                : null,
+            OriginalFileName: blob.Metadata.TryGetValue("originalFileName", out var originalFileName)
+                ? originalFileName
+                : null,
+            FileSize: blob.Properties.ContentLength
         );
     }
 }

@@ -46,18 +46,25 @@ public static class FileEndpointsExtensions
         return Task.FromResult<IResult>(TypedResults.Ok(response));
     }
 
-    private static Task<IResult> GetFilesByOrganization([FromQuery] Guid organizationId,
+    private static async Task<IResult> GetFilesByOrganization([FromQuery] Guid organizationId,
         [FromServices] FileService service,
         [FromServices] ILogger<FileService> logger,
+        [FromServices] IAuthService auth,
+        HttpContext context,
         CancellationToken cancellationToken)
     {
         logger.LogDebug("Finding files for organization {organizationId} from {container}", organizationId, service);
-
-        var response = service.GetFilesByOrganizationAsync(organizationId, cancellationToken);
+        var user = await auth.GetUserFromContext(context);
+        if (user.Role != TreyRole.Admin && user.Role != TreyRole.TreyBoard && user.OrganizationId != organizationId.ToString())
+        {
+            logger.LogWarning("User {userId} is not authorized to access files for organization {organizationId} from {container}", user.Id, organizationId, service);
+            return TypedResults.Forbid();
+        }
+        var response = await service.GetFilesByOrganizationAsync(auth, organizationId, cancellationToken);
 
         logger.LogDebug("Found files: {x}", response);
 
-        return Task.FromResult<IResult>(TypedResults.Ok(response));
+        return await Task.FromResult<IResult>(TypedResults.Ok(response));
     }
 
     private static async Task<IResult> GetFileByName([FromRoute] string fileName,

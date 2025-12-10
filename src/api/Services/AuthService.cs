@@ -7,6 +7,7 @@ namespace Trey.Api.Services;
 public interface IAuthService
 {
     Task<TreyUser> GetUserFromContext(HttpContext context);
+    Task<TreyUser?> FindUserById(string userId);
 }
 
 internal sealed class AuthService : IAuthService
@@ -44,6 +45,24 @@ internal sealed class AuthService : IAuthService
     private async Task<TreyUser> GetUserById(User user)
     {
         var supabaseUser = await supabaseClient.From<TreyUserDbObject>().Where(u => u.Id == user.Id).Single() ?? throw new UnauthorizedAccessException("User not found in database");
+        return new TreyUser
+        {
+            Id = Guid.Parse(supabaseUser.Id),
+            Username = supabaseUser.Username,
+            OrganizationId = supabaseUser.OrganizationId,
+            Role = supabaseUser.Role,
+            CreatedAt = supabaseUser.CreatedAt,
+            UpdatedAt = supabaseUser.UpdatedAt
+        };
+    }
+
+    public async Task<TreyUser?> FindUserById(string userId)
+    {
+        var supabaseUser = await supabaseClient.From<TreyUserDbObject>().Where(u => u.Id == userId).Single();
+        if (supabaseUser == null)
+        {
+            return null;
+        }
         return new TreyUser
         {
             Id = Guid.Parse(supabaseUser.Id),
