@@ -1,7 +1,6 @@
 import { useMemo, useState } from "react"
 import { useTranslation } from "react-i18next"
-import { Link as RouterLink } from "react-router-dom"
-import { Download, Visibility } from "@mui/icons-material"
+import { Visibility } from "@mui/icons-material"
 import {
   Card,
   CardContent,
@@ -16,7 +15,6 @@ import {
   Box,
   Paper,
   IconButton,
-  Tooltip,
   CircularProgress,
 } from "@mui/material"
 import { useAuth } from "../../authentication/AuthContext"

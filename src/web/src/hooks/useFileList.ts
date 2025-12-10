@@ -45,27 +45,27 @@ export const useFilesForOrganization = (
   })
 }
 
-export const getFileByName = async (
+export const getFileById = async (
   fileService: FileService,
-  fileName: string,
+  fileId: string,
 ): Promise<Blob | null> => {
   try {
-    const file = await fileService.getFileByName(fileName)
+    const file = await fileService.getFileById(fileId)
     return file
   } catch (error) {
-    console.error("Error fetching file by name:", error)
+    console.error("Error fetching file by ID:", error)
     return null
   }
 }
 
-export const useGetBlobByName = (fileService: FileService, fileName: string) => {
+export const useGetBlobById = (fileService: FileService, fileId: string) => {
   return useQuery<Blob | null, AxiosError>({
-    queryKey: ["blobFile", fileName],
+    queryKey: ["blobFile", fileId],
     queryFn: async () => {
-      const file = await fileService.getFileByName(fileName)
+      const file = await fileService.getFileById(fileId)
       return file
     },
-    enabled: !!fileName,
+    enabled: !!fileId,
   })
 }
 

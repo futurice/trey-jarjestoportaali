@@ -35,10 +35,10 @@ export class FileService extends RestService<BlobFile> {
     return response.data
   }
 
-  getFileByName = async (fileName: string): Promise<Blob> => {
+  getFileById = async (fileId: string): Promise<Blob> => {
     const response = await this.client.request<Blob>({
       method: "GET",
-      url: `file?fileId=${fileName}`,
+      url: `file?fileId=${fileId}`,
     })
 
     return response.data
