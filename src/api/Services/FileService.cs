@@ -141,32 +141,41 @@ internal sealed class FileService(BlobContainerClient containerClient, BlobServi
         }
     }
 
-    public async Task<BlobFile> GetFileByNameAsync(string id, CancellationToken cancellationToken)
+    public async Task<BlobFile> GetFileByNameAsync(string id, IAuthService auth, CancellationToken cancellationToken)
     {
         try
         {
             var blobClient = containerClient.GetBlobClient(id);
-
-            var download = await blobClient.DownloadContentAsync(cancellationToken);
-            var bytes = download.Value.Content.ToArray();
-            var props = await blobClient.GetPropertiesAsync(cancellationToken: cancellationToken);
+            if (!await blobClient.ExistsAsync(cancellationToken))
+            {
+                throw new FileNotFoundException($"File '{id}' not found in container '{containerClient.Name}'.");
+            }
+            var blobProperties = await blobClient.GetPropertiesAsync(cancellationToken: cancellationToken);
 
             var blobFile = new BlobFile(
-                Id: id,
-                FileName: blobClient.Name,
-                ContentType: props.Value.ContentType,
-                Size: props.Value.ContentLength,
-                CreatedDate: props.Value.CreatedOn.UtcDateTime,
-                UpdatedDate: props.Value.LastModified.UtcDateTime,
-                Uri: (await CreateSasUri(blobClient.Name)).ToString(),
-                Content: Convert.ToBase64String(bytes),
-                UploadedBy: props.Value.Metadata.TryGetValue("uploadedBy", out var uploadedBy)
-                    ? uploadedBy
-                    : null,
-                OrganizationId: props.Value.Metadata.TryGetValue("organizationId", out var orgIdString)
-                                && Guid.TryParse(orgIdString, out var orgId)
-                    ? orgId
-                    : null
+                    Id: id,
+                    FileName: blobClient.Name,
+                    Uri: blobClient.Uri.ToString(),
+                    ContentType: blobProperties.Value.ContentType,
+                    CreatedDate: blobProperties.Value.CreatedOn.UtcDateTime,
+                    UpdatedDate: blobProperties.Value.LastModified.UtcDateTime,
+                    UploadedBy: blobProperties.Value.Metadata.TryGetValue("uploadedBy", out var uploadedBy)
+                        ? uploadedBy
+                        : null,
+                    OrganizationId: blobProperties.Value.Metadata.TryGetValue("organizationId", out var orgIdString)
+                                    && Guid.TryParse(orgIdString, out var orgId)
+                        ? orgId
+                        : null,
+                    OriginalFileName: blobProperties.Value.Metadata.TryGetValue("originalFileName", out var originalFileName)
+                        ? originalFileName
+                        : null,
+                    UploadedByUsername: blobProperties.Value.Metadata.TryGetValue("uploadedBy", out var uploadedByUserString)
+                            ? (await auth.FindUserById(uploadedByUserString))?.Username
+                            : null,
+                    OrganizationName: blobProperties.Value.Metadata.TryGetValue("organizationId", out var organizationIdString)
+                        && Guid.TryParse(organizationIdString, out var organizationId)
+                            ? (await organizationsRepository.GetOrganizationAsync(organizationId.ToString()))?.Name
+                            : null
             );
 
             return blobFile;

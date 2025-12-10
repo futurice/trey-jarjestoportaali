@@ -66,16 +66,6 @@ const App = () => {
           }
         />
         <Route
-          path="/file"
-          element={
-            <Authenticated requiredRoles={approvedRoles} redirectUrl={"/registration"}>
-              <Layout>
-                <FileDetails />
-              </Layout>
-            </Authenticated>
-          }
-        />
-        <Route
           path="/organizations/:orgId"
           element={
             <Authenticated requiredRoles={approvedRoles} redirectUrl={"/registration"}>

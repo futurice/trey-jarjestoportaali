@@ -83,7 +83,7 @@ public static class FileEndpointsExtensions
             return TypedResults.Forbid();
         }
 
-        var response = await service.GetFileByNameAsync(id, cancellationToken);
+        var response = await service.GetFileByNameAsync(id, auth, cancellationToken);
         if (response is null)
         {
             return TypedResults.NotFound();

@@ -1,4 +1,4 @@
-import { useMemo } from "react"
+import { useMemo, useState } from "react"
 import { useTranslation } from "react-i18next"
 import { Link as RouterLink } from "react-router-dom"
 import { Download, Visibility } from "@mui/icons-material"
@@ -24,6 +24,7 @@ import { useFilesForOrganization } from "../../hooks/useFileList"
 import { useFileService } from "../../hooks/useFileService"
 import { BlobFile } from "../../models/file"
 import { formatDate, formatFileSize } from "../../utils/formatUtils"
+import FileDetails from "./FileDetails"
 
 interface FilesListProps {
   readonly files: readonly BlobFile[]
@@ -53,6 +54,8 @@ export const OrganizationFileList = ({
 }
 
 export function FilesList({ files }: FilesListProps) {
+  const [isOpen, setIsOpen] = useState(false)
+  const [selectedFile, setSelectedFile] = useState<BlobFile | null>(null)
   const { t } = useTranslation()
   return (
     <Box>
@@ -122,8 +125,10 @@ export function FilesList({ files }: FilesListProps) {
                       <Box sx={{ display: "flex", gap: 0.5, justifyContent: "center" }}>
                         <Tooltip title="View Details">
                           <IconButton
-                            component={RouterLink}
-                            to={`/file?id=${file.id}`}
+                            onClick={() => {
+                              setSelectedFile(file)
+                              setIsOpen(true)
+                            }}
                             size="small"
                             color="primary"
                           >
@@ -157,6 +162,9 @@ export function FilesList({ files }: FilesListProps) {
         <Box sx={{ textAlign: "center", py: 8 }}>
           <Typography color="text.secondary">{t("files.no_files")}</Typography>
         </Box>
+      )}
+      {selectedFile && isOpen && (
+        <FileDetails file={selectedFile} open={isOpen} onClose={() => setIsOpen(false)} />
       )}
     </Box>
   )
