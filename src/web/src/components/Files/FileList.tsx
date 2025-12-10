@@ -123,31 +123,16 @@ export function FilesList({ files }: FilesListProps) {
                     </TableCell>
                     <TableCell align="center">
                       <Box sx={{ display: "flex", gap: 0.5, justifyContent: "center" }}>
-                        <Tooltip title="View Details">
-                          <IconButton
-                            onClick={() => {
-                              setSelectedFile(file)
-                              setIsOpen(true)
-                            }}
-                            size="small"
-                            color="primary"
-                          >
-                            <Visibility fontSize="small" />
-                          </IconButton>
-                        </Tooltip>
-                        <Tooltip title="Download">
-                          <IconButton
-                            size="small"
-                            color="default"
-                            onClick={(e) => {
-                              e.stopPropagation()
-                              // Mock download action
-                              console.log(`Downloading file: ${file.uri}`)
-                            }}
-                          >
-                            <Download fontSize="small" />
-                          </IconButton>
-                        </Tooltip>
+                        <IconButton
+                          onClick={() => {
+                            setSelectedFile(file)
+                            setIsOpen(true)
+                          }}
+                          size="small"
+                          color="primary"
+                        >
+                          <Visibility fontSize="small" />
+                        </IconButton>
                       </Box>
                     </TableCell>
                   </TableRow>
