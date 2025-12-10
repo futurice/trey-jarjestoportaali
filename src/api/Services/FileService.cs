@@ -29,12 +29,24 @@ internal sealed class FileService(BlobContainerClient containerClient, BlobServi
                     ? Guid.NewGuid().ToString("N")
                     : file.FileName;
 
-
                 var blobClient = containerClient.GetBlobClient($"{folderName}/{fileName}");
                 if (await blobClient.ExistsAsync(cancellationToken))
                 {
                     var fileNameParts = fileName.Split('.');
-                    blobClient = containerClient.GetBlobClient($"{folderName}/{fileNameParts[0]}-{Guid.NewGuid():N}.{fileNameParts[^1]}");
+                    string newFileName;
+                    if (fileNameParts.Length == 1)
+                    {
+                        // No extension
+                        newFileName = $"{fileNameParts[0]}-{Guid.NewGuid():N}";
+                    }
+                    else
+                    {
+                        // Has extension
+                        var nameWithoutExtension = string.Join('.', fileNameParts.Take(fileNameParts.Length - 1));
+                        var extension = fileNameParts[^1];
+                        newFileName = $"{nameWithoutExtension}-{Guid.NewGuid():N}.{extension}";
+                    }
+                    blobClient = containerClient.GetBlobClient($"{folderName}/{newFileName}");
                 }
 
                 await using var fileStream = file.OpenReadStream();
