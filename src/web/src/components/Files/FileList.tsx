@@ -141,11 +141,6 @@ export function FilesList({ files }: FilesListProps) {
         </CardContent>
       </Card>
 
-      {files.length === 0 && (
-        <Box sx={{ textAlign: "center", py: 8 }}>
-          <Typography color="text.secondary">{t("files.no_files")}</Typography>
-        </Box>
-      )}
       {selectedFile && isOpen && (
         <FileDetails file={selectedFile} open={isOpen} onClose={() => setIsOpen(false)} />
       )}

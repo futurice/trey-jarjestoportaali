@@ -47,7 +47,7 @@ public static class SurveyEndpointExtensions
             var allSurveys = await repo.GetAllSurveysAsync();
             return Results.Ok(allSurveys);
         }
-        else if (user.Role != TreyRole.Organization || user.OrganizationId is null)
+        else if (user.Role != TreyRole.Organization)
         {
             return Results.Forbid();
         }

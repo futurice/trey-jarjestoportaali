@@ -37,14 +37,14 @@ internal sealed class FileService(BlobContainerClient containerClient, BlobServi
                     if (fileNameParts.Length == 1)
                     {
                         // No extension
-                        newFileName = $"{fileNameParts[0]}-{Guid.NewGuid():N}";
+                        newFileName = $"{fileNameParts[0]}-{Guid.NewGuid():D}";
                     }
                     else
                     {
                         // Has extension
                         var nameWithoutExtension = string.Join('.', fileNameParts.Take(fileNameParts.Length - 1));
                         var extension = fileNameParts[^1];
-                        newFileName = $"{nameWithoutExtension}-{Guid.NewGuid():N}.{extension}";
+                        newFileName = $"{nameWithoutExtension}-{Guid.NewGuid():D}.{extension}";
                     }
                     blobClient = containerClient.GetBlobClient($"{folderName}/{newFileName}");
                 }

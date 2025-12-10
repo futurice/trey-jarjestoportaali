@@ -41,7 +41,7 @@ export const useFileUpload = (fileService: FileService) => {
     try {
       return await fileService.uploadMany(formData)
     } catch (error) {
-      setUploadError("Failed to upload file. Please try again")
+      setUploadError("Failed to upload files. Please try again")
     } finally {
       setIsUploading(false)
     }

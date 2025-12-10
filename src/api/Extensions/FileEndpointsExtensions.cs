@@ -86,7 +86,17 @@ public static class FileEndpointsExtensions
     {
         logger.LogDebug("Getting file {id} from {container}", id, service);
         var user = await auth.GetUserFromContext(context);
-        if (!await auth.IsUserAuthorized(user, Path.GetDirectoryName(id)))
+        // Explicitly parse organization ID from id (expected format: "orgId/fileName")
+        string organizationId = null;
+        if (!string.IsNullOrEmpty(id))
+        {
+            var separatorIndex = id.IndexOfAny(new[] { '/', '\\' });
+            if (separatorIndex > 0)
+            {
+                organizationId = id.Substring(0, separatorIndex);
+            }
+        }
+        if (string.IsNullOrEmpty(organizationId) || !await auth.IsUserAuthorized(user, organizationId))
         {
             logger.LogWarning("User {userId} is not authorized to access file {id} from {container}", user.Id, id, service);
             return TypedResults.Forbid();
