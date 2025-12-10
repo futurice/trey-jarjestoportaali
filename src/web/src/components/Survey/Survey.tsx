@@ -253,16 +253,20 @@ export const SurveyPage = () => {
       }
 
       const filesToDelete = options.fileName
-        ? options.value.filter((item) => item.name === options.fileName)
+        ? options.value.filter((item: { name?: string }) => item.name === options.fileName)
         : options.value
 
       if (filesToDelete.length === 0) {
         return options.callback("error")
       }
       const fileNames = filesToDelete
-        .map((file) => file.content && typeof file.content === "string" ? file.content.split("/").pop() : undefined)
-        .filter((name) => typeof name === "string" && name.length > 0)
-      const results = await Promise.all(fileNames.map((file) => deleteFileEvent(file)))
+        .map((file: { content?: string }) =>
+          file.content && typeof file.content === "string"
+            ? file.content.split("/").pop()
+            : undefined,
+        )
+        .filter((name: unknown) => typeof name === "string" && name.length > 0)
+      const results = await Promise.all(fileNames.map((file: string) => deleteFileEvent(file)))
 
       if (results.every((res) => res === "success")) {
         options.callback("success")
