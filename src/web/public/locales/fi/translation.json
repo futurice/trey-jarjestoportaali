@@ -25,7 +25,8 @@
     "dashboard": "Dashboard",
     "files": "Tiedostot",
     "organizations": "Yhdistykset",
-    "organization_profile": "Järjestön tiedot"
+    "organization_profile": "Järjestön tiedot",
+    "change_password": "Vaihda salasana"
   },
   "language": {
     "fi": "Suomi",

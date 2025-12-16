@@ -1,3 +1,4 @@
+using Azure.Communication.Email;
 using Supabase.Gotrue;
 using Trey.Api.Models;
 using static Supabase.Gotrue.StatelessClient;
@@ -9,6 +10,8 @@ public interface IAuthService
     Task<TreyUser> GetUserFromContext(HttpContext context);
     Task<TreyUser?> FindUserById(string userId);
     Task<bool> IsUserAuthorized(TreyUser user, string? organizationId);
+    Task<TreyUser> CreateUser(CreateTreyUserRequest request);
+    Task<TreyUser[]> CreateMultipleUsers(CreateTreyUserRequest[] request);
 }
 
 internal sealed class AuthService : IAuthService
@@ -16,7 +19,8 @@ internal sealed class AuthService : IAuthService
     private readonly StatelessClient statelessClient;
     private readonly Supabase.Client supabaseClient;
     private readonly StatelessClientOptions options;
-    public AuthService(Supabase.Client supabaseClient)
+    private readonly EmailService emailService;
+    public AuthService(Supabase.Client supabaseClient, EmailService emailService)
     {
         var baseUrl = Environment.GetEnvironmentVariable("SUPABASE_URL") ?? throw new ArgumentNullException("SUPABASE_URL");
         options = new StatelessClientOptions
@@ -29,6 +33,7 @@ internal sealed class AuthService : IAuthService
         };
         statelessClient = new StatelessClient();
         this.supabaseClient = supabaseClient;
+        this.emailService = emailService;
     }
     public async Task<TreyUser> GetUserFromContext(HttpContext context)
     {
@@ -73,6 +78,51 @@ internal sealed class AuthService : IAuthService
             CreatedAt = supabaseUser.CreatedAt,
             UpdatedAt = supabaseUser.UpdatedAt
         };
+    }
+
+    public async Task<TreyUser[]> CreateMultipleUsers(CreateTreyUserRequest[] request)
+    {
+        var tasks = new List<Task<TreyUser>>();
+        foreach (var userRequest in request)
+        {
+            tasks.Add(CreateUser(userRequest));
+        }
+        var users = await Task.WhenAll(tasks);
+        return users.Where(u => u != null).ToArray();
+    }
+    public async Task<TreyUser> CreateUser(CreateTreyUserRequest request)
+    {
+        var userPassword = request.Password ?? GeneratePassword(12);
+        var userRole = request.Role.ToTreyRole();
+        var treyOptions = new SignUpOptions
+        {
+            Data = new Dictionary<string, object>
+            {
+                { "username", request.Username },
+                { "organization_id", request.OrganizationId ?? string.Empty },
+                { "trey_role", userRole.ToString() ?? (request.OrganizationId != null ? TreyRole.Organization.ToString() : TreyRole.None.ToString()) }
+            }
+        };
+        var session = await supabaseClient.Auth.SignUp(request.Email, userPassword, treyOptions);
+        if (session?.User == null || session.User.Id == null)
+        {
+            Console.WriteLine($"Error: Failed to create user {request.Email}");
+            return null!;
+        }
+        var emailResponse = await emailService.SendAccountCreatedEmail(request.Email, request.Username, userPassword);
+        if (emailResponse.Value.Status != EmailSendStatus.Succeeded)
+        {
+            Console.WriteLine("Warning: Failed to send account created email to user " + request.Email);
+        }
+        return await GetUserById(session.User);
+    }
+
+    private static string GeneratePassword(int length)
+    {
+        const string validChars = "ABCDEFGHJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*()?_-";
+        var random = new Random();
+        return new string(Enumerable.Repeat(validChars, length)
+            .Select(s => s[random.Next(s.Length)]).ToArray());
     }
 
     private static string GetTokenFromHeader(HttpContext context)

@@ -13,6 +13,7 @@
         <PackageReference Include="AspNetCore.HealthChecks.ApplicationStatus" Version="9.0.0" />
         <PackageReference Include="AspNetCore.HealthChecks.Azure.Storage.Blobs" Version="9.0.0" />
         <PackageReference Include="AspNetCore.HealthChecks.CosmosDb" Version="9.0.0" />
+        <PackageReference Include="Azure.Communication.Email" Version="1.1.0" />
         <PackageReference Include="Azure.Storage.Blobs" Version="12.22.2" />
         <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="8.0.0" />
         <PackageReference Include="supabase" Version="1.1.1" />
