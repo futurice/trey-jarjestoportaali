@@ -163,14 +163,11 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         password: newPassword,
       })
       if (error) {
-        toast.error("Error resetting password: " + error.message)
         return { success: false, message: error.message }
       } else {
-        toast.success("Password has been reset successfully!")
         return { success: true }
       }
     } catch (err: unknown) {
-      toast.error("Error during password reset: " + (err as AuthError).message)
       return { success: false, message: (err as AuthError).message }
     } finally {
       setIsLoading(false)

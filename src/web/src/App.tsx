@@ -12,6 +12,7 @@ import { OrganizationsList } from "./components/Organization/OrganizationList.ts
 import { OrganizationPage } from "./components/Organization/OrganizationPage.tsx"
 import { Registration } from "./components/Registration/Registration.tsx"
 import { SurveyPage } from "./components/Survey/Survey.tsx"
+import { ChangePassword } from "./components/UserSettings/ChangePassword.tsx"
 
 const approvedRoles = [Roles.ORGANISATION, Roles.TREY_BOARD, Roles.ADMIN]
 
@@ -78,6 +79,16 @@ const App = () => {
         <Route path="/login" element={<Login />} />
         <Route path="/forgot-password" element={<ForgotPassword />} />
         <Route path="/reset-password" element={<ResetPassword />} />
+        <Route
+          path="/change-password"
+          element={
+            <Authenticated requiredRoles={approvedRoles} redirectUrl={"/dashboard"}>
+              <Layout>
+                <ChangePassword />
+              </Layout>
+            </Authenticated>
+          }
+        />
         <Route path="/" element={<Login />} />
 
         <Route
