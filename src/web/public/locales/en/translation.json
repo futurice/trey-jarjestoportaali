@@ -25,7 +25,8 @@
     "dashboard": "Dashboard",
     "files": "Files",
     "organizations": "Organizations",
-    "organization_profile": "Organization profile"
+    "organization_profile": "Organization profile",
+    "change_password": "Change password"
   },
   "language": {
     "fi": "Finnish",
