@@ -9,6 +9,7 @@ using Trey.Api.Repositories;
 using Trey.Api.Services;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
+using Azure.Communication.Email;
 
 var credentialOptions = new DefaultAzureCredentialOptions
 {
@@ -66,6 +67,8 @@ builder.Services.AddHealthChecks()
 builder.Services.AddSingleton<FileService>();
 builder.Services.AddSingleton<OrganizationsRepository>();
 builder.Services.AddSingleton<SurveyRepository>();
+builder.Services.AddSingleton<EmailService>();
+builder.Services.AddSingleton<IAuthService, AuthService>();
 
 builder.Services.AddCors();
 builder.Services.AddApplicationInsightsTelemetry(builder.Configuration);
@@ -83,6 +86,11 @@ builder.Services.AddSingleton<Supabase.Client>(_ => new Supabase.Client(supabase
 
 builder.Services.AddTreyAuth();
 builder.Services.AddSupabaseClient(builder.Configuration);
+
+var emailClientEndpoint = Environment.GetEnvironmentVariable("ACS_EMAIL_ENDPOINT") ?? throw new ArgumentNullException("ACS_EMAIL_ENDPOINT");
+EmailClient emailClient = new EmailClient(new Uri(emailClientEndpoint), credential);
+builder.Services.AddSingleton(emailClient);
+
 var app = builder.Build();
 
 app.UseCors(policy =>
