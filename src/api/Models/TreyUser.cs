@@ -45,6 +45,15 @@ public class TreyUser
     public DateTime UpdatedAt { get; set; }
 }
 
+public class CreateTreyUserRequest
+{
+    public required string Email { get; set; }
+    public required string Username { get; set; }
+    public string? OrganizationId { get; set; }
+    public required string Role { get; set; }
+    public string? Password { get; set; }
+}
+
 [Table("profiles")]
 public class TreyUserDbObject : BaseModel
 {
