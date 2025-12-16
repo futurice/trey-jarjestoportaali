@@ -74,12 +74,18 @@ public static class AuthEndpointsExtensions
     return TypedResults.Ok(response);
   }
 
-  private static async Task<IResult> CreateUser([FromServices] IAuthService authService, [FromBody] CreateTreyUserRequest createUserData)
+  private static async Task<IResult> CreateUser([FromServices] IAuthService authService, [FromServices] ILogger<FileService> logger, [FromBody] CreateTreyUserRequest createUserData, HttpContext context)
   {
     try
     {
-      var user = await authService.CreateUser(createUserData);
-      return TypedResults.Ok(user);
+      var user = await authService.GetUserFromContext(context);
+      if (user.Role != TreyRole.Admin)
+      {
+        logger.LogWarning("User {userId} is not authorized to create users", user.Id);
+        return TypedResults.Forbid();
+      }
+      var createdUser = await authService.CreateUser(createUserData);
+      return TypedResults.Ok(createdUser);
     }
     catch (Exception ex)
     {
@@ -88,10 +94,16 @@ public static class AuthEndpointsExtensions
       return TypedResults.Problem("An error occurred while creating the user.", statusCode: (int)HttpStatusCode.InternalServerError);
     }
   }
-  private static async Task<IResult> CreateMultipleUsers([FromServices] IAuthService authService, [FromBody] CreateTreyUserRequest[] createUserData)
+  private static async Task<IResult> CreateMultipleUsers([FromServices] IAuthService authService, [FromServices] ILogger<FileService> logger, [FromBody] CreateTreyUserRequest[] createUserData, HttpContext context)
   {
     try
     {
+      var user = await authService.GetUserFromContext(context);
+      if (user.Role != TreyRole.Admin)
+      {
+        logger.LogWarning("User {userId} is not authorized to create users", user.Id);
+        return TypedResults.Forbid();
+      }
       var users = await authService.CreateMultipleUsers(createUserData);
       return TypedResults.Ok(users);
     }
