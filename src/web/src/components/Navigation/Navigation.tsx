@@ -1,7 +1,7 @@
 import { useState } from "react"
 import { useTranslation } from "react-i18next"
 import { Link as RouterLink, useLocation, useNavigate } from "react-router-dom"
-import { Business, Language, Person } from "@mui/icons-material"
+import { Business, Language, Person, Settings } from "@mui/icons-material"
 import Logout from "@mui/icons-material/Logout"
 import {
   Avatar,
@@ -193,6 +193,12 @@ const Navigation = () => {
             <Business fontSize="small" />
           </ListItemIcon>
           {t("navigation.organization_profile")}
+        </MenuItem>
+        <MenuItem onClick={() => navigate(`/change-password`)}>
+          <ListItemIcon>
+            <Settings fontSize="small" />
+          </ListItemIcon>
+          {t("navigation.change_password")}
         </MenuItem>
         <MenuItem onClick={logout}>
           <ListItemIcon>
