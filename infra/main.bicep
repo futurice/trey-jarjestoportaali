@@ -42,6 +42,24 @@ param apimSku string = 'Consumption'
 @description('Id of the user or app to assign application roles')
 param principalId string = ''
 
+param emailServiceName string = ''
+param communicationServiceName string = ''
+
+@allowed([
+  'AzureManaged'
+  'CustomerManaged'
+  'CustomerManagedInExchangeOnline'
+])
+param emailDomainManagement string = 'CustomerManaged'
+
+param emailCustomDomainName string = 'jippo.trey.fi'
+
+param createAcsForEmail bool = true
+
+param emailSenderUsernameName string = 'trey-jippo'
+param emailSenderUsername string = 'trey-jippo'
+param emailSenderDisplayName string = 'TREY Jippo'
+
 var abbrs = loadJsonContent('./abbreviations.json')
 var resourceToken = toLower(uniqueString(subscription().id, environmentName, location))
 var tags = { 'azd-env-name': environmentName }
@@ -51,6 +69,34 @@ resource rg 'Microsoft.Resources/resourceGroups@2021-04-01' = {
   name: !empty(resourceGroupName) ? resourceGroupName : '${abbrs.resourcesResourceGroups}${environmentName}'
   location: location
   tags: tags
+}
+
+module email './core/communication/emailService.bicep' = {
+  name: 'email'
+  scope: rg
+  params: {
+    emailServiceName: !empty(emailServiceName) ? emailServiceName : 'ecs-email-${resourceToken}'
+    ecsLocation: 'global'
+    dataLocation: 'Europe' // or make this a param if you prefer
+    domainManagement: emailDomainManagement
+    customDomainName: emailCustomDomainName
+    userEngagementTracking: 'Disabled'
+    senderUsernameName: emailSenderUsernameName
+    senderUsername: emailSenderUsername
+    senderDisplayName: emailSenderDisplayName
+  }
+}
+
+module acsEmail './core/communication/acs.bicep' = {
+  name: 'acs-email'
+  scope: rg
+  params: {
+    enabled: createAcsForEmail
+    communicationServiceName: !empty(communicationServiceName) ? communicationServiceName : 'acs-${resourceToken}'
+    location: 'global'
+    dataLocation: 'Europe' // keep consistent with email data residency
+    emailDomainId: email.outputs.emailDomainId
+  }
 }
 
 // The application frontend
@@ -92,6 +138,7 @@ module api './app/api.bicep' = {
       STYTCH_PROJECT_SECRET: '@Microsoft.KeyVault(VaultName=${keyVault.outputs.name};SecretName=STYTCH-PROJECT-SECRET)'
       SUPABASE_KEY: '@Microsoft.KeyVault(VaultName=${keyVault.outputs.name};SecretName=SUPABASE-KEY)'
       SUPABASE_URL: '@Microsoft.KeyVault(VaultName=${keyVault.outputs.name};SecretName=SUPABASE-URL)'
+      ACS_EMAIL_ENDPOINT: acsEmail.outputs.endpoint
     }
   }
 }
@@ -274,3 +321,8 @@ output API_BASE_URL string = useAPIM ? apimApi!.outputs.SERVICE_API_URI : api.ou
 output REACT_APP_WEB_BASE_URL string = web.outputs.SERVICE_WEB_URI
 output USE_APIM bool = useAPIM
 output SERVICE_API_ENDPOINTS array = useAPIM ? [ apimApi!.outputs.SERVICE_API_URI, api.outputs.SERVICE_API_URI ]: []
+output EMAIL_SERVICE_ID string = email.outputs.emailServiceId
+output EMAIL_DOMAIN_ID string = email.outputs.emailDomainId
+output EMAIL_SENDER_ID string = email.outputs.senderId
+output ACS_ID string = acsEmail.outputs.acsId
+output ACS_EMAIL_ENDPOINT string = acsEmail.outputs.endpoint
