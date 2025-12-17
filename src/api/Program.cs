@@ -9,7 +9,6 @@ using Trey.Api.Repositories;
 using Trey.Api.Services;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
-// using Azure.Communication.Email;
 
 var credentialOptions = new DefaultAzureCredentialOptions
 {
@@ -31,6 +30,16 @@ JsonSerializerOptions options = new()
     PropertyNameCaseInsensitive = true,
     PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
 };
+
+var appInsightsConnectionString = builder.Configuration["APPLICATIONINSIGHTS_CONNECTION_STRING"];
+builder.Logging.AddAzureWebAppDiagnostics();
+builder.Logging.AddApplicationInsights();
+builder.Services.AddApplicationInsightsTelemetry(
+    options =>
+    {
+        options.EnableAdaptiveSampling = false; // when enabled, some logs and telemetry is dropped which causes inaccurate audit logs
+    }
+);
 
 builder.Services.AddSingleton(_ => new CosmosClient(builder.Configuration["AZURE_COSMOS_ENDPOINT"], credential,
     new CosmosClientOptions
@@ -67,7 +76,7 @@ builder.Services.AddHealthChecks()
 builder.Services.AddSingleton<FileService>();
 builder.Services.AddSingleton<OrganizationsRepository>();
 builder.Services.AddSingleton<SurveyRepository>();
-builder.Services.AddSingleton<EmailService>();
+// builder.Services.AddSingleton<EmailService>();
 
 builder.Services.AddCors();
 builder.Services.AddApplicationInsightsTelemetry(builder.Configuration);
