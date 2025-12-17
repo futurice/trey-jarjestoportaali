@@ -1,4 +1,4 @@
-using Azure.Communication.Email;
+// using Azure.Communication.Email;
 using Supabase.Gotrue;
 using Trey.Api.Models;
 using static Supabase.Gotrue.StatelessClient;
@@ -109,11 +109,11 @@ internal sealed class AuthService : IAuthService
             Console.WriteLine($"Error: Failed to create user {request.Email}");
             return null!;
         }
-        var emailResponse = await emailService.SendAccountCreatedEmail(request.Email, request.Username, userPassword);
+        /* var emailResponse = await emailService.SendAccountCreatedEmail(request.Email, request.Username, userPassword);
         if (emailResponse.Value.Status != EmailSendStatus.Succeeded)
         {
             Console.WriteLine("Warning: Failed to send account created email to user " + request.Email);
-        }
+        } */
         return await GetUserById(session.User);
     }
 
