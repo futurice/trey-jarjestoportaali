@@ -1,4 +1,4 @@
-// using Azure.Communication.Email;
+using Azure.Communication.Email;
 using Supabase.Gotrue;
 using Trey.Api.Models;
 using static Supabase.Gotrue.StatelessClient;
@@ -19,8 +19,8 @@ internal sealed class AuthService : IAuthService
     private readonly StatelessClient statelessClient;
     private readonly Supabase.Client supabaseClient;
     private readonly StatelessClientOptions options;
-    // private readonly EmailService emailService;
-    public AuthService(Supabase.Client supabaseClient)
+    private readonly EmailService emailService;
+    public AuthService(Supabase.Client supabaseClient, EmailService emailService)
     {
         var baseUrl = Environment.GetEnvironmentVariable("SUPABASE_URL") ?? throw new ArgumentNullException("SUPABASE_URL");
         options = new StatelessClientOptions
@@ -33,7 +33,7 @@ internal sealed class AuthService : IAuthService
         };
         statelessClient = new StatelessClient();
         this.supabaseClient = supabaseClient;
-        // this.emailService = emailService;
+        this.emailService = emailService;
     }
     public async Task<TreyUser> GetUserFromContext(HttpContext context)
     {
@@ -109,11 +109,11 @@ internal sealed class AuthService : IAuthService
             Console.WriteLine($"Error: Failed to create user {request.Email}");
             return null!;
         }
-        /* var emailResponse = await emailService.SendAccountCreatedEmail(request.Email, request.Username, userPassword);
+        var emailResponse = await emailService.SendAccountCreatedEmail(request.Email, request.Username, userPassword);
         if (emailResponse.Value.Status != EmailSendStatus.Succeeded)
         {
             Console.WriteLine("Warning: Failed to send account created email to user " + request.Email);
-        } */
+        }
         return await GetUserById(session.User);
     }
 

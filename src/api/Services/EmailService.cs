@@ -25,7 +25,7 @@ internal sealed class EmailService : IEmailService
     };
 
     var emailMessage = new EmailMessage(
-        senderAddress: "trey-jippo@5e57e8ca-4d68-4fe1-99da-9e818a907d84.azurecomm.net",
+        senderAddress: "trey-jippo@770cf9a2-025a-4c5b-a5e1-8db3ed73bf4a.azurecomm.net",
         recipientAddress: email,
         content: emailContent
     );
