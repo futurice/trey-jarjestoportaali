@@ -11,6 +11,9 @@
 		"principalId": {
 			"value": "${AZURE_PRINCIPAL_ID}"
 		},
+		"resourceToken": {
+			"value": "${AZURE_RESOURCE_TOKEN}"
+		},
 		"useAPIM": {
 			"value": "${USE_APIM=false}"
 		},

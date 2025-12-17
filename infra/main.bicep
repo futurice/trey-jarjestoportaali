@@ -32,6 +32,8 @@ param sentryDsn string = ''
 param supabaseUrl string = ''
 param supabasePublicKey string = ''
 
+@description('Stable suffix used in resource names. Set explicitly for existing environments to avoid renames.')
+param resourceToken string = toLower(uniqueString(subscription().id, environmentName, location))
 
 @description('Flag to use Azure API Management to mediate the calls between the Web frontend and the backend API')
 param useAPIM bool = false
@@ -61,7 +63,6 @@ param emailSenderUsername string = 'trey-jippo'
 param emailSenderDisplayName string = 'TREY Jippo'
 
 var abbrs = loadJsonContent('./abbreviations.json')
-var resourceToken = toLower(uniqueString(subscription().id, environmentName, location))
 var tags = { 'azd-env-name': environmentName }
 
 // Organize resources in a resource group

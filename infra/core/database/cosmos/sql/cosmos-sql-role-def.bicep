@@ -1,5 +1,6 @@
 metadata description = 'Creates a SQL role definition under an Azure Cosmos DB account.'
 param accountName string
+param roleName string = 'Reader Writer-${deployment().name}' // or pass in from azd
 
 resource roleDefinition 'Microsoft.DocumentDB/databaseAccounts/sqlRoleDefinitions@2024-11-15' = {
   parent: cosmos
@@ -18,7 +19,7 @@ resource roleDefinition 'Microsoft.DocumentDB/databaseAccounts/sqlRoleDefinition
         notDataActions: []
       }
     ]
-    roleName: 'Reader Writer'
+    roleName: roleName
     type: 'CustomRole'
   }
 }
