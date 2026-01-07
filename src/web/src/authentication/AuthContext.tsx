@@ -74,12 +74,9 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       setIsLoading(true)
       try {
         const {
-          data: { session },
-        } = await supabase.auth.getSession()
+          data: { session, user },
+        } = await supabase.auth.refreshSession()
         setSession(session)
-        const {
-          data: { user },
-        } = await supabase.auth.getUser()
         setUser(user)
       } catch (error) {
         console.error("Error checking auth status:", error)
