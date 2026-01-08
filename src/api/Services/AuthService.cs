@@ -180,7 +180,7 @@ internal sealed class AuthService : IAuthService
             if (loginResponse?.User == null) throw new UnauthorizedAccessException("Invalid username or password");
             return loginResponse;
         }
-        catch (Exception ex) when (ex is not UnauthorizedAccessException || ex is GotrueException gEx && gEx.StatusCode != 400 && gEx.StatusCode != 401)
+        catch (Exception ex) when (ex is not UnauthorizedAccessException && ex is GotrueException gEx && gEx.StatusCode != 400 && gEx.StatusCode != 401)
         {
             logger.LogError($"Error logging in user {username}: {ex.Message}");
             throw;

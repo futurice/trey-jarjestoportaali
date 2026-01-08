@@ -25,7 +25,7 @@ public static class AuthEndpointsExtensions
 
       return TypedResults.Ok(sessionResponse);
     }
-    catch (Exception ex) when (ex is UnauthorizedAccessException || ex is GotrueException gEx && (gEx.StatusCode == 400 || gEx.StatusCode == 401))
+    catch (Exception ex) when ((ex is UnauthorizedAccessException) || (ex is GotrueException gEx && (gEx.StatusCode == 400 || gEx.StatusCode == 401)))
     {
       return TypedResults.Unauthorized();
     }
