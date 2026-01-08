@@ -26,7 +26,9 @@ internal sealed class AuthService : IAuthService
     private readonly Supabase.Client supabaseClient;
     private readonly StatelessClientOptions options;
     private readonly EmailService emailService;
-    public AuthService(Supabase.Client supabaseClient, EmailService emailService)
+    private readonly ILogger<AuthService> logger;
+
+    public AuthService(Supabase.Client supabaseClient, EmailService emailService, ILogger<AuthService> _logger)
     {
         var baseUrl = Environment.GetEnvironmentVariable("SUPABASE_URL") ?? throw new ArgumentNullException("SUPABASE_URL");
         options = new StatelessClientOptions
@@ -40,6 +42,7 @@ internal sealed class AuthService : IAuthService
         statelessClient = new StatelessClient();
         this.supabaseClient = supabaseClient;
         this.emailService = emailService;
+        logger = _logger;
     }
     public async Task<TreyUser> GetUserFromContext(HttpContext context)
     {
@@ -179,7 +182,7 @@ internal sealed class AuthService : IAuthService
         }
         catch (Exception ex) when (ex is not UnauthorizedAccessException || ex is GotrueException gEx && gEx.StatusCode != 400 && gEx.StatusCode != 401)
         {
-            Console.WriteLine($"Error logging in user {username}: {ex.Message}");
+            logger.LogError($"Error logging in user {username}: {ex.Message}");
             throw;
         }
     }
@@ -210,7 +213,7 @@ internal sealed class AuthService : IAuthService
         }
         catch (Exception ex)
         {
-            Console.WriteLine($"Exception while retrieving email for username {username}: {ex.Message}");
+            logger.LogError($"Exception while retrieving email for username {username}: {ex.Message}");
             return null;
         }
     }

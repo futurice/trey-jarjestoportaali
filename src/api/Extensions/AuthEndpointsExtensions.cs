@@ -16,7 +16,7 @@ public static class AuthEndpointsExtensions
     return group;
   }
 
-  private static async Task<IResult> AuthorizeUser([FromServices] IAuthService authService, [FromBody] LoginData loginData)
+  private static async Task<IResult> AuthorizeUser([FromServices] IAuthService authService, [FromServices] ILogger<AuthService> logger, [FromBody] LoginData loginData)
   {
     try
     {
@@ -31,12 +31,12 @@ public static class AuthEndpointsExtensions
     }
     catch (Exception ex)
     {
-      Console.WriteLine($"Exception while signing in user {loginData.Username}: {ex.Message}");
+      logger.LogError($"Exception while signing in user {loginData.Username}: {ex.Message}");
       return TypedResults.Problem("An error occurred while attempting to sign in.", statusCode: (int)HttpStatusCode.InternalServerError);
     }
   }
 
-  private static async Task<IResult> CreateUser([FromServices] IAuthService authService, [FromServices] ILogger<FileService> logger, [FromBody] CreateTreyUserRequest createUserData, HttpContext context)
+  private static async Task<IResult> CreateUser([FromServices] IAuthService authService, [FromServices] ILogger<AuthService> logger, [FromBody] CreateTreyUserRequest createUserData, HttpContext context)
   {
     try
     {
@@ -51,12 +51,11 @@ public static class AuthEndpointsExtensions
     }
     catch (Exception ex)
     {
-      // Log the exception if logging is available
-      Console.WriteLine(ex.Message);
+      logger.LogError(ex.Message);
       return TypedResults.Problem("An error occurred while creating the user.", statusCode: (int)HttpStatusCode.InternalServerError);
     }
   }
-  private static async Task<IResult> CreateMultipleUsers([FromServices] IAuthService authService, [FromServices] ILogger<FileService> logger, [FromBody] CreateTreyUserRequest[] createUserData, HttpContext context)
+  private static async Task<IResult> CreateMultipleUsers([FromServices] IAuthService authService, [FromServices] ILogger<AuthService> logger, [FromBody] CreateTreyUserRequest[] createUserData, HttpContext context)
   {
     try
     {
@@ -72,7 +71,7 @@ public static class AuthEndpointsExtensions
     catch (Exception ex)
     {
       // Log the exception if logging is available
-      Console.WriteLine(ex.Message);
+      logger.LogError(ex.Message);
       return TypedResults.Problem("An error occurred while creating the users.", statusCode: (int)HttpStatusCode.InternalServerError);
     }
   }
