@@ -1,3 +1,4 @@
+using System.Text.RegularExpressions;
 using Azure.Identity;
 using Azure.Storage.Blobs;
 using Azure.Storage.Blobs.Models;
@@ -42,7 +43,7 @@ internal sealed class FileService(BlobContainerClient containerClient, BlobServi
                     else
                     {
                         // Has extension
-                        var nameWithoutExtension = string.Join('.', fileNameParts.Take(fileNameParts.Length - 1));
+                        var nameWithoutExtension = ReplaceNonASCIICharacters(string.Join('.', fileNameParts.Take(fileNameParts.Length - 1)));
                         var extension = fileNameParts[^1];
                         newFileName = $"{nameWithoutExtension}-{Guid.NewGuid():D}.{extension}";
                     }
@@ -59,7 +60,7 @@ internal sealed class FileService(BlobContainerClient containerClient, BlobServi
                     { "uploadedOn", DateTime.UtcNow.ToString("o") },
                     { "organizationId", user?.OrganizationId?.ToString() ?? "unknown" },
                     { "uploadedBy", user?.Id.ToString() ?? "anonymous" },
-                    { "originalFileName", file.FileName }
+                    { "originalFileName", ReplaceNonASCIICharacters(file.FileName) }
                 }, cancellationToken: cancellationToken);
                 var blobProperties = await blobClient.GetPropertiesAsync(cancellationToken: cancellationToken);
                 uploadedFiles.Add(new BlobFile(
@@ -77,7 +78,7 @@ internal sealed class FileService(BlobContainerClient containerClient, BlobServi
                         ? orgId
                         : null,
                     OriginalFileName: blobProperties.Value.Metadata.TryGetValue("originalFileName", out var originalFileName)
-                        ? originalFileName
+                        ? ReplaceNonASCIICharacters(originalFileName)
                         : null
                 ));
             }
@@ -139,7 +140,7 @@ internal sealed class FileService(BlobContainerClient containerClient, BlobServi
                             ? (await auth.FindUserById(uploadedByUserString))?.Username
                             : null,
                         OrganizationName = await organizationsRepository.GetOrganizationAsync(organizationId.ToString()) is Organization org
-                            ? org.Name
+                            ? ReplaceNonASCIICharacters(org.Name)
                             : null,
                         Tags = blob.Metadata.TryGetValue("tags", out var tagsString)
                             ? tagsString.Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries)
@@ -182,14 +183,14 @@ internal sealed class FileService(BlobContainerClient containerClient, BlobServi
                         ? orgId
                         : null,
                     OriginalFileName: blobProperties.Value.Metadata.TryGetValue("originalFileName", out var originalFileName)
-                        ? originalFileName
+                        ? ReplaceNonASCIICharacters(originalFileName)
                         : null,
                     UploadedByUsername: blobProperties.Value.Metadata.TryGetValue("uploadedBy", out var uploadedByUserString)
                             ? (await auth.FindUserById(uploadedByUserString))?.Username
                             : null,
                     OrganizationName: blobProperties.Value.Metadata.TryGetValue("organizationId", out var organizationIdString)
                         && Guid.TryParse(organizationIdString, out var organizationId)
-                            ? (await organizationsRepository.GetOrganizationAsync(organizationId.ToString()))?.Name
+                            ? ReplaceNonASCIICharacters((await organizationsRepository.GetOrganizationAsync(organizationId.ToString()))?.Name ?? "unknown")
                             : null,
                     Tags: blobProperties.Value.Metadata.TryGetValue("tags", out var tagsString)
                         ? tagsString.Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries)
@@ -255,5 +256,16 @@ internal sealed class FileService(BlobContainerClient containerClient, BlobServi
         };
 
         return uriBuilder.ToUri();
+    }
+
+    // replace ä with a, ö with o, and ü with u etc
+    private static string ReplaceNonASCIICharacters(string input)
+    {
+        var output = input
+            .Replace("ä", "a")
+            .Replace("ö", "o")
+            .Replace("ü", "u");
+        // replace other non-ASCII characters with string.Empty
+        return Regex.Replace(output, @"[^\u001F-\u007F]", string.Empty);
     }
 }
