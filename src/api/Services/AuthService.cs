@@ -1,5 +1,9 @@
+using System.ComponentModel.DataAnnotations;
+using System.Net;
 using Azure.Communication.Email;
+using Newtonsoft.Json;
 using Supabase.Gotrue;
+using Supabase.Gotrue.Exceptions;
 using Trey.Api.Models;
 using static Supabase.Gotrue.StatelessClient;
 
@@ -12,6 +16,8 @@ public interface IAuthService
     Task<bool> IsUserAuthorized(TreyUser user, string? organizationId);
     Task<TreyUser> CreateUser(CreateTreyUserRequest request);
     Task<TreyUser[]> CreateMultipleUsers(CreateTreyUserRequest[] request);
+    Task<Session> LoginUser(string username, string password);
+    Task<string?> GetEmailForUsername(string username);
 }
 
 internal sealed class AuthService : IAuthService
@@ -160,5 +166,52 @@ internal sealed class AuthService : IAuthService
             return true;
         }
         return organizationId != null && user.OrganizationId == organizationId;
+    }
+
+    public async Task<Session> LoginUser(string username, string password)
+    {
+        try
+        {
+            string? userEmail = await GetEmailForUsername(username) ?? throw new UnauthorizedAccessException("Invalid username or password");
+            var loginResponse = await supabaseClient.Auth.SignInWithPassword(userEmail, password);
+            if (loginResponse?.User == null) throw new UnauthorizedAccessException("Invalid username or password");
+            return loginResponse;
+        }
+        catch (Exception ex) when (ex is not UnauthorizedAccessException || ex is GotrueException gEx && gEx.StatusCode != 400 && gEx.StatusCode != 401)
+        {
+            Console.WriteLine($"Error logging in user {username}: {ex.Message}");
+            throw;
+        }
+    }
+
+    /// <summary>
+    /// Retrieves the email address associated with a given username using Supabase RPC.
+    /// If the provided username is already a valid email address, it is returned directly.
+    /// If the username is empty or no email is found, returns <c>null</c>.
+    /// </summary>
+    /// <param name="supabase">The Supabase client instance used to perform the RPC call.</param>
+    /// <param name="username">The username for which to retrieve the associated email address.</param>
+    /// <returns>
+    /// A <see cref="Task{TResult}"/> representing the asynchronous operation. The task result contains the email address as a string if found; otherwise, <c>null</c>.
+    /// </returns>
+    public async Task<string?> GetEmailForUsername(string username)
+    {
+        try
+        {
+            var email = new EmailAddressAttribute();
+            if (email.IsValid(username)) return username;
+            else if (username.Length == 0) return null;
+
+            // The 'email_for_username' RPC function retrieves the email address associated with the given username from the database.
+            var userEmailResponse = await supabaseClient.Rpc("email_for_username", new { p_username = username });
+            var userEmail = JsonConvert.DeserializeObject<string>(userEmailResponse?.Content?.ToString() ?? "");
+            if (userEmailResponse?.Content == null || userEmailResponse.ResponseMessage?.StatusCode == HttpStatusCode.NotFound || userEmail == null) return null;
+            return userEmail;
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Exception while retrieving email for username {username}: {ex.Message}");
+            return null;
+        }
     }
 }
