@@ -26,9 +26,9 @@ internal sealed class AuthService : IAuthService
     private readonly Supabase.Client supabaseClient;
     private readonly StatelessClientOptions options;
     private readonly EmailService emailService;
-    private readonly ILogger<AuthService> logger;
+    private readonly ILogger<AuthService> _logger;
 
-    public AuthService(Supabase.Client supabaseClient, EmailService emailService, ILogger<AuthService> _logger)
+    public AuthService(Supabase.Client supabaseClient, EmailService emailService, ILogger<AuthService> logger)
     {
         var baseUrl = Environment.GetEnvironmentVariable("SUPABASE_URL") ?? throw new ArgumentNullException("SUPABASE_URL");
         options = new StatelessClientOptions
@@ -42,7 +42,7 @@ internal sealed class AuthService : IAuthService
         statelessClient = new StatelessClient();
         this.supabaseClient = supabaseClient;
         this.emailService = emailService;
-        logger = _logger;
+        _logger = logger;
     }
     public async Task<TreyUser> GetUserFromContext(HttpContext context)
     {
@@ -182,7 +182,7 @@ internal sealed class AuthService : IAuthService
         }
         catch (Exception ex) when (ex is not UnauthorizedAccessException && ex is GotrueException gEx && gEx.StatusCode != 400 && gEx.StatusCode != 401)
         {
-            logger.LogError($"Error logging in user {username}: {ex.Message}");
+            _logger.LogError(ex, $"Error logging in user {username}");
             throw;
         }
     }
@@ -203,7 +203,7 @@ internal sealed class AuthService : IAuthService
         {
             var email = new EmailAddressAttribute();
             if (email.IsValid(username)) return username;
-            else if (username.Length == 0) return null;
+            else if (string.IsNullOrEmpty(username)) return null;
 
             // The 'email_for_username' RPC function retrieves the email address associated with the given username from the database.
             var userEmailResponse = await supabaseClient.Rpc("email_for_username", new { p_username = username });
@@ -213,7 +213,7 @@ internal sealed class AuthService : IAuthService
         }
         catch (Exception ex)
         {
-            logger.LogError($"Exception while retrieving email for username {username}: {ex.Message}");
+            _logger.LogError(ex, $"Exception while retrieving email for username {username}");
             return null;
         }
     }

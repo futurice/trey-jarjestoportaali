@@ -16,7 +16,7 @@ public static class AuthEndpointsExtensions
     return group;
   }
 
-  private static async Task<IResult> AuthorizeUser([FromServices] IAuthService authService, [FromServices] ILogger<AuthService> logger, [FromBody] LoginData loginData)
+  private static async Task<IResult> AuthorizeUser([FromServices] IAuthService authService, [FromServices] ILogger<AuthService> _logger, [FromBody] LoginData loginData)
   {
     try
     {
@@ -31,19 +31,19 @@ public static class AuthEndpointsExtensions
     }
     catch (Exception ex)
     {
-      logger.LogError($"Exception while signing in user {loginData.Username}: {ex.Message}");
+      _logger.LogError(ex, $"Exception while signing in user {loginData.Username}");
       return TypedResults.Problem("An error occurred while attempting to sign in.", statusCode: (int)HttpStatusCode.InternalServerError);
     }
   }
 
-  private static async Task<IResult> CreateUser([FromServices] IAuthService authService, [FromServices] ILogger<AuthService> logger, [FromBody] CreateTreyUserRequest createUserData, HttpContext context)
+  private static async Task<IResult> CreateUser([FromServices] IAuthService authService, [FromServices] ILogger<AuthService> _logger, [FromBody] CreateTreyUserRequest createUserData, HttpContext context)
   {
     try
     {
       var user = await authService.GetUserFromContext(context);
       if (user.Role != TreyRole.Admin)
       {
-        logger.LogWarning("User {userId} is not authorized to create users", user.Id);
+        _logger.LogWarning("User {userId} is not authorized to create users", user.Id);
         return TypedResults.Forbid();
       }
       var createdUser = await authService.CreateUser(createUserData);
@@ -51,18 +51,18 @@ public static class AuthEndpointsExtensions
     }
     catch (Exception ex)
     {
-      logger.LogError(ex.Message);
+      _logger.LogError(ex, "Error occurred while creating the user.");
       return TypedResults.Problem("An error occurred while creating the user.", statusCode: (int)HttpStatusCode.InternalServerError);
     }
   }
-  private static async Task<IResult> CreateMultipleUsers([FromServices] IAuthService authService, [FromServices] ILogger<AuthService> logger, [FromBody] CreateTreyUserRequest[] createUserData, HttpContext context)
+  private static async Task<IResult> CreateMultipleUsers([FromServices] IAuthService authService, [FromServices] ILogger<AuthService> _logger, [FromBody] CreateTreyUserRequest[] createUserData, HttpContext context)
   {
     try
     {
       var user = await authService.GetUserFromContext(context);
       if (user.Role != TreyRole.Admin)
       {
-        logger.LogWarning("User {userId} is not authorized to create users", user.Id);
+        _logger.LogWarning("User {userId} is not authorized to create users", user.Id);
         return TypedResults.Forbid();
       }
       var users = await authService.CreateMultipleUsers(createUserData);
@@ -71,7 +71,7 @@ public static class AuthEndpointsExtensions
     catch (Exception ex)
     {
       // Log the exception if logging is available
-      logger.LogError(ex.Message);
+      _logger.LogError(ex, "Error occurred while creating multiple users.");
       return TypedResults.Problem("An error occurred while creating the users.", statusCode: (int)HttpStatusCode.InternalServerError);
     }
   }
