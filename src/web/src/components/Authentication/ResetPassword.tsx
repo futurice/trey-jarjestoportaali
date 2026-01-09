@@ -1,7 +1,7 @@
 import { useState } from "react"
 import toast from "react-hot-toast"
 import { useTranslation } from "react-i18next"
-import { useNavigate } from "react-router-dom"
+import { useNavigate, useSearchParams } from "react-router-dom"
 import { VisibilityOff, Visibility } from "@mui/icons-material"
 import { Box, IconButton, InputAdornment, TextField, Typography } from "@mui/material"
 import { RequestResponse, useAuth } from "../../authentication/AuthContext"
@@ -34,10 +34,12 @@ const ResetPasswordComponent = ({
   resetPassword,
 }: {
   isLoading: boolean
-  resetPassword: (newPassword: string) => Promise<RequestResponse>
+  resetPassword: (newPassword: string, token: string | null) => Promise<RequestResponse>
 }) => {
   const navigate = useNavigate()
   const { t } = useTranslation()
+  const [searchParams] = useSearchParams()
+  const token = searchParams.get("token")
   const [formData, setFormData] = useState<ResetPasswordData>({
     newPassword: "",
     newPasswordRepeat: "",
@@ -66,7 +68,7 @@ const ResetPasswordComponent = ({
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
     if (validateForm()) {
-      resetPassword(formData.newPassword).then((response) => {
+      resetPassword(formData.newPassword, token).then((response) => {
         if (response.success) {
           toast.success(t("reset_password.success.message"))
           navigate("/dashboard")

@@ -31,7 +31,8 @@ export interface AuthContextType {
     callbackFunction: () => void
   }) => Promise<void>
   forgotPasswordRequest: (email: string) => Promise<RequestResponse>
-  resetPassword: (newPassword: string) => Promise<RequestResponse>
+  resetPassword: (newPassword: string, token: string | null) => Promise<RequestResponse>
+  changePassword: (newPassword: string) => Promise<RequestResponse>
 }
 
 export interface RequestResponse {
@@ -153,7 +154,37 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     }
   }, [])
 
-  const resetPassword = useCallback(async (newPassword: string): Promise<RequestResponse> => {
+  const resetPassword = useCallback(
+    async (newPassword: string, token: string | null): Promise<RequestResponse> => {
+      if (!token) {
+        return { success: false, message: "Invalid token" }
+      }
+      setIsLoading(true)
+      try {
+        const { data } = await supabase.auth.verifyOtp({ token_hash: token, type: "recovery" })
+        if (!data) {
+          return { success: false, message: "Invalid token" }
+        }
+        setSession(data.session)
+        setUser(data.user)
+        const { error } = await supabase.auth.updateUser({
+          password: newPassword,
+        })
+        if (error) {
+          return { success: false, message: error.message }
+        } else {
+          return { success: true }
+        }
+      } catch (err: unknown) {
+        return { success: false, message: (err as AuthError).message }
+      } finally {
+        setIsLoading(false)
+      }
+    },
+    [],
+  )
+
+  const changePassword = useCallback(async (newPassword: string): Promise<RequestResponse> => {
     setIsLoading(true)
     try {
       const { error } = await supabase.auth.updateUser({
@@ -209,8 +240,19 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       signIn,
       forgotPasswordRequest,
       resetPassword,
+      changePassword,
     }),
-    [session, isLoading, logout, user, treyUser, signIn, forgotPasswordRequest, resetPassword],
+    [
+      session,
+      isLoading,
+      logout,
+      user,
+      treyUser,
+      signIn,
+      forgotPasswordRequest,
+      resetPassword,
+      changePassword,
+    ],
   )
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>

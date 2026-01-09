@@ -17,7 +17,7 @@ export interface ChangePasswordErrors {
 }
 
 export const ChangePassword = () => {
-  const { isLoading, resetPassword } = useAuth()
+  const { isLoading, changePassword } = useAuth()
   const { t } = useTranslation()
   const [formData, setFormData] = useState<ChangePasswordData>({
     newPassword: "",
@@ -47,7 +47,7 @@ export const ChangePassword = () => {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
     if (validateForm()) {
-      resetPassword(formData.newPassword).then((response) => {
+      changePassword(formData.newPassword).then((response) => {
         if (response.success) {
           toast.success(t("reset_password.success.message"))
         } else {
