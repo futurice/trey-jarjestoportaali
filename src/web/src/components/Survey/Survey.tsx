@@ -303,6 +303,14 @@ export const SurveyPage = () => {
   ])
 
   useEffect(() => {
+    const interval = setInterval(() => {
+      saveSurveyData(surveyModel)
+    }, 300000)
+
+    return () => clearInterval(interval)
+  }, [saveSurveyData, surveyModel])
+
+  useEffect(() => {
     if (
       !surveyAnswerData &&
       survey?.surveyType === SurveyType.AssociationAnnouncement &&
@@ -333,6 +341,7 @@ export const SurveyPage = () => {
     isFetchingOrganization,
     surveyAnswerData,
     isLoadingSurveyResults,
+    saveSurveyData,
   ])
 
   if (loading || isLoadingSurveyResults) {

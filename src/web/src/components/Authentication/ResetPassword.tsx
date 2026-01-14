@@ -1,7 +1,7 @@
 import { useState } from "react"
 import toast from "react-hot-toast"
 import { useTranslation } from "react-i18next"
-import { useNavigate, useSearchParams } from "react-router-dom"
+import { Navigate, useNavigate, useSearchParams } from "react-router-dom"
 import { VisibilityOff, Visibility } from "@mui/icons-material"
 import { Box, IconButton, InputAdornment, TextField, Typography } from "@mui/material"
 import { RequestResponse, useAuth } from "../../authentication/AuthContext"
@@ -11,10 +11,18 @@ import { LoginContainer } from "./LoginContainer/LoginContainer"
 
 export const ResetPassword = () => {
   const { isLoading, resetPassword } = useAuth()
+  const { t } = useTranslation()
+  const [searchParams] = useSearchParams()
+  const token = searchParams.get("token")
+
+  if (!token) {
+    toast.error(t("reset_password.error_message.invalid_token"))
+    return <Navigate to="/login" />
+  }
 
   return (
     <LoginContainer>
-      <ResetPasswordComponent isLoading={isLoading} resetPassword={resetPassword} />
+      <ResetPasswordComponent isLoading={isLoading} resetPassword={resetPassword} token={token} />
     </LoginContainer>
   )
 }
@@ -32,14 +40,14 @@ export interface ResetPasswordErrors {
 const ResetPasswordComponent = ({
   isLoading,
   resetPassword,
+  token,
 }: {
   isLoading: boolean
   resetPassword: (newPassword: string, token: string | null) => Promise<RequestResponse>
+  token: string | null
 }) => {
   const navigate = useNavigate()
   const { t } = useTranslation()
-  const [searchParams] = useSearchParams()
-  const token = searchParams.get("token")
   const [formData, setFormData] = useState<ResetPasswordData>({
     newPassword: "",
     newPasswordRepeat: "",

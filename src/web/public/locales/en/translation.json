@@ -126,7 +126,9 @@
       "repeat_password_required": "Confirm password is a required field.",
       "password_required": "New password is a required field.",
       "passwords_do_not_match": "Passwords do not match.",
-      "password_too_short": "Password must be at least 8 characters long."
+      "password_too_short": "Password must be at least 8 characters long.",
+      "invalid_token": "Invalid password reset link.",
+      "expired_token": "The password reset link has expired."
     }
   },
   "organization": {

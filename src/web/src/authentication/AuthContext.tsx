@@ -16,10 +16,12 @@ import { supabase } from "./authClient"
 
 export interface AuthContextType {
   session: Session | null
+  setSession: (session: Session | null) => void
   isLoading: boolean
   setIsLoading: (loading: boolean) => void
   logout: () => void
   user: User | null
+  setUser: (user: User | null) => void
   treyUser: TreyUser | null
   signIn: ({
     username,
@@ -71,24 +73,45 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
   // Check for existing session on mount
   useEffect(() => {
-    const checkAuthStatus = async () => {
+    let isMounted = true
+
+    const init = async () => {
       setIsLoading(true)
       try {
-        const {
-          data: { session, user },
-        } = await supabase.auth.refreshSession()
-        setSession(session)
-        setUser(user)
-      } catch (error) {
-        console.error("Error checking auth status:", error)
-        // Clear invalid data
+        const { data, error } = await supabase.auth.getSession()
+        if (error) throw error
+
+        if (!isMounted) return
+        setSession(data.session)
+        setUser(data.session?.user ?? null)
+      } catch (e) {
+        console.error("Error loading session:", e)
+        if (!isMounted) return
         setSession(null)
+        setUser(null)
       } finally {
-        setIsLoading(false)
+        if (isMounted) setIsLoading(false)
       }
     }
 
-    checkAuthStatus()
+    init()
+
+    const { data: authListener } = supabase.auth.onAuthStateChange((event, session) => {
+      console.log(event, session)
+      // Keep callback fast; Supabase warns events can fire frequently and to avoid heavy work here. :contentReference[oaicite:2]{index=2}
+      setSession(session)
+      setUser(session?.user ?? null)
+
+      if (event === "SIGNED_OUT") {
+        setSession(null)
+        setUser(null)
+      }
+    })
+
+    return () => {
+      isMounted = false
+      authListener.subscription.unsubscribe()
+    }
   }, [])
 
   const signIn = useCallback(
@@ -232,10 +255,12 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const value: AuthContextType = useMemo(
     () => ({
       session,
+      setSession,
       isLoading,
       setIsLoading,
       logout,
       user,
+      setUser,
       treyUser,
       signIn,
       forgotPasswordRequest,
@@ -244,9 +269,11 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     }),
     [
       session,
+      setSession,
       isLoading,
       logout,
       user,
+      setUser,
       treyUser,
       signIn,
       forgotPasswordRequest,

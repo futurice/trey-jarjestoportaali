@@ -3,6 +3,7 @@ using Trey.Api.Repositories;
 using Trey.Api.Services;
 
 namespace Trey.Api.Extensions;
+
 public static class SurveyEndpointExtensions
 {
     public static RouteGroupBuilder MapSurveyEndpoints(this RouteGroupBuilder group)
@@ -34,7 +35,7 @@ public static class SurveyEndpointExtensions
         return Results.Ok(surveys);
     }
 
-    [RequiredRole(TreyRole.Organization)]
+    [RequiredRole(TreyRole.Admin, TreyRole.TreyBoard, TreyRole.Organization)]
     private static async Task<IResult> GetAllSurveysForOrg(SurveyRepository repo, IAuthService auth, HttpContext context)
     {
         var user = await auth.GetUserFromContext(context);
@@ -47,7 +48,7 @@ public static class SurveyEndpointExtensions
             var allSurveys = await repo.GetAllSurveysAsync();
             return Results.Ok(allSurveys);
         }
-        else if (user.Role != TreyRole.Organization)
+        else if (user is null || user.Role != TreyRole.Organization || user.OrganizationId is null)
         {
             return Results.Forbid();
         }

@@ -126,7 +126,9 @@
       "repeat_password_required": "Salasanan vahvistus on pakollinen tieto.",
       "password_required": "Uusi salasana on pakollinen tieto.",
       "passwords_do_not_match": "Salasanat eivät täsmää.",
-      "password_too_short": "Salasanan on oltava vähintään 8 merkkiä pitkä."
+      "password_too_short": "Salasanan on oltava vähintään 8 merkkiä pitkä.",
+      "invalid_token": "Virheellinen salasanan resetointilinkki.",
+      "expired_token": "Salasanan resetointilinkki on vanhentunut."
     }
   },
   "organization": {
