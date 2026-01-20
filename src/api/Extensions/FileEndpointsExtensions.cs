@@ -42,7 +42,7 @@ public static class FileEndpointsExtensions
     {
         logger.LogDebug("Finding files from {container}", service);
         var user = await auth.GetUserFromContext(context);
-        if (!await auth.IsUserAuthorized(user, null))
+        if (!await auth.IsUserAuthorized(user, user.OrganizationId))
         {
             logger.LogWarning("User {userId} is not authorized to access files from {container}", user.Id, service);
             return TypedResults.Forbid();

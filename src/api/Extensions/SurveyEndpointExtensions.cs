@@ -28,7 +28,7 @@ public static class SurveyEndpointExtensions
         context.Response.Headers.Vary = "User-Agent";
         var user = await auth.GetUserFromContext(context);
         var surveys = await repo.GetAllSurveysAsync();
-        if (user.Role == TreyRole.Organization)
+        if (user == null || user.Role == TreyRole.Organization)
         {
             surveys = surveys.Where(s => s.ResponsePeriod == null || (s.ResponsePeriod.Start <= DateTime.UtcNow && s.ResponsePeriod.End >= DateTime.UtcNow));
         }
@@ -61,7 +61,6 @@ public static class SurveyEndpointExtensions
     {
         context.Response.Headers.CacheControl = "public, max-age=30";
         context.Response.Headers.Vary = "User-Agent";
-        var user = await auth.GetUserFromContext(context);
         var survey = await repo.GetSurveyByIdAsync(id);
         return survey is null ? Results.NotFound() : Results.Ok(survey);
     }

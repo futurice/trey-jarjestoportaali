@@ -99,6 +99,7 @@ builder.Services.AddSupabaseClient(builder.Configuration);
 var emailClientEndpoint = Environment.GetEnvironmentVariable("ACS_EMAIL_ENDPOINT") ?? throw new ArgumentNullException("ACS_EMAIL_ENDPOINT");
 EmailClient emailClient = new EmailClient(new Uri(emailClientEndpoint), credential);
 builder.Services.AddSingleton(emailClient);
+builder.Services.AddMemoryCache();
 
 var app = builder.Build();
 

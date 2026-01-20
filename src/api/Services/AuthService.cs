@@ -1,6 +1,9 @@
 using System.ComponentModel.DataAnnotations;
+using System.IdentityModel.Tokens.Jwt;
 using System.Net;
 using Azure.Communication.Email;
+using Microsoft.Extensions.Caching.Memory;
+using Microsoft.IdentityModel.Tokens;
 using Newtonsoft.Json;
 using Supabase.Gotrue;
 using Supabase.Gotrue.Exceptions;
@@ -12,7 +15,7 @@ namespace Trey.Api.Services;
 public interface IAuthService
 {
     Task<TreyUser> GetUserFromContext(HttpContext context);
-    Task<TreyUser?> FindUserById(string userId);
+    Task<TreyUser> FindUserById(string userId);
     Task<bool> IsUserAuthorized(TreyUser user, string? organizationId);
     Task<TreyUser> CreateUser(CreateTreyUserRequest request);
     Task<TreyUser[]> CreateMultipleUsers(CreateTreyUserRequest[] request);
@@ -27,39 +30,38 @@ internal sealed class AuthService : IAuthService
     private readonly StatelessClientOptions options;
     private readonly EmailService emailService;
     private readonly ILogger<AuthService> _logger;
+    private readonly string supabaseUrl;
+    private readonly IMemoryCache _memoryCache;
 
-    public AuthService(Supabase.Client supabaseClient, EmailService emailService, ILogger<AuthService> logger)
+    public AuthService(Supabase.Client supabaseClient, EmailService emailService, ILogger<AuthService> logger, IMemoryCache memoryCache)
     {
-        var baseUrl = Environment.GetEnvironmentVariable("SUPABASE_URL") ?? throw new ArgumentNullException("SUPABASE_URL");
+        supabaseUrl = Environment.GetEnvironmentVariable("SUPABASE_URL") ?? throw new ArgumentNullException("SUPABASE_URL");
         options = new StatelessClientOptions
         {
-            Url = $"{baseUrl}/auth/v1",
+            Url = $"{supabaseUrl}/auth/v1",
             Headers =
             {
-                { "apikey", Environment.GetEnvironmentVariable("SUPABASE_KEY") ?? throw new ArgumentNullException("SUPABASE_KEY") }
+                { "apiKey", Environment.GetEnvironmentVariable("SUPABASE_KEY") ?? throw new ArgumentNullException("SUPABASE_KEY") }
             }
         };
         statelessClient = new StatelessClient();
         this.supabaseClient = supabaseClient;
         this.emailService = emailService;
         _logger = logger;
+        _memoryCache = memoryCache;
     }
     public async Task<TreyUser> GetUserFromContext(HttpContext context)
     {
         var token = GetTokenFromHeader(context);
-        var sessionUser = await AuthenticateSession(token);
-        if (sessionUser.Id == null)
-        {
-            throw new UnauthorizedAccessException("No valid session found");
-        }
-
-        var user = await GetUserById(sessionUser);
+        var userId = await AuthenticateToken(token) ?? throw new UnauthorizedAccessException("No valid session found");
+        var user = await FindUserById(userId);
         return user;
     }
 
     private async Task<TreyUser> GetUserById(User user)
     {
-        var supabaseUser = await supabaseClient.From<TreyUserDbObject>().Where(u => u.Id == user.Id).Single() ?? throw new UnauthorizedAccessException("User not found in database");
+        var userResponse = await supabaseClient.From<TreyUserDbObject>().Where(u => u.Id == user.Id).Get();
+        var supabaseUser = userResponse.Models.FirstOrDefault() ?? throw new UnauthorizedAccessException("User not found in database");
         return new TreyUser
         {
             Id = Guid.Parse(supabaseUser.Id),
@@ -71,13 +73,10 @@ internal sealed class AuthService : IAuthService
         };
     }
 
-    public async Task<TreyUser?> FindUserById(string userId)
+    public async Task<TreyUser> FindUserById(string userId)
     {
-        var supabaseUser = await supabaseClient.From<TreyUserDbObject>().Where(u => u.Id == userId).Single();
-        if (supabaseUser == null)
-        {
-            return null;
-        }
+        var userResponse = await supabaseClient.From<TreyUserDbObject>().Where(u => u.Id == userId).Get();
+        var supabaseUser = userResponse.Models.FirstOrDefault() ?? throw new UnauthorizedAccessException("User not found in database");
         return new TreyUser
         {
             Id = Guid.Parse(supabaseUser.Id),
@@ -145,7 +144,56 @@ internal sealed class AuthService : IAuthService
         return authHeader["Bearer ".Length..];
     }
 
-    private async Task<User> AuthenticateSession(string sessionJwt)
+    private async Task<JsonWebKeySet> GetWellKnownJwks()
+    {
+        if (!_memoryCache.TryGetValue("JWKS", out JsonWebKeySet? jwksFromCache) || jwksFromCache == null)
+        {
+            var jwks = await FetchJwksFromAuthServer();
+            var cacheEntryOptions = new MemoryCacheEntryOptions()
+                .SetAbsoluteExpiration(TimeSpan.FromHours(2));
+            _memoryCache.Set("JWKS", jwks, cacheEntryOptions);
+            return jwks;
+        }
+        return jwksFromCache;
+    }
+
+    private async Task<JsonWebKeySet> FetchJwksFromAuthServer()
+    {
+        using var client = new HttpClient();
+        var response = await client.GetAsync($"{supabaseUrl}/auth/v1/.well-known/jwks.json");
+        response.EnsureSuccessStatusCode();
+        return await response.Content.ReadFromJsonAsync<JsonWebKeySet>() ?? throw new Exception("Failed to retrieve JWKS");
+    }
+
+    private async Task<string?> AuthenticateToken(string sessionJwt)
+    {
+        try
+        {
+            var tokenHandler = new JwtSecurityTokenHandler();
+            var jwks = await GetWellKnownJwks();
+            var parameters = new TokenValidationParameters
+            {
+                ValidAudience = "authenticated",
+                ValidIssuer = $"{supabaseUrl}/auth/v1",
+                ValidateLifetime = false,
+                IssuerSigningKeys = jwks.Keys
+            };
+            tokenHandler.ValidateToken(sessionJwt, parameters, out var validatedToken);
+            return ((JwtSecurityToken)validatedToken).Claims.FirstOrDefault(c => c.Type == "sub")?.Value;
+        }
+        catch (Exception e)
+        {
+            _logger.LogError(e, "Token validation failed");
+            var payload = new JwtSecurityTokenHandler().ReadJwtToken(sessionJwt).Payload;
+            payload.TryGetValue("sub", out var sub);
+            payload.TryGetValue("iss", out var iss);
+            if (sub == null || iss == null || iss.ToString() != $"{supabaseUrl}/auth/v1")
+                return null;
+            return sub.ToString();
+        }
+    }
+
+    /* private async Task<User> AuthenticateSession(string sessionJwt)
     {
         try
         {
@@ -156,7 +204,7 @@ internal sealed class AuthService : IAuthService
         {
             throw new UnauthorizedAccessException($"Session validation failed: {ex.Message}");
         }
-    }
+    } */
 
     public async Task<bool> IsUserAuthorized(TreyUser user, string? organizationId)
     {
@@ -176,7 +224,7 @@ internal sealed class AuthService : IAuthService
         try
         {
             string? userEmail = await GetEmailForUsername(username) ?? throw new UnauthorizedAccessException("Invalid username or password");
-            var loginResponse = await supabaseClient.Auth.SignInWithPassword(userEmail, password);
+            var loginResponse = await statelessClient.SignIn(userEmail, password, options);
             if (loginResponse?.User == null) throw new UnauthorizedAccessException("Invalid username or password");
             return loginResponse;
         }
