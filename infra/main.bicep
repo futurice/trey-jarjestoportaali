@@ -138,6 +138,7 @@ module api './app/api.bicep' = {
       STYTCH_PROJECT_ID: '@Microsoft.KeyVault(VaultName=${keyVault.outputs.name};SecretName=STYTCH-PROJECT-ID)'
       STYTCH_PROJECT_SECRET: '@Microsoft.KeyVault(VaultName=${keyVault.outputs.name};SecretName=STYTCH-PROJECT-SECRET)'
       SUPABASE_KEY: '@Microsoft.KeyVault(VaultName=${keyVault.outputs.name};SecretName=SUPABASE-KEY)'
+      SUPABASE_SECRET_KEY: '@Microsoft.KeyVault(VaultName=${keyVault.outputs.name};SecretName=SUPABASE-SECRET-KEY)'
       SUPABASE_URL: '@Microsoft.KeyVault(VaultName=${keyVault.outputs.name};SecretName=SUPABASE-URL)'
       ACS_EMAIL_ENDPOINT: acsEmail.outputs.endpoint
     }

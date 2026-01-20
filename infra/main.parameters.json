@@ -35,6 +35,9 @@
 		"supabaseKey": {
 			"value": "${SUPABASE_KEY}"
 		},
+		"supabaseSecretKey": {
+			"value": "${SUPABASE_SECRET_KEY}"
+		},
 		"supabasePublicKey": {
 			"value": "${SUPABASE_PUBLIC_KEY}"
 		},

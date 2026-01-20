@@ -15,7 +15,7 @@ public static class AuthServiceExtensions
         services.AddSingleton<Supabase.Gotrue.Client>(_ =>
         {
             var url = configuration["SUPABASE_URL"] ?? throw new ArgumentNullException("SUPABASE_URL");
-            var key = configuration["SUPABASE_KEY"] ?? throw new ArgumentNullException("SUPABASE_KEY");
+            var key = configuration["SUPABASE_SECRET_KEY"] ?? throw new ArgumentNullException("SUPABASE_SECRET_KEY");
             var options = new Supabase.Gotrue.ClientOptions
             {
                 Url = url,

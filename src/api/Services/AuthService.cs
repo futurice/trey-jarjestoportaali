@@ -41,7 +41,7 @@ internal sealed class AuthService : IAuthService
             Url = $"{supabaseUrl}/auth/v1",
             Headers =
             {
-                { "apiKey", Environment.GetEnvironmentVariable("SUPABASE_KEY") ?? throw new ArgumentNullException("SUPABASE_KEY") }
+                { "apiKey", Environment.GetEnvironmentVariable("SUPABASE_SECRET_KEY") ?? throw new ArgumentNullException("SUPABASE_SECRET_KEY") }
             }
         };
         statelessClient = new StatelessClient();
