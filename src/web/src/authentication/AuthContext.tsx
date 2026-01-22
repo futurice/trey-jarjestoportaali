@@ -71,6 +71,20 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const [user, setUser] = useState<User | null>(null)
   const { t } = useTranslation()
 
+  useEffect(() => {
+    const refresh = async () => {
+      const { data, error } = await supabase.auth.refreshSession()
+      if (error) {
+        setUser(null)
+        setSession(null)
+        return
+      }
+      setSession(data.session)
+      setUser(data.session?.user ?? null)
+    }
+    refresh()
+  }, [])
+
   // Check for existing session on mount
   useEffect(() => {
     let isMounted = true
@@ -79,9 +93,11 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       setIsLoading(true)
       try {
         const { data, error } = await supabase.auth.getSession()
-        if (error) throw error
-
-        if (!isMounted) return
+        if (error || !isMounted || !data.session) {
+          setUser(null)
+          setSession(null)
+          return
+        }
         setSession(data.session)
         setUser(data.session?.user ?? null)
       } catch (e) {
