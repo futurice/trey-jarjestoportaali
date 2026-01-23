@@ -23,6 +23,7 @@ var credentialOptions = new DefaultAzureCredentialOptions
 };
 var credential = new DefaultAzureCredential(credentialOptions);
 var builder = WebApplication.CreateBuilder(args);
+builder.Services.AddLogging(b => b.AddConsole());
 
 JsonSerializerOptions options = new()
 {
@@ -93,7 +94,7 @@ var supabaseOptions = new Supabase.SupabaseOptions
 };
 builder.Services.AddSingleton<Supabase.Client>(_ => new Supabase.Client(supabaseUrl, supabaseKey, supabaseOptions));
 
-builder.Services.AddTreyAuth();
+builder.Services.AddSingleton<IAuthService, AuthService>();
 builder.Services.AddSupabaseClient(builder.Configuration);
 
 var emailClientEndpoint = Environment.GetEnvironmentVariable("ACS_EMAIL_ENDPOINT") ?? throw new ArgumentNullException("ACS_EMAIL_ENDPOINT");
