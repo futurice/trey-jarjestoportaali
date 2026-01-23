@@ -17,11 +17,13 @@ export const Authenticated = ({
   redirectUrl = "/",
 }: AuthenticatedProps) => {
   const location = useLocation()
-  const { isLoading, session, user } = useAuth()
+  const { isLoading, session, user, setUser, setSession } = useAuth()
 
   if (isLoading) {
     return <CircularProgress />
-  } else if (!isLoading && !session?.user) {
+  } else if (!isLoading && (!user || !session)) {
+    setSession(null)
+    setUser(null)
     return <Navigate to="/login" state={{ from: location }} />
   }
 

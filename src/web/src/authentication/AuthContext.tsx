@@ -74,13 +74,14 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   useEffect(() => {
     const refresh = async () => {
       const { data, error } = await supabase.auth.refreshSession()
-      if (error) {
+      const { data: userData, error: userError } = await supabase.auth.getUser()
+      if (error || userError) {
         setUser(null)
         setSession(null)
         return
       }
       setSession(data.session)
-      setUser(data.session?.user ?? null)
+      setUser(userData.user)
     }
     refresh()
   }, [])
@@ -113,7 +114,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     init()
 
     const { data: authListener } = supabase.auth.onAuthStateChange((event, session) => {
-      console.log(event, session)
+      console.debug(event, session)
       // Keep callback fast; Supabase warns events can fire frequently and to avoid heavy work here. :contentReference[oaicite:2]{index=2}
       setSession(session)
       setUser(session?.user ?? null)
