@@ -65,6 +65,8 @@ const ResetPasswordComponent = ({
 
     if (!formData.newPasswordRepeat.trim()) {
       newErrors.newPasswordRepeat = t("reset_password.error_message.repeat_password_required")
+    } else if (formData.newPassword.length < 6) {
+      newErrors.newPassword = t("login.error.password_too_short")
     } else if (formData.newPassword !== formData.newPasswordRepeat) {
       newErrors.newPasswordRepeat = t("reset_password.error_message.passwords_do_not_match")
     }

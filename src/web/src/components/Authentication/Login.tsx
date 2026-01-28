@@ -67,8 +67,6 @@ const LoginComponent = ({ onLogin, isLoading = false, error }: LoginFormProps) =
 
     if (!formData.password) {
       newErrors.password = t("login.error.password_required")
-    } else if (formData.password.length < 8) {
-      newErrors.password = t("login.error.password_too_short")
     }
 
     setErrors(newErrors)
