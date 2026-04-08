@@ -13,6 +13,7 @@ import { OrganizationPage } from "./components/Organization/OrganizationPage.tsx
 import { Registration } from "./components/Registration/Registration.tsx"
 import { SurveyPage } from "./components/Survey/Survey.tsx"
 import { ChangePassword } from "./components/UserSettings/ChangePassword.tsx"
+import { OrganizationEdit } from "./components/Organization/OrganizationEdit.tsx"
 
 const approvedRoles = [Roles.ORGANISATION, Roles.TREY_BOARD, Roles.ADMIN]
 
@@ -71,6 +72,16 @@ const App = () => {
             <Authenticated requiredRoles={approvedRoles} redirectUrl={"/registration"}>
               <Layout>
                 <OrganizationPage />
+              </Layout>
+            </Authenticated>
+          }
+        />
+        <Route
+          path="/organizations/:orgId/edit"
+          element={
+            <Authenticated requiredRoles={approvedRoles} redirectUrl={"/dashboard"}>
+              <Layout>
+                <OrganizationEdit />
               </Layout>
             </Authenticated>
           }

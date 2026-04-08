@@ -139,6 +139,7 @@
       "Other": "Other",
       "Unknown": "Unknown"
     },
+    "basic_info": "Basic information",
     "founding_year": "Founding Year",
     "name": "Name",
     "short_name": "Short Name",
@@ -162,10 +163,31 @@
     "board": {
       "no_board_members": "No board members found.",
       "board_members": "Board Members",
+      "board_member": "Board Member",
       "chairperson": "Chairperson",
       "intra_rights_owner": "Intra Rights Owner",
       "signature_rights_owners": "Signature Rights Owners",
-      "name": "Name"
+      "signature_rights_owner": "Signature Rights Owner",
+      "name": "Name",
+      "add_board_member": "Add Board Member",
+      "add_signature_rights_owner": "Add Signature Rights Owner",
+      "reservation_emails": "Reservation Rights"
+    },
+    "emails": {
+      "add_email": "Add Email",
+      "email_label": "Email",
+      "email_placeholder": "Enter email address",
+      "remove": "Remove",
+      "add_email_list": "Add Email List",
+      "list_name": "Email List Name"
+    },
+    "person": {
+      "name": "Name",
+      "email": "Email",
+      "phone": "Phone",
+      "role": "Role",
+      "telegram": "Telegram",
+      "has_banking_account": "Has Banking Account"
     },
     "facilities": {
       "label": "Organization Facilities",
@@ -174,6 +196,12 @@
       "room": "Room",
       "contact_person": "Contact Person",
       "other_info": "Other Information"
+    },
+    "edit": {
+      "title": "Edit Organization Information",
+      "save": "Save",
+      "cancel": "Cancel",
+      "error": "Failed to save organization information. Please try again later."
     }
   },
   "pages": {

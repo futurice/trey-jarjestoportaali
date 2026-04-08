@@ -288,30 +288,19 @@ export function OrganizationEdit() {
   }
 
   return (
-    <Box sx={{ display: "flex", flexDirection: "column", gap: 3 }}>
+    <Container sx={{ display: "flex", flexDirection: "column", gap: 3 }}>
       {/* Header */}
-      <Card>
-        <CardHeader
-          title={
-            <Box sx={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
-              <Typography variant="h4">Edit Organization</Typography>
-              <Box sx={{ display: "flex", gap: 2 }}>
-                <Button variant="outlined" startIcon={<Cancel />} onClick={handleCancel}>
-                  Cancel
-                </Button>
-                <Button
-                  variant="contained"
-                  color="primary"
-                  startIcon={<Save />}
-                  onClick={handleSave}
-                >
-                  Save Changes
-                </Button>
-              </Box>
-            </Box>
-          }
-        />
-      </Card>
+      <Box sx={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+        <Typography variant="h4">{t("organization.edit.title")}</Typography>
+        <Box sx={{ display: "flex", gap: 2 }}>
+          <Button variant="outlined" startIcon={<Cancel />} onClick={handleCancel}>
+            {t("organization.edit.cancel")}
+          </Button>
+          <Button variant="contained" color="primary" startIcon={<Save />} onClick={handleSave}>
+            {t("organization.edit.save")}
+          </Button>
+        </Box>
+      </Box>
 
       {/* Validation Errors */}
       {Object.keys(errors).length > 0 && (
@@ -327,14 +316,17 @@ export function OrganizationEdit() {
 
       {/* Basic Information */}
       <Card>
-        <CardHeader title={<Typography variant="h6">Basic Information</Typography>} />
+        <CardHeader
+          sx={{ display: "flex", alignItems: "flex-start", flexDirection: "column" }}
+          title={<Typography variant="h6">{t("organization.basic_info")}</Typography>}
+        />
         <CardContent>
           <Grid container spacing={3}>
             <Grid size={{ xs: 12, md: 8 }}>
               <TextField
                 fullWidth
                 required
-                label="Organization Name"
+                label={t("organization.name")}
                 value={formData.name}
                 onChange={(e) => updateField("name", e.target.value)}
                 error={!!errors.name}
@@ -344,18 +336,19 @@ export function OrganizationEdit() {
             <Grid size={{ xs: 12, md: 4 }}>
               <TextField
                 fullWidth
-                label="Short Name"
+                label={t("organization.short_name")}
                 value={formData.shortName || ""}
                 onChange={(e) => updateField("shortName", e.target.value)}
               />
             </Grid>
             <Grid size={{ xs: 12, md: 6 }}>
               <FormControl fullWidth>
-                <InputLabel>Category</InputLabel>
+                <InputLabel>{t("organization.category.label")}</InputLabel>
                 <Select
+                  sx={{ textAlign: "start" }}
                   value={formData.category ?? ""}
                   onChange={(e) => updateField("category", e.target.value as Category)}
-                  label="Category"
+                  label={t("organization.category.label")}
                 >
                   <MenuItem value={Category.FacultyAndUmbrella}>
                     {getCategoryLabel(Category.FacultyAndUmbrella, t)}
@@ -372,7 +365,7 @@ export function OrganizationEdit() {
               <TextField
                 fullWidth
                 type="number"
-                label="Founding Year"
+                label={t("organization.founding_year")}
                 value={formData.foundingYear || ""}
                 onChange={(e) =>
                   updateField("foundingYear", Number.parseInt(e.target.value) || undefined)
@@ -383,7 +376,7 @@ export function OrganizationEdit() {
               <TextField
                 fullWidth
                 required
-                label="Email"
+                label={t("organization.email")}
                 type="email"
                 value={formData.email}
                 onChange={(e) => updateField("email", e.target.value)}
@@ -394,7 +387,7 @@ export function OrganizationEdit() {
             <Grid size={{ xs: 12, md: 6 }}>
               <TextField
                 fullWidth
-                label="Website"
+                label={t("organization.website")}
                 type="url"
                 value={formData.website || ""}
                 onChange={(e) => updateField("website", e.target.value)}
@@ -405,7 +398,7 @@ export function OrganizationEdit() {
                 fullWidth
                 required
                 type="number"
-                label="Member Count"
+                label={t("organization.member_count")}
                 value={formData.memberCount}
                 onChange={(e) => updateField("memberCount", Number.parseInt(e.target.value) || 0)}
                 error={!!errors.memberCount}
@@ -416,7 +409,7 @@ export function OrganizationEdit() {
               <TextField
                 fullWidth
                 type="number"
-                label="TREY Member Count"
+                label={t("organization.trey_members")}
                 value={formData.treyMemberCount || ""}
                 onChange={(e) =>
                   updateField("treyMemberCount", Number.parseInt(e.target.value) || undefined)
@@ -426,7 +419,7 @@ export function OrganizationEdit() {
             <Grid size={{ xs: 12, md: 4 }}>
               <TextField
                 fullWidth
-                label="IBAN"
+                label={t("organization.bank_account")}
                 value={formData.iban || ""}
                 onChange={(e) => updateField("iban", e.target.value)}
               />
@@ -435,17 +428,17 @@ export function OrganizationEdit() {
 
           <Divider sx={{ my: 3 }} />
 
-          <Typography variant="subtitle1" sx={{ mb: 2 }}>
-            Operating Period
+          <Typography variant="subtitle1" sx={{ mb: 2, textAlign: "start" }}>
+            {t("organization.operating_period.label")}
           </Typography>
           <Grid container spacing={3}>
             <Grid size={{ xs: 12, md: 6 }}>
               <TextField
                 fullWidth
-                label="Start Date"
-                type="datetime-local"
+                label={t("organization.operating_period.start")}
+                type="date"
                 value={
-                  formData.operatingPeriod.start ? formData.operatingPeriod.start.slice(0, 16) : ""
+                  formData.operatingPeriod.start ? formData.operatingPeriod.start.slice(0, 10) : ""
                 }
                 onChange={(e) =>
                   updateField("operatingPeriod", {
@@ -459,10 +452,10 @@ export function OrganizationEdit() {
             <Grid size={{ xs: 12, md: 6 }}>
               <TextField
                 fullWidth
-                label="End Date"
-                type="datetime-local"
+                label={t("organization.operating_period.end")}
+                type="date"
                 value={
-                  formData.operatingPeriod.end ? formData.operatingPeriod.end.slice(0, 16) : ""
+                  formData.operatingPeriod.end ? formData.operatingPeriod.end.slice(0, 10) : ""
                 }
                 onChange={(e) =>
                   updateField("operatingPeriod", {
@@ -483,22 +476,22 @@ export function OrganizationEdit() {
           title={
             <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
               <PersonIcon />
-              <Typography variant="h6">People</Typography>
+              <Typography variant="h6">{t("organization.board.board_members")}</Typography>
             </Box>
           }
         />
         <CardContent sx={{ display: "flex", flexDirection: "column", gap: 3 }}>
           {/* Chairperson */}
           <Box>
-            <Typography variant="subtitle1" sx={{ mb: 2 }}>
-              Chairperson *
+            <Typography variant="subtitle1" sx={{ mb: 2, textAlign: "start" }}>
+              {t("organization.board.chairperson")} *
             </Typography>
             <Grid container spacing={2}>
               <Grid size={{ xs: 12, md: 6 }}>
                 <TextField
                   fullWidth
                   required
-                  label="Name"
+                  label={t("organization.person.name")}
                   value={formData.chairperson.name}
                   onChange={(e) => updatePerson("chairperson", "name", e.target.value)}
                   error={!!errors.chairperson}
@@ -508,7 +501,7 @@ export function OrganizationEdit() {
               <Grid size={{ xs: 12, md: 6 }}>
                 <TextField
                   fullWidth
-                  label="Email"
+                  label={t("organization.person.email")}
                   type="email"
                   value={formData.chairperson.email || ""}
                   onChange={(e) => updatePerson("chairperson", "email", e.target.value)}
@@ -517,7 +510,7 @@ export function OrganizationEdit() {
               <Grid size={{ xs: 12, md: 4 }}>
                 <TextField
                   fullWidth
-                  label="Phone"
+                  label={t("organization.person.phone")}
                   value={formData.chairperson.phone || ""}
                   onChange={(e) => updatePerson("chairperson", "phone", e.target.value)}
                 />
@@ -525,7 +518,7 @@ export function OrganizationEdit() {
               <Grid size={{ xs: 12, md: 4 }}>
                 <TextField
                   fullWidth
-                  label="Telegram Nick"
+                  label={t("organization.person.telegram")}
                   value={formData.chairperson.telegramNick || ""}
                   onChange={(e) => updatePerson("chairperson", "telegramNick", e.target.value)}
                 />
@@ -540,7 +533,7 @@ export function OrganizationEdit() {
                       }
                     />
                   }
-                  label="Has Banking Account"
+                  label={t("organization.person.has_banking_account")}
                 />
               </Grid>
             </Grid>
@@ -551,14 +544,16 @@ export function OrganizationEdit() {
           {/* Intra Rights Owner */}
           <Accordion>
             <AccordionSummary expandIcon={<ExpandMore />}>
-              <Typography variant="subtitle1">Intra Rights Owner</Typography>
+              <Typography variant="subtitle1">
+                {t("organization.board.intra_rights_owner")}
+              </Typography>
             </AccordionSummary>
             <AccordionDetails>
               <Grid container spacing={2}>
                 <Grid size={{ xs: 12, md: 6 }}>
                   <TextField
                     fullWidth
-                    label="Name"
+                    label={t("organization.person.name")}
                     value={formData.intraRightsOwner?.name || ""}
                     onChange={(e) => updatePerson("intraRightsOwner", "name", e.target.value)}
                   />
@@ -566,7 +561,7 @@ export function OrganizationEdit() {
                 <Grid size={{ xs: 12, md: 6 }}>
                   <TextField
                     fullWidth
-                    label="Email"
+                    label={t("organization.person.email")}
                     type="email"
                     value={formData.intraRightsOwner?.email || ""}
                     onChange={(e) => updatePerson("intraRightsOwner", "email", e.target.value)}
@@ -575,7 +570,7 @@ export function OrganizationEdit() {
                 <Grid size={{ xs: 12, md: 4 }}>
                   <TextField
                     fullWidth
-                    label="Phone"
+                    label={t("organization.person.phone")}
                     value={formData.intraRightsOwner?.phone || ""}
                     onChange={(e) => updatePerson("intraRightsOwner", "phone", e.target.value)}
                   />
@@ -583,7 +578,7 @@ export function OrganizationEdit() {
                 <Grid size={{ xs: 12, md: 4 }}>
                   <TextField
                     fullWidth
-                    label="Telegram Nick"
+                    label={t("organization.person.telegram")}
                     value={formData.intraRightsOwner?.telegramNick || ""}
                     onChange={(e) =>
                       updatePerson("intraRightsOwner", "telegramNick", e.target.value)
@@ -600,7 +595,7 @@ export function OrganizationEdit() {
                         }
                       />
                     }
-                    label="Has Banking Account"
+                    label={t("organization.person.has_banking_account")}
                   />
                 </Grid>
               </Grid>
@@ -611,7 +606,7 @@ export function OrganizationEdit() {
           <Accordion>
             <AccordionSummary expandIcon={<ExpandMore />}>
               <Typography variant="subtitle1">
-                Board Members ({formData.boardmembers?.length || 0})
+                {t("organization.board.board_members")} ({formData.boardmembers?.length || 0})
               </Typography>
             </AccordionSummary>
             <AccordionDetails>
@@ -620,7 +615,10 @@ export function OrganizationEdit() {
                   <Card key={index} variant="outlined">
                     <CardContent>
                       <Box sx={{ display: "flex", justifyContent: "space-between", mb: 2 }}>
-                        <Chip label={`Member ${index + 1}`} size="small" />
+                        <Chip
+                          label={`${t("organization.board.board_member")} ${index + 1}`}
+                          size="small"
+                        />
                         <IconButton
                           size="small"
                           color="error"
@@ -633,7 +631,7 @@ export function OrganizationEdit() {
                         <Grid size={{ xs: 12, md: 6 }}>
                           <TextField
                             fullWidth
-                            label="Name"
+                            label={t("organization.person.name")}
                             value={member.name}
                             onChange={(e) =>
                               updateArrayPerson("boardmembers", index, "name", e.target.value)
@@ -643,7 +641,7 @@ export function OrganizationEdit() {
                         <Grid size={{ xs: 12, md: 6 }}>
                           <TextField
                             fullWidth
-                            label="Email"
+                            label={t("organization.person.email")}
                             type="email"
                             value={member.email || ""}
                             onChange={(e) =>
@@ -654,7 +652,7 @@ export function OrganizationEdit() {
                         <Grid size={{ xs: 12, md: 4 }}>
                           <TextField
                             fullWidth
-                            label="Phone"
+                            label={t("organization.person.phone")}
                             value={member.phone || ""}
                             onChange={(e) =>
                               updateArrayPerson("boardmembers", index, "phone", e.target.value)
@@ -664,7 +662,7 @@ export function OrganizationEdit() {
                         <Grid size={{ xs: 12, md: 4 }}>
                           <TextField
                             fullWidth
-                            label="Telegram Nick"
+                            label={t("organization.person.telegram")}
                             value={member.telegramNick || ""}
                             onChange={(e) =>
                               updateArrayPerson(
@@ -694,7 +692,7 @@ export function OrganizationEdit() {
                                 }
                               />
                             }
-                            label="Has Banking Account"
+                            label={t("organization.person.has_banking_account")}
                           />
                         </Grid>
                       </Grid>
@@ -706,7 +704,7 @@ export function OrganizationEdit() {
                   startIcon={<Add />}
                   onClick={() => addArrayPerson("boardmembers")}
                 >
-                  Add Board Member
+                  {t("organization.board.add_board_member")}
                 </Button>
               </Box>
             </AccordionDetails>
@@ -716,7 +714,8 @@ export function OrganizationEdit() {
           <Accordion>
             <AccordionSummary expandIcon={<ExpandMore />}>
               <Typography variant="subtitle1">
-                Signature Rights Owners ({formData.signatureRightsOwners?.length || 0})
+                {t("organization.board.signature_rights_owners")} (
+                {formData.signatureRightsOwners?.length || 0})
               </Typography>
             </AccordionSummary>
             <AccordionDetails>
@@ -725,7 +724,10 @@ export function OrganizationEdit() {
                   <Card key={index} variant="outlined">
                     <CardContent>
                       <Box sx={{ display: "flex", justifyContent: "space-between", mb: 2 }}>
-                        <Chip label={`Owner ${index + 1}`} size="small" />
+                        <Chip
+                          label={`${t("organization.board.signature_rights_owner")} ${index + 1}`}
+                          size="small"
+                        />
                         <IconButton
                           size="small"
                           color="error"
@@ -738,7 +740,7 @@ export function OrganizationEdit() {
                         <Grid size={{ xs: 12, md: 6 }}>
                           <TextField
                             fullWidth
-                            label="Name"
+                            label={t("organization.person.name")}
                             value={owner.name}
                             onChange={(e) =>
                               updateArrayPerson(
@@ -753,7 +755,7 @@ export function OrganizationEdit() {
                         <Grid size={{ xs: 12, md: 6 }}>
                           <TextField
                             fullWidth
-                            label="Email"
+                            label={t("organization.person.email")}
                             type="email"
                             value={owner.email || ""}
                             onChange={(e) =>
@@ -769,7 +771,7 @@ export function OrganizationEdit() {
                         <Grid size={{ xs: 12, md: 4 }}>
                           <TextField
                             fullWidth
-                            label="Phone"
+                            label={t("organization.person.phone")}
                             value={owner.phone || ""}
                             onChange={(e) =>
                               updateArrayPerson(
@@ -784,7 +786,7 @@ export function OrganizationEdit() {
                         <Grid size={{ xs: 12, md: 4 }}>
                           <TextField
                             fullWidth
-                            label="Telegram Nick"
+                            label={t("organization.person.telegram")}
                             value={owner.telegramNick || ""}
                             onChange={(e) =>
                               updateArrayPerson(
@@ -814,7 +816,7 @@ export function OrganizationEdit() {
                                 }
                               />
                             }
-                            label="Has Banking Account"
+                            label={t("organization.person.has_banking_account")}
                           />
                         </Grid>
                       </Grid>
@@ -826,7 +828,7 @@ export function OrganizationEdit() {
                   startIcon={<Add />}
                   onClick={() => addArrayPerson("signatureRightsOwners")}
                 >
-                  Add Signature Rights Owner
+                  {t("organization.board.add_signature_rights_owner")}
                 </Button>
               </Box>
             </AccordionDetails>
@@ -840,7 +842,7 @@ export function OrganizationEdit() {
           title={
             <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
               <Business />
-              <Typography variant="h6">Facility</Typography>
+              <Typography variant="h6">{t("organization.facilities.label")}</Typography>
             </Box>
           }
         />
@@ -849,7 +851,7 @@ export function OrganizationEdit() {
             <Grid size={{ xs: 12, md: 6 }}>
               <TextField
                 fullWidth
-                label="Campus"
+                label={t("organization.facilities.campus")}
                 value={formData.associationFacility?.campus || ""}
                 onChange={(e) => updateFacility("campus", e.target.value)}
               />
@@ -857,7 +859,7 @@ export function OrganizationEdit() {
             <Grid size={{ xs: 12, md: 6 }}>
               <TextField
                 fullWidth
-                label="Building"
+                label={t("organization.facilities.building")}
                 value={formData.associationFacility?.building || ""}
                 onChange={(e) => updateFacility("building", e.target.value)}
               />
@@ -865,7 +867,7 @@ export function OrganizationEdit() {
             <Grid size={{ xs: 12, md: 6 }}>
               <TextField
                 fullWidth
-                label="Room Code"
+                label={t("organization.facilities.room")}
                 value={formData.associationFacility?.roomCode || ""}
                 onChange={(e) => updateFacility("roomCode", e.target.value)}
               />
@@ -873,7 +875,7 @@ export function OrganizationEdit() {
             <Grid size={{ xs: 12, md: 6 }}>
               <TextField
                 fullWidth
-                label="Other Info"
+                label={t("organization.facilities.other_info")}
                 value={formData.associationFacility?.otherInfo || ""}
                 onChange={(e) => updateFacility("otherInfo", e.target.value)}
               />
@@ -883,13 +885,13 @@ export function OrganizationEdit() {
           <Divider sx={{ my: 3 }} />
 
           <Typography variant="subtitle1" sx={{ mb: 2 }}>
-            Contact Person
+            {t("organization.facilities.contact_person")}
           </Typography>
           <Grid container spacing={2}>
             <Grid size={{ xs: 12, md: 6 }}>
               <TextField
                 fullWidth
-                label="Name"
+                label={t("organization.person.name")}
                 value={formData.associationFacility?.contactPerson?.name || ""}
                 onChange={(e) => updateFacilityContactPerson("name", e.target.value)}
               />
@@ -897,7 +899,7 @@ export function OrganizationEdit() {
             <Grid size={{ xs: 12, md: 6 }}>
               <TextField
                 fullWidth
-                label="Email"
+                label={t("organization.person.email")}
                 type="email"
                 value={formData.associationFacility?.contactPerson?.email || ""}
                 onChange={(e) => updateFacilityContactPerson("email", e.target.value)}
@@ -906,7 +908,7 @@ export function OrganizationEdit() {
             <Grid size={{ xs: 12, md: 6 }}>
               <TextField
                 fullWidth
-                label="Phone"
+                label={t("organization.person.phone")}
                 value={formData.associationFacility?.contactPerson?.phone || ""}
                 onChange={(e) => updateFacilityContactPerson("phone", e.target.value)}
               />
@@ -914,7 +916,7 @@ export function OrganizationEdit() {
             <Grid size={{ xs: 12, md: 6 }}>
               <TextField
                 fullWidth
-                label="Telegram Nick"
+                label={t("organization.person.telegram")}
                 value={formData.associationFacility?.contactPerson?.telegramNick || ""}
                 onChange={(e) => updateFacilityContactPerson("telegramNick", e.target.value)}
               />
@@ -929,7 +931,7 @@ export function OrganizationEdit() {
           title={
             <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
               <Shield />
-              <Typography variant="h6">Permissions</Typography>
+              <Typography variant="h6">{t("organization.tabs.permissions")}</Typography>
             </Box>
           }
         />
@@ -938,7 +940,8 @@ export function OrganizationEdit() {
             sx={{ display: "flex", alignItems: "center", justifyContent: "space-between", mb: 2 }}
           >
             <Typography variant="subtitle1">
-              Reservation Rights Emails ({formData.reservationRightsEmails?.length || 0})
+              {t("organization.board.reservation_emails")} (
+              {formData.reservationRightsEmails?.length || 0})
             </Typography>
             <Button
               variant="outlined"
@@ -946,7 +949,7 @@ export function OrganizationEdit() {
               startIcon={<Add />}
               onClick={addReservationEmail}
             >
-              Add Email
+              {t("organization.emails.add_email")}
             </Button>
           </Box>
           <Box sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
@@ -954,7 +957,8 @@ export function OrganizationEdit() {
               <Box key={index} sx={{ display: "flex", gap: 1 }}>
                 <TextField
                   fullWidth
-                  label={`Email ${index + 1}`}
+                  label={`${t("organization.emails.email_label")} ${index + 1}`}
+                  placeholder={t("organization.emails.email_placeholder")}
                   type="email"
                   value={email}
                   onChange={(e) => updateReservationEmail(index, e.target.value)}
@@ -981,10 +985,10 @@ export function OrganizationEdit() {
             >
               <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
                 <MailOutline />
-                <Typography variant="h6">Communications</Typography>
+                <Typography variant="h6">{t("organization.tabs.communications")}</Typography>
               </Box>
               <Button variant="outlined" startIcon={<Add />} onClick={addEmailList}>
-                Add Email List
+                {t("organization.emails.add_email_list")}
               </Button>
             </Box>
           }
@@ -997,7 +1001,7 @@ export function OrganizationEdit() {
                   <Box sx={{ display: "flex", gap: 1, mb: 2 }}>
                     <TextField
                       fullWidth
-                      label="List Name"
+                      label={t("organization.emails.list_name")}
                       value={listName}
                       onChange={(e) => updateEmailListName(listName, e.target.value)}
                     />
@@ -1029,7 +1033,7 @@ export function OrganizationEdit() {
                       startIcon={<Add />}
                       onClick={() => addEmailToList(listName)}
                     >
-                      Add Email to List
+                      {t("organization.emails.add_email")}
                     </Button>
                   </Box>
                 </CardContent>
@@ -1044,14 +1048,14 @@ export function OrganizationEdit() {
         <CardContent>
           <Box sx={{ display: "flex", justifyContent: "flex-end", gap: 2 }}>
             <Button variant="outlined" startIcon={<Cancel />} onClick={handleCancel}>
-              Cancel
+              {t("organization.edit.cancel")}
             </Button>
             <Button variant="contained" color="primary" startIcon={<Save />} onClick={handleSave}>
-              Save Changes
+              {t("organization.edit.save")}
             </Button>
           </Box>
         </CardContent>
       </Card>
-    </Box>
+    </Container>
   )
 }

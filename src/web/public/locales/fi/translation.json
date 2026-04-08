@@ -140,6 +140,7 @@
       "Other": "Muu",
       "Unknown": "Tuntematon"
     },
+    "basic_info": "Perustiedot",
     "founding_year": "Perustamisvuosi",
     "name": "Nimi",
     "short_name": "Käyttäjätunnus",
@@ -163,10 +164,31 @@
     "board": {
       "no_board_members": "Hallituksen jäseniä ei löydetty.",
       "board_members": "Hallituksen jäsenet",
+      "board_member": "Hallituksen jäsen",
       "chairperson": "Puheenjohtaja",
       "intra_rights_owner": "Intra-oikeuksien haltija",
       "signature_rights_owners": "Nimenkirjoitusoikeudet",
-      "name": "Nimi"
+      "signature_rights_owner": "Nimenkirjoitusoikeudellinen",
+      "name": "Nimi",
+      "add_board_member": "Lisää hallituksen jäsen",
+      "add_signature_rights_owner": "Lisää nimenkirjoitusoikeudellinen",
+      "reservation_emails": "Tilavarausoikeudet"
+    },
+    "emails": {
+      "add_email": "Lisää sähköposti",
+      "email_label": "Sähköposti",
+      "email_placeholder": "Kirjoita sähköpostiosoite",
+      "remove": "Poista",
+      "add_email_list": "Lisää sähköpostilista",
+      "list_name": "Sähköpostilistan nimi"
+    },
+    "person": {
+      "name": "Nimi",
+      "email": "Sähköposti",
+      "phone": "Puhelin",
+      "role": "Rooli",
+      "telegram": "Telegram",
+      "has_banking_account": "Suomalainen pankkitunnus"
     },
     "facilities": {
       "label": "Järjestön tilat",
@@ -175,6 +197,12 @@
       "room": "Tila",
       "contact_person": "Yhteyshenkilö",
       "other_info": "Muut tiedot"
+    },
+    "edit": {
+      "title": "Muokkaa järjestön tietoja",
+      "save": "Tallenna",
+      "cancel": "Peruuta",
+      "error": "Järjestön tietojen tallentaminen epäonnistui. Yritä myöhemmin uudelleen."
     }
   },
   "pages": {
