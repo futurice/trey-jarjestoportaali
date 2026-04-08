@@ -134,13 +134,13 @@ module api './app/api.bicep' = {
       AZURE_COSMOS_DATABASE_NAME: cosmos.outputs.databaseName
       AZURE_COSMOS_ENDPOINT: cosmos.outputs.endpoint
       AZURE_STORAGE_BLOB_ENDPOINT: storage.outputs.primaryEndpoints.blob
-      API_ALLOW_ORIGINS: web.outputs.SERVICE_WEB_URI
+      API_ALLOW_ORIGINS: '${web.outputs.SERVICE_WEB_URI}, https://jippo.trey.fi'
       STYTCH_PROJECT_ID: '@Microsoft.KeyVault(VaultName=${keyVault.outputs.name};SecretName=STYTCH-PROJECT-ID)'
       STYTCH_PROJECT_SECRET: '@Microsoft.KeyVault(VaultName=${keyVault.outputs.name};SecretName=STYTCH-PROJECT-SECRET)'
       SUPABASE_KEY: '@Microsoft.KeyVault(VaultName=${keyVault.outputs.name};SecretName=SUPABASE-KEY)'
       SUPABASE_SECRET_KEY: '@Microsoft.KeyVault(VaultName=${keyVault.outputs.name};SecretName=SUPABASE-SECRET-KEY)'
       SUPABASE_URL: '@Microsoft.KeyVault(VaultName=${keyVault.outputs.name};SecretName=SUPABASE-URL)'
-      ACS_EMAIL_ENDPOINT: acsEmail.outputs.endpoint
+      ACS_EMAIL_ENDPOINT: 'https://${acsEmail.outputs.endpoint}'
     }
   }
 }

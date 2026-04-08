@@ -15,7 +15,7 @@ import { useSurveyAnswerService } from "../../hooks/useSurveyAnswerService"
 import { useGetSurveyResults } from "../../hooks/useSurveyAnswers"
 import { useSurveyService } from "../../hooks/useSurveyService"
 import { useGetSurveyById } from "../../hooks/useSurveys"
-import { CachedSurveyState, SurveyAnswer, SurveyType } from "../../models/survey"
+import { CachedSurveyState, SurveyAnswer } from "../../models/survey"
 import "./Survey.css"
 import surveyTheme from "./SurveyTheme"
 
@@ -43,7 +43,7 @@ export const SurveyPage = () => {
   const { data: organization, isFetching: isFetchingOrganization } = useGetOrganizationById(
     organizationsService,
     treyUser?.organizationId || "",
-    !!treyUser?.organizationId && survey?.surveyType === SurveyType.AssociationAnnouncement,
+    !!treyUser?.organizationId,
   )
   const fileService = useFileService(sessionJwt)
 
@@ -311,24 +311,12 @@ export const SurveyPage = () => {
   }, [saveSurveyData, surveyModel])
 
   useEffect(() => {
-    if (
-      !surveyAnswerData &&
-      survey?.surveyType === SurveyType.AssociationAnnouncement &&
-      organization &&
-      !isFetchingOrganization &&
-      !isLoadingSurveyResults
-    ) {
-      surveyModel.data = {
-        ...surveyModel.data,
-        organizationName: organization?.name || undefined,
-        boardEmail: organization?.email || undefined,
-        memberCount: organization?.memberCount || undefined,
-        treyMemberCount: organization?.treyMemberCount || undefined,
-        hasAssociationFacility: !!organization.associationFacility,
-        campus: organization.associationFacility?.campus || undefined,
-        building: organization.associationFacility?.building || undefined,
-        roomCode: organization.associationFacility?.roomCode || undefined,
-      }
+    if (!surveyAnswerData && organization && !isFetchingOrganization && !isLoadingSurveyResults) {
+      surveyModel.setVariable("organizationFullName", organization.name)
+      surveyModel.setVariable("organizationCategory", organization.category)
+      surveyModel.setVariable("organizationEmail", organization.email)
+      surveyModel.setVariable("organizationMemberCount", organization.memberCount)
+      surveyModel.setVariable("organizationTreyMemberCount", organization.treyMemberCount)
     }
   }, [
     organization,
