@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from "react"
 import { useTranslation } from "react-i18next"
-import { useNavigate, useParams } from "react-router-dom"
+import { useNavigate, useParams, Link as RouterLink } from "react-router-dom"
 import {
   CalendarToday,
   Email,
@@ -14,6 +14,7 @@ import {
   ArrowDropDownSharp,
   ArrowBack,
   AttachFile,
+  Edit,
 } from "@mui/icons-material"
 import {
   Container,
@@ -33,6 +34,7 @@ import {
   styled,
   IconButton,
   Link,
+  Button,
 } from "@mui/material"
 import MuiAccordion, { AccordionProps } from "@mui/material/Accordion"
 import { Roles } from "../../authentication"
@@ -154,13 +156,24 @@ export const OrganizationPage = () => {
                     </Typography>
                   )}
                 </Box>
-                {organization.category !== undefined && (
+                <Box sx={{ display: "flex", gap: 2, alignItems: "center" }}>
                   <Chip
                     label={getCategoryLabel(organization.category, t)}
                     color="primary"
                     variant="outlined"
                   />
-                )}
+                  {(treyUser?.role === Roles.TREY_BOARD || treyUser?.role === Roles.ADMIN) && (
+                    <Button
+                      component={RouterLink}
+                      to={`/organizations/${organization.id}/edit`}
+                      variant="contained"
+                      color="primary"
+                      startIcon={<Edit />}
+                    >
+                      Edit
+                    </Button>
+                  )}
+                </Box>
               </Box>
             }
           />
