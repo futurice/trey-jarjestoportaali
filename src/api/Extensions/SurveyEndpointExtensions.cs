@@ -113,8 +113,20 @@ public static class SurveyEndpointExtensions
     }
 
     [RequiredRole(TreyRole.Admin, TreyRole.TreyBoard, TreyRole.Organization)]
-    private static async Task<IResult> GetSurveyAnswerByOrganizationId(Guid surveyId, Guid organizationId, SurveyRepository repo)
+    private static async Task<IResult> GetSurveyAnswerByOrganizationId(
+        Guid surveyId,
+        Guid organizationId,
+        SurveyRepository repo,
+        HttpContext httpContext)
     {
+        if (httpContext.User.IsInRole(TreyRole.Organization.ToString()))
+        {
+            var userOrganizationId = httpContext.User.FindFirst("organizationId")?.Value;
+            if (!Guid.TryParse(userOrganizationId, out var authorizedOrganizationId) || authorizedOrganizationId != organizationId)
+            {
+                return Results.Forbid();
+            }
+        }
         var answer = await repo.GetSurveyAnswerByOrganizationIdAsync(surveyId, organizationId);
         return answer is null ? Results.NotFound() : Results.Ok(answer);
     }
