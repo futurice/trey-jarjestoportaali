@@ -16,6 +16,7 @@ public static class SurveyEndpointExtensions
         group.MapDelete("/{id:guid}", DeleteSurvey);
         group.MapPost("/{surveyId:guid}/answers", CreateSurveyAnswer);
         group.MapGet("/{surveyId:guid}/answers", GetSurveyAnswers);
+        group.MapGet("/{surveyId:guid}/answers/{organizationId:guid}", GetSurveyAnswerByOrganizationId);
         group.MapPut("/{surveyId:guid}/answers/{responseId:guid}", UpdateSurveyAnswer);
 
         return group;
@@ -109,5 +110,24 @@ public static class SurveyEndpointExtensions
     {
         var answers = await repo.GetSurveyAnswersAsync(surveyId);
         return Results.Ok(answers);
+    }
+
+    [RequiredRole(TreyRole.Admin, TreyRole.TreyBoard, TreyRole.Organization)]
+    private static async Task<IResult> GetSurveyAnswerByOrganizationId(
+        Guid surveyId,
+        Guid organizationId,
+        SurveyRepository repo,
+        HttpContext httpContext)
+    {
+        if (httpContext.User.IsInRole(TreyRole.Organization.ToString()))
+        {
+            var userOrganizationId = httpContext.User.FindFirst("organizationId")?.Value;
+            if (!Guid.TryParse(userOrganizationId, out var authorizedOrganizationId) || authorizedOrganizationId != organizationId)
+            {
+                return Results.Forbid();
+            }
+        }
+        var answer = await repo.GetSurveyAnswerByOrganizationIdAsync(surveyId, organizationId);
+        return answer is null ? Results.NotFound() : Results.Ok(answer);
     }
 }

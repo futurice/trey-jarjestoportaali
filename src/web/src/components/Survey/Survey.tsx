@@ -3,7 +3,13 @@ import toast from "react-hot-toast"
 import { useTranslation } from "react-i18next"
 import { useParams } from "react-router-dom"
 import { CircularProgress, Container, Typography } from "@mui/material"
-import { CompleteEvent, getLocaleStrings, UploadFilesEvent } from "survey-core"
+import {
+  ClearFilesEvent,
+  CompleteEvent,
+  getLocaleStrings,
+  UploadFilesEvent,
+  ValueChangedEvent,
+} from "survey-core"
 import "survey-core/i18n/finnish"
 import "survey-core/survey-core.css"
 import { Model, Survey, SurveyModel } from "survey-react-ui"
@@ -12,7 +18,7 @@ import { useFileService } from "../../hooks/useFileService"
 import { useGetOrganizationById } from "../../hooks/useOrganizations"
 import { useOrganizationsService } from "../../hooks/useOrganizationsService"
 import { useSurveyAnswerService } from "../../hooks/useSurveyAnswerService"
-import { useGetSurveyResults } from "../../hooks/useSurveyAnswers"
+import { useGetSurveyResultById } from "../../hooks/useSurveyAnswers"
 import { useSurveyService } from "../../hooks/useSurveyService"
 import { useGetSurveyById } from "../../hooks/useSurveys"
 import { CachedSurveyState, SurveyAnswer } from "../../models/survey"
@@ -28,7 +34,10 @@ export const SurveyPage = () => {
   const [surveyAnswers, setSurveyAnswers] = useState<SurveyModel | undefined>(undefined)
   const [responseSaved, setResponseSaved] = useState<Date | undefined>(undefined)
   const sessionJwt = useMemo(() => session?.access_token, [session])
-  const storageItemKey = `trey-${surveyId}-${treyUser?.organizationId ?? treyUser?.id}`
+  const storageItemKey = useMemo(
+    () => `trey-${surveyId}-${treyUser?.organizationId ?? treyUser?.id}`,
+    [surveyId, treyUser?.organizationId, treyUser?.id],
+  )
 
   const surveyService = useSurveyService(treyUser?.role, sessionJwt)
   if (!surveyId) {
@@ -37,8 +46,10 @@ export const SurveyPage = () => {
   const { survey, loading } = useGetSurveyById(surveyService, surveyId)
 
   const surveyAnswerService = useSurveyAnswerService(treyUser?.role, sessionJwt, surveyId)
-  const { surveyResults, loading: isLoadingSurveyResults } =
-    useGetSurveyResults(surveyAnswerService)
+  const { surveyResults, loading: isLoadingSurveyResults } = useGetSurveyResultById(
+    surveyAnswerService,
+    treyUser?.organizationId ?? treyUser?.id,
+  )
   const organizationsService = useOrganizationsService(treyUser?.role, sessionJwt)
   const { data: organization, isFetching: isFetchingOrganization } = useGetOrganizationById(
     organizationsService,
@@ -47,8 +58,7 @@ export const SurveyPage = () => {
   )
   const fileService = useFileService(sessionJwt)
 
-  useEffect(() => {
-    if (loading || isLoadingSurveyResults) return
+  const getCachedData = useCallback(() => {
     const rawCache = globalThis.localStorage.getItem(storageItemKey) || null
     let cached: CachedSurveyState | null = null
     if (rawCache) {
@@ -63,29 +73,43 @@ export const SurveyPage = () => {
         cached = null
       }
     }
-    const currentAnswers = surveyResults?.find((surveyAnswer) => surveyAnswer.surveyId === surveyId)
-    const cachedAnswerJson = cached ? JSON.parse(cached.answerJson) : null
-    if (currentAnswers?.answerJson) {
-      const serverData = JSON.parse(currentAnswers.answerJson)
-      const serverUpdatedAt = currentAnswers.updatedAt
-        ? new Date(currentAnswers.updatedAt).getTime()
-        : 0
+    return cached
+  }, [storageItemKey, surveyId])
 
-      const cacheUpdatedAt = cached?.updatedAt ? new Date(cached.updatedAt).getTime() : 0
+  useEffect(() => {
+    if (loading || isLoadingSurveyResults) return
+    const cachedData = getCachedData()
+    let cachedAnswerJson = null
+    try {
+      cachedAnswerJson = cachedData ? JSON.parse(cachedData.answerJson) : null
+    } catch (e) {
+      console.warn("Failed to parse cached survey answer JSON", e)
+    }
+    if (surveyResults?.answerJson) {
+      setSurveyAnswerData(surveyResults)
+      let serverData = null
+      try {
+        serverData = JSON.parse(surveyResults.answerJson)
+      } catch (e) {
+        console.error("Failed to parse survey answer JSON from server", e)
+      }
+
+      const serverUpdatedAt = surveyResults.updatedAt
+        ? new Date(surveyResults.updatedAt).getTime()
+        : 0
+      const cacheUpdatedAt = cachedData?.updatedAt ? new Date(cachedData.updatedAt).getTime() : 0
 
       // pick whichever is newer
-      if (cached && cacheUpdatedAt > serverUpdatedAt) {
-        setSurveyAnswerData(currentAnswers)
-        setSurveyAnswers({ ...cachedAnswerJson, pageNo: cachedAnswerJson.pageNo })
-      } else {
-        setSurveyAnswerData(currentAnswers)
+      if (cachedAnswerJson && cacheUpdatedAt > serverUpdatedAt) {
+        setSurveyAnswers(cachedAnswerJson)
+      } else if (serverData) {
         setSurveyAnswers(serverData)
       }
-    } else if (cached) {
+    } else if (cachedAnswerJson) {
       // no server data yet, but we have a local cache
-      setSurveyAnswers({ ...cachedAnswerJson, pageNo: cachedAnswerJson.pageNo })
+      setSurveyAnswers(cachedAnswerJson)
     }
-  }, [isLoadingSurveyResults, loading, storageItemKey, surveyId, surveyResults])
+  }, [getCachedData, isLoadingSurveyResults, loading, storageItemKey, surveyId, surveyResults])
 
   // Hack to change the loading and completing survey messages
   useEffect(() => {
@@ -100,7 +124,8 @@ export const SurveyPage = () => {
   }, [])
 
   const saveToLocalStorage = useCallback(
-    (survey: SurveyModel) => {
+    (survey: SurveyModel, options?: ValueChangedEvent) => {
+      if (options?.reason === "expression") return
       const cache: CachedSurveyState = {
         surveyId,
         organizationId: treyUser?.organizationId ?? treyUser?.id,
@@ -234,20 +259,8 @@ export const SurveyPage = () => {
     [fileService, treyUser?.id, treyUser?.organizationId],
   )
 
-  const surveyModel = useMemo(() => {
-    const model = new Model(survey?.surveyJson)
-    model.locale = i18n.language ?? "fi"
-    model.applyTheme(surveyTheme)
-    model.data = surveyAnswers ?? {}
-    if (surveyAnswers?.pageNo) {
-      model.currentPageNo = surveyAnswers?.pageNo
-    }
-    model.onUploadFiles.add(uploadFilesEvent)
-    model.onCurrentPageChanged.add(saveSurveyData)
-    model.onComplete.add(completeSurvey)
-    model.onValueChanged.add(saveToLocalStorage)
-
-    model.onClearFiles.add(async (survey, options) => {
+  const clearFilesEvent = useCallback(
+    async (survey: Model, options: ClearFilesEvent) => {
       if (!options.value || options.value.length === 0) {
         return options.callback("success")
       }
@@ -274,7 +287,37 @@ export const SurveyPage = () => {
         options.callback("error")
       }
       saveSurveyData(survey)
-    })
+    },
+    [deleteFileEvent, saveSurveyData],
+  )
+
+  const setVariables = useCallback(
+    (surveyModel: Model) => {
+      if (organization && !isFetchingOrganization && !isLoadingSurveyResults) {
+        surveyModel.setVariable("organizationFullName", organization.name)
+        surveyModel.setVariable("organizationCategory", organization.category)
+        surveyModel.setVariable("organizationEmail", organization.email)
+        surveyModel.setVariable("organizationMemberCount", organization.memberCount)
+        surveyModel.setVariable("organizationTreyMemberCount", organization.treyMemberCount)
+      }
+    },
+    [isFetchingOrganization, isLoadingSurveyResults, organization],
+  )
+
+  const surveyModel = useMemo(() => {
+    const model = new Model(survey?.surveyJson)
+    model.locale = i18n.language ?? "fi"
+    model.applyTheme(surveyTheme)
+    model.mergeData(surveyAnswers)
+    if (surveyAnswers?.pageNo) {
+      model.currentPageNo = surveyAnswers?.pageNo
+    }
+    model.onUploadFiles.add(uploadFilesEvent)
+    model.onCurrentPageChanged.add(saveSurveyData)
+    model.onClearFiles.add(clearFilesEvent)
+    model.onComplete.add(completeSurvey)
+    model.onValueChanged.add(saveToLocalStorage)
+    model.onAfterRenderSurvey.add(setVariables)
 
     model.addNavigationItem({
       id: "sv-nav-save",
@@ -294,12 +337,13 @@ export const SurveyPage = () => {
   }, [
     survey?.surveyJson,
     i18n.language,
-    surveyAnswers,
     uploadFilesEvent,
     saveSurveyData,
+    clearFilesEvent,
     completeSurvey,
     saveToLocalStorage,
-    deleteFileEvent,
+    setVariables,
+    surveyAnswers,
   ])
 
   useEffect(() => {
@@ -309,28 +353,6 @@ export const SurveyPage = () => {
 
     return () => clearInterval(interval)
   }, [saveSurveyData, surveyModel])
-
-  useEffect(() => {
-    if (!surveyAnswerData && organization && !isFetchingOrganization && !isLoadingSurveyResults) {
-      surveyModel.setVariable("organizationFullName", organization.name)
-      surveyModel.setVariable("organizationCategory", organization.category)
-      surveyModel.setVariable("organizationEmail", organization.email)
-      surveyModel.setVariable("organizationMemberCount", organization.memberCount)
-      surveyModel.setVariable("organizationTreyMemberCount", organization.treyMemberCount)
-    }
-  }, [
-    organization,
-    survey,
-    surveyId,
-    surveyResults,
-    storageItemKey,
-    surveyModel.data,
-    surveyModel,
-    isFetchingOrganization,
-    surveyAnswerData,
-    isLoadingSurveyResults,
-    saveSurveyData,
-  ])
 
   if (loading || isLoadingSurveyResults) {
     return (

@@ -34,6 +34,38 @@ export const usePostSurveyResult = (
   return { surveyResult, loading }
 }
 
+export const useGetSurveyResultById = (
+  SurveyAnswerService: SurveyAnswerService | null,
+  organizationId: string | undefined,
+) => {
+  const [surveyResults, setSurveyResults] = useState<SurveyAnswer | null>(null)
+  const [loading, setLoading] = useState(true)
+
+  const fetchSurveyResults = useCallback(async () => {
+    if (!SurveyAnswerService || !organizationId) {
+      setSurveyResults(null)
+      setLoading(false)
+      return
+    }
+
+    try {
+      const surveyResults = await SurveyAnswerService.getAnswerById(organizationId)
+      setSurveyResults(surveyResults)
+    } catch (error) {
+      setSurveyResults(null)
+    } finally {
+      setLoading(false)
+    }
+  }, [SurveyAnswerService, organizationId])
+
+  useEffect(() => {
+    setLoading(true)
+    fetchSurveyResults()
+  }, [fetchSurveyResults])
+
+  return { surveyResults, loading }
+}
+
 export const useGetSurveyResults = (SurveyAnswerService: SurveyAnswerService | null) => {
   const [surveyResults, setSurveyResults] = useState<SurveyAnswer[]>([])
   const [loading, setLoading] = useState(true)
