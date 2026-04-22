@@ -18,7 +18,7 @@ import { useFileService } from "../../hooks/useFileService"
 import { useGetOrganizationById } from "../../hooks/useOrganizations"
 import { useOrganizationsService } from "../../hooks/useOrganizationsService"
 import { useSurveyAnswerService } from "../../hooks/useSurveyAnswerService"
-import { useGetSurveyResultsById } from "../../hooks/useSurveyAnswers"
+import { useGetSurveyResultById } from "../../hooks/useSurveyAnswers"
 import { useSurveyService } from "../../hooks/useSurveyService"
 import { useGetSurveyById } from "../../hooks/useSurveys"
 import { CachedSurveyState, SurveyAnswer } from "../../models/survey"
@@ -46,9 +46,8 @@ export const SurveyPage = () => {
   const { survey, loading } = useGetSurveyById(surveyService, surveyId)
 
   const surveyAnswerService = useSurveyAnswerService(treyUser?.role, sessionJwt, surveyId)
-  const { surveyResults, loading: isLoadingSurveyResults } = useGetSurveyResultsById(
+  const { surveyResults, loading: isLoadingSurveyResults } = useGetSurveyResultById(
     surveyAnswerService,
-    surveyId,
     treyUser?.organizationId ?? treyUser?.id,
   )
   const organizationsService = useOrganizationsService(treyUser?.role, sessionJwt)
@@ -80,10 +79,21 @@ export const SurveyPage = () => {
   useEffect(() => {
     if (loading || isLoadingSurveyResults) return
     const cachedData = getCachedData()
-    const cachedAnswerJson = cachedData ? JSON.parse(cachedData.answerJson) : null
+    let cachedAnswerJson = null
+    try {
+      cachedAnswerJson = cachedData ? JSON.parse(cachedData.answerJson) : null
+    } catch (e) {
+      console.warn("Failed to parse cached survey answer JSON", e)
+    }
     if (surveyResults?.answerJson) {
       setSurveyAnswerData(surveyResults)
-      const serverData = JSON.parse(surveyResults.answerJson)
+      let serverData = null
+      try {
+        serverData = JSON.parse(surveyResults.answerJson)
+      } catch (e) {
+        console.error("Failed to parse survey answer JSON from server", e)
+      }
+
       const serverUpdatedAt = surveyResults.updatedAt
         ? new Date(surveyResults.updatedAt).getTime()
         : 0
@@ -91,13 +101,13 @@ export const SurveyPage = () => {
 
       // pick whichever is newer
       if (cachedAnswerJson && cacheUpdatedAt > serverUpdatedAt) {
-        setSurveyAnswers({ ...cachedAnswerJson, pageNo: cachedAnswerJson.pageNo })
-      } else {
+        setSurveyAnswers(cachedAnswerJson)
+      } else if (serverData) {
         setSurveyAnswers(serverData)
       }
     } else if (cachedAnswerJson) {
       // no server data yet, but we have a local cache
-      setSurveyAnswers({ ...cachedAnswerJson, pageNo: cachedAnswerJson.pageNo })
+      setSurveyAnswers(cachedAnswerJson)
     }
   }, [getCachedData, isLoadingSurveyResults, loading, storageItemKey, surveyId, surveyResults])
 

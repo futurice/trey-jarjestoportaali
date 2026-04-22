@@ -34,30 +34,29 @@ export const usePostSurveyResult = (
   return { surveyResult, loading }
 }
 
-export const useGetSurveyResultsById = (
+export const useGetSurveyResultById = (
   SurveyAnswerService: SurveyAnswerService | null,
-  surveyId: string | undefined,
   organizationId: string | undefined,
 ) => {
   const [surveyResults, setSurveyResults] = useState<SurveyAnswer | null>(null)
   const [loading, setLoading] = useState(true)
 
   const fetchSurveyResults = useCallback(async () => {
-    if (!SurveyAnswerService || !surveyId || !organizationId) {
+    if (!SurveyAnswerService || !organizationId) {
       setSurveyResults(null)
       setLoading(false)
       return
     }
 
     try {
-      const surveyResults = await SurveyAnswerService.getAnswersById(surveyId, organizationId)
+      const surveyResults = await SurveyAnswerService.getAnswerById(organizationId)
       setSurveyResults(surveyResults)
     } catch (error) {
       setSurveyResults(null)
     } finally {
       setLoading(false)
     }
-  }, [SurveyAnswerService, surveyId, organizationId])
+  }, [SurveyAnswerService, organizationId])
 
   useEffect(() => {
     setLoading(true)

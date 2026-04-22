@@ -26,9 +26,7 @@ export class SurveyAnswerService extends RestService<SurveyAnswer> {
     return response.data
   }
 
-  public async getAnswersById(
-    organizationId: string,
-  ): Promise<SurveyAnswer | null> {
+  public async getAnswerById(organizationId: string): Promise<SurveyAnswer | null> {
     const response = await this.client.request<SurveyAnswer>({
       method: "GET",
       url: organizationId,

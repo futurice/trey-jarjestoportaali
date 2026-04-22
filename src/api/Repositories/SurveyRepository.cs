@@ -49,12 +49,12 @@ public class SurveyRepository
         var iterator = _surveyResponseCollection.GetItemQueryIterator<SurveyAnswer>(
             new QueryDefinition("SELECT * FROM c WHERE c.surveyId = @surveyId AND c.organizationId = @organizationId")
                 .WithParameter("@surveyId", surveyId.ToString())
-                .WithParameter("@organizationId", organizationId.ToString()));
+                .WithParameter("@organizationId", organizationId.ToString()),
+                requestOptions: new QueryRequestOptions { MaxItemCount = 1 });
         while (iterator.HasMoreResults)
         {
             var response = await iterator.ReadNextAsync();
-            var answer = response.FirstOrDefault();
-            if (answer != null)
+            if (response.FirstOrDefault() is SurveyAnswer answer)
             {
                 return answer;
             }
