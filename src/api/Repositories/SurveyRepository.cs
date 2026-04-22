@@ -44,6 +44,25 @@ public class SurveyRepository
         return surveys;
     }
 
+    public async Task<SurveyAnswer?> GetSurveyAnswerByOrganizationIdAsync(Guid surveyId, Guid organizationId)
+    {
+        var iterator = _surveyResponseCollection.GetItemQueryIterator<SurveyAnswer>(
+            new QueryDefinition("SELECT * FROM c WHERE c.surveyId = @surveyId AND c.organizationId = @organizationId")
+                .WithParameter("@surveyId", surveyId.ToString())
+                .WithParameter("@organizationId", organizationId.ToString()));
+        while (iterator.HasMoreResults)
+        {
+            var response = await iterator.ReadNextAsync();
+            var answer = response.FirstOrDefault();
+            if (answer != null)
+            {
+                return answer;
+            }
+        }
+
+        return null;
+    }
+
     public async Task<Survey?> GetSurveyByIdAsync(Guid id)
     {
         var response = await _surveyCollection.ReadItemAsync<Survey>(id.ToString(), new PartitionKey(id.ToString()));
