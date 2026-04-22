@@ -249,20 +249,8 @@ export const SurveyPage = () => {
     [fileService, treyUser?.id, treyUser?.organizationId],
   )
 
-  const surveyModel = useMemo(() => {
-    const model = new Model(survey?.surveyJson)
-    model.locale = i18n.language ?? "fi"
-    model.applyTheme(surveyTheme)
-    model.data = surveyAnswers ?? {}
-    if (surveyAnswers?.pageNo) {
-      model.currentPageNo = surveyAnswers?.pageNo
-    }
-    model.onUploadFiles.add(uploadFilesEvent)
-    model.onCurrentPageChanged.add(saveSurveyData)
-    model.onComplete.add(completeSurvey)
-    model.onValueChanged.add(saveToLocalStorage)
-
-    model.onClearFiles.add(async (survey, options) => {
+  const clearFilesEvent = useCallback(
+    async (survey: Model, options: ClearFilesEvent) => {
       if (!options.value || options.value.length === 0) {
         return options.callback("success")
       }
@@ -289,7 +277,37 @@ export const SurveyPage = () => {
         options.callback("error")
       }
       saveSurveyData(survey)
-    })
+    },
+    [deleteFileEvent, saveSurveyData],
+  )
+
+  const setVariables = useCallback(
+    (surveyModel: Model) => {
+      if (organization && !isFetchingOrganization && !isLoadingSurveyResults) {
+        surveyModel.setVariable("organizationFullName", organization.name)
+        surveyModel.setVariable("organizationCategory", organization.category)
+        surveyModel.setVariable("organizationEmail", organization.email)
+        surveyModel.setVariable("organizationMemberCount", organization.memberCount)
+        surveyModel.setVariable("organizationTreyMemberCount", organization.treyMemberCount)
+      }
+    },
+    [isFetchingOrganization, isLoadingSurveyResults, organization],
+  )
+
+  const surveyModel = useMemo(() => {
+    const model = new Model(survey?.surveyJson)
+    model.locale = i18n.language ?? "fi"
+    model.applyTheme(surveyTheme)
+    model.mergeData(surveyAnswers)
+    if (surveyAnswers?.pageNo) {
+      model.currentPageNo = surveyAnswers?.pageNo
+    }
+    model.onUploadFiles.add(uploadFilesEvent)
+    model.onCurrentPageChanged.add(saveSurveyData)
+    model.onClearFiles.add(clearFilesEvent)
+    model.onComplete.add(completeSurvey)
+    model.onValueChanged.add(saveToLocalStorage)
+    model.onAfterRenderSurvey.add(setVariables)
 
     model.addNavigationItem({
       id: "sv-nav-save",
@@ -309,12 +327,13 @@ export const SurveyPage = () => {
   }, [
     survey?.surveyJson,
     i18n.language,
-    surveyAnswers,
     uploadFilesEvent,
     saveSurveyData,
+    clearFilesEvent,
     completeSurvey,
     saveToLocalStorage,
-    deleteFileEvent,
+    setVariables,
+    surveyAnswers,
   ])
 
   useEffect(() => {
@@ -324,28 +343,6 @@ export const SurveyPage = () => {
 
     return () => clearInterval(interval)
   }, [saveSurveyData, surveyModel])
-
-  useEffect(() => {
-    if (!surveyAnswerData && organization && !isFetchingOrganization && !isLoadingSurveyResults) {
-      surveyModel.setVariable("organizationFullName", organization.name)
-      surveyModel.setVariable("organizationCategory", organization.category)
-      surveyModel.setVariable("organizationEmail", organization.email)
-      surveyModel.setVariable("organizationMemberCount", organization.memberCount)
-      surveyModel.setVariable("organizationTreyMemberCount", organization.treyMemberCount)
-    }
-  }, [
-    organization,
-    survey,
-    surveyId,
-    surveyResults,
-    storageItemKey,
-    surveyModel.data,
-    surveyModel,
-    isFetchingOrganization,
-    surveyAnswerData,
-    isLoadingSurveyResults,
-    saveSurveyData,
-  ])
 
   if (loading || isLoadingSurveyResults) {
     return (
