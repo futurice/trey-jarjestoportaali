@@ -39,7 +39,7 @@ import {
 } from "@mui/material"
 import { Roles } from "../../authentication"
 import { useAuth } from "../../authentication/AuthContext"
-import { useGetOrganizationById } from "../../hooks/useOrganizations"
+import { useGetOrganizationById, useSaveOrganizationData } from "../../hooks/useOrganizations"
 import { useOrganizationsService } from "../../hooks/useOrganizationsService"
 import { Category, Facility, Organization, Person } from "../../models/organization"
 import { getCategoryLabel } from "../../utils/organizationUtils"
@@ -50,15 +50,18 @@ export function OrganizationEdit() {
   const navigate = useNavigate()
   const { t } = useTranslation()
 
+  const isAdmin = useMemo(
+    () => treyUser?.role === Roles.ADMIN || treyUser?.role === Roles.TREY_BOARD,
+    [treyUser],
+  )
   const sessionJwt = useMemo(() => session?.access_token, [session])
   const organizationsService = useOrganizationsService(treyUser?.role, sessionJwt)
   const { data: organization, isFetching } = useGetOrganizationById(
     organizationsService,
     orgId,
-    (treyUser?.role === Roles.ORGANISATION && treyUser?.organizationId === orgId) ||
-      treyUser?.role === Roles.TREY_BOARD ||
-      treyUser?.role === Roles.ADMIN,
+    (treyUser?.role === Roles.ORGANISATION && treyUser?.organizationId === orgId) || isAdmin,
   )
+  const saveData = useSaveOrganizationData(organizationsService)
 
   const [formData, setFormData] = useState<Organization>(organization || ({} as Organization))
   const [errors, setErrors] = useState<Record<string, string>>({})
@@ -81,12 +84,6 @@ export function OrganizationEdit() {
         </Typography>
       </Container>
     )
-  }
-
-  const saveData = (organization: Organization) => {
-    organizationsService?.save(organization).then((savedOrg) => {
-      setFormData(savedOrg)
-    })
   }
 
   // Helper to update nested fields
@@ -278,8 +275,12 @@ export function OrganizationEdit() {
 
   const handleSave = () => {
     if (validate()) {
-      saveData(formData)
-      navigate("..", { relative: "path" })
+      saveData.mutateAsync(formData, {
+        onSuccess: (savedOrg) => {
+          setFormData(savedOrg)
+          navigate("..", { relative: "path" })
+        },
+      })
     }
   }
 

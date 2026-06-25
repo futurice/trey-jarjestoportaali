@@ -1,4 +1,4 @@
-import { useQuery } from "@tanstack/react-query"
+import { useMutation, useQuery } from "@tanstack/react-query"
 import { AxiosError } from "axios"
 import { Roles } from "../authentication"
 import { TreyUser } from "../authentication/AuthContext"
@@ -31,5 +31,17 @@ export const useOrganizations = (
     enabled:
       !!organizationsService &&
       (treyUser?.role === Roles.ADMIN || treyUser?.role === Roles.TREY_BOARD),
+  })
+}
+
+export const useSaveOrganizationData = (organizationsService: OrganizationService | null) => {
+  return useMutation<Organization, AxiosError, Organization>({
+    mutationKey: ["saveOrganizationData"],
+    mutationFn: async (organizationData: Organization) => {
+      return await organizationsService!.save(organizationData)
+    },
+    onSuccess: (data) => {
+      return data
+    },
   })
 }
