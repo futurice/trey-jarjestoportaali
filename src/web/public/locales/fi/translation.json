@@ -200,6 +200,7 @@
     },
     "edit": {
       "title": "Muokkaa järjestön tietoja",
+      "edit": "Muokkaa",
       "save": "Tallenna",
       "cancel": "Peruuta",
       "error": "Järjestön tietojen tallentaminen epäonnistui. Yritä myöhemmin uudelleen."
