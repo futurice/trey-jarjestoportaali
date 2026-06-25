@@ -162,17 +162,15 @@ export const OrganizationPage = () => {
                     color="primary"
                     variant="outlined"
                   />
-                  {(treyUser?.role === Roles.TREY_BOARD || treyUser?.role === Roles.ADMIN) && (
-                    <Button
-                      component={RouterLink}
-                      to={`/organizations/${organization.id}/edit`}
-                      variant="contained"
-                      color="primary"
-                      startIcon={<Edit />}
-                    >
-                      Edit
-                    </Button>
-                  )}
+                  <Button
+                    component={RouterLink}
+                    to={`/organizations/${organization.id}/edit`}
+                    variant="contained"
+                    color="primary"
+                    startIcon={<Edit />}
+                  >
+                    {t("organization.edit.edit")}
+                  </Button>
                 </Box>
               </Box>
             }
