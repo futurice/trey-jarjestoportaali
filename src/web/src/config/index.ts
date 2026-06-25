@@ -26,7 +26,7 @@ export interface AppConfig {
 }
 
 const config: AppConfig = {
-  env: import.meta.env.VITE_ENV || "dev",
+  env: import.meta.env.MODE,
   api: {
     baseUrl: import.meta.env.VITE_API_BASE_URL || "http://localhost:3100",
   },

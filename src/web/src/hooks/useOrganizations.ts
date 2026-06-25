@@ -38,10 +38,10 @@ export const useSaveOrganizationData = (organizationsService: OrganizationServic
   return useMutation<Organization, AxiosError, Organization>({
     mutationKey: ["saveOrganizationData"],
     mutationFn: async (organizationData: Organization) => {
-      return await organizationsService!.save(organizationData)
-    },
-    onSuccess: (data) => {
-      return data
+      if (!organizationsService) {
+        throw new Error("OrganizationService is not initialized")
+      }
+      return await organizationsService.save(organizationData)
     },
   })
 }

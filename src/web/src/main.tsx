@@ -11,7 +11,7 @@ import config from "./config/index.ts"
 import "./i18n"
 import "./index.css"
 
-if (config.env !== "dev") {
+if (config.env !== "development") {
   Sentry.init({
     dsn: config.sentry.dsn,
     integrations: [
