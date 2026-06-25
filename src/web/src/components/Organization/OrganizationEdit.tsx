@@ -273,9 +273,9 @@ export function OrganizationEdit() {
     return Object.keys(newErrors).length === 0
   }
 
-  const handleSave = () => {
+  const handleSave = async () => {
     if (validate()) {
-      saveData.mutateAsync(formData, {
+      await saveData.mutateAsync(formData, {
         onSuccess: (savedOrg) => {
           setFormData(savedOrg)
           navigate("..", { relative: "path" })
